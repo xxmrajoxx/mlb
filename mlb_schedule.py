@@ -3,7 +3,7 @@ import requests
 import json
 import logging
 
-from sql_loader import load_dataframe
+from sql.sql_loader import load_dataframe
 
 logging.basicConfig(level=logging.INFO)
 
