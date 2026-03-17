@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import logging
 import os
 
@@ -38,3 +38,13 @@ def load_dataframe(df, table_name, if_exists="append"):
         logger.info(f"Loaded {len(df)} rows into {table_name}")
     except Exception as e:
         logger.error(f"Error loading data into {table_name}: {e}")
+
+def truncate_table(table_name: str, schema: str = "dbo"):
+    with engine.begin() as conn:
+        conn.execute(text(f"TRUNCATE TABLE {schema}.{table_name}"))
+    logger.info(f"Truncated table {schema}.{table_name}")
+
+def execute_sql(sql: str):
+    with engine.begin() as conn:
+        conn.execute(text(sql))
+    logger.info("SQL executed successfully")
