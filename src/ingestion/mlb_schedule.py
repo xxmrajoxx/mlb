@@ -24,7 +24,7 @@ full_schedule.columns = full_schedule.columns.str.replace(".", "_", regex=False)
 load_dataframe(full_schedule, "mlb_schedule", if_exists="replace")
 
 
-
+# print(json.dumps(data, indent=2))
 # print(data.keys())
 # print(data["dates"][0].keys())
 # print(data["dates"][0]["games"][0].keys())

@@ -2,10 +2,6 @@ import pandas as pd
 import requests
 import logging
 
-#-----------------------
-# Below function required to obtain gamePk
-#-----------------------
-
 logging.basicConfig(level=logging.INFO)
 
 def fetch_gamePk(start_date: str, end_date: str) -> pd.DataFrame:
