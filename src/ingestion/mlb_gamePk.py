@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def fetch_gamePk(start_date: str, end_date: str) -> pd.DataFrame:
+def fetch_gamePk_with_dates(start_date: str=None, end_date: str=None) -> pd.DataFrame:
     url = (
         "https://statsapi.mlb.com/api/v1/schedule"
         f"?sportId=1&startDate={start_date}&endDate={end_date}&gameType=R"
@@ -41,7 +41,8 @@ def fetch_gamePk(start_date: str, end_date: str) -> pd.DataFrame:
     return df
 
 
+
 if __name__ == "__main__":
-    df = fetch_gamePk("2025-03-01", "2025-03-01")
+    df = fetch_gamePk_with_dates("2025-03-01", "2025-03-01")
     print(df.head())
     print(df.columns.tolist())
