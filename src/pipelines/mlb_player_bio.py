@@ -6,13 +6,14 @@ import time
 
 from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
 from src.ingestion.mlb_player_id_indiv import fetch_single_team
+from sql.sql_loader import load_dataframe
 
 logging.basicConfig(level=logging.INFO)
 
 def fetch_player_bio()-> pd.DataFrame:
 
-    players_df = fetch_single_team("133")                           # get the dataframe
-    players_ids = players_df["player_id"].dropna().tolist()           # convert column to a python list
+    players_df = fetch_active_mlb_players()                              # without () it is the function and not the dataframe
+    players_ids = players_df["player_id"].dropna().tolist()              # convert column to a python list
 
     # for player_id in players_ids:
     #     print(player_id)
@@ -22,7 +23,7 @@ def fetch_player_bio()-> pd.DataFrame:
     for player_id in players_ids:
         url = f"https://statsapi.mlb.com/api/v1/people/{player_id}"         # make sure its a f string
     
-        logging.info(f"Fetching brio for player_id={player_id}")
+        logging.info(f"Fetching bio for player_id={player_id}")
 
         try: 
             response = requests.get(url, timeout=15)
@@ -84,22 +85,26 @@ def fetch_player_bio()-> pd.DataFrame:
     return pd.DataFrame(players)
 
 if __name__ == "__main__":
-    logging.info("starting MLB player bio extraction")
-
+    
+    logging.info("Starting MLB player bio extractionand obtaining total number of")
     df = fetch_player_bio()
-    print(df.head())
-    print(df.shape)
+    load_dataframe(df, "dim_player", if_exists="replace")
 
-    df.to_csv("mlb_player_bio.csv", index=False)
-
+    logging.info("Completed")
 
 
-
-# print(data.keys())
-# print(data["people"][0].keys())
-# print(json.dumps(data["people"][0], indent=2))
+    # print(df.head())
+    # print(df.shape)
 
 
 
-# 1. obtain player id via mlb_player_id.py
-# 2. select a random player and use to identity key and structure 
+
+    # df.to_csv("mlb_player_bio.csv", index=False)
+    # print(data.keys())
+    # print(data["people"][0].keys())
+    # print(json.dumps(data["people"][0], indent=2))
+
+
+
+    # 1. obtain player id via mlb_player_id.py
+    # 2. select a random player and use to identity key and structure 
