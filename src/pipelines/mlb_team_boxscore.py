@@ -3,7 +3,7 @@ import requests
 import logging
 import time
 
-from src.ingestion.mlb_gamePk import fetch_gamePk
+from src.ingestion.mlb_gamePk import fetch_gamePk_with_dates
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO)
@@ -179,7 +179,7 @@ WHEN NOT MATCHED BY TARGET THEN
 """
 
 def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3) -> pd.DataFrame:
-    schedule_df = fetch_gamePk(start_date, end_date)
+    schedule_df = fetch_gamePk_with_dates(start_date, end_date)
 
     if schedule_df.empty:
         logging.warning("No games found for the given date range")
