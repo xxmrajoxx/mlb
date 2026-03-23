@@ -236,7 +236,7 @@ def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3)
 
 
 if __name__ == "__main__":
-    df = fetch_team_boxscores("2026-05-01", "2026-05-01")
+    df = fetch_team_boxscores("2025-05-01", "2025-05-01")
 
     if not df.empty:
         truncate_table("stg_fact_team_boxscore", schema="dbo")
