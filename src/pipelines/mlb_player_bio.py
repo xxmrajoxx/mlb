@@ -5,10 +5,11 @@ import logging
 import time
 
 from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
-from src.ingestion.mlb_player_id_indiv import fetch_single_team
+from src.ingestion.mlb_player_id_team import fetch_single_team
 from sql.sql_loader import load_dataframe
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 def fetch_player_bio()-> pd.DataFrame:
 
