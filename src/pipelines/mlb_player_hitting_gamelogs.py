@@ -22,6 +22,7 @@ def fetch_player_game_logs()->pd.DataFrame:
         player_id = player_row["player_id"]
         player_name = player_row["player_name"]
         team_id = player_row["team_id"]
+        team_position = player_row["position"]
         team_name = player_row.get("team_name")
 
         url = f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season=2026"
@@ -61,6 +62,7 @@ def fetch_player_game_logs()->pd.DataFrame:
             row = {
                 "player_id": player_id,
                 "player_name": player_name,
+                "position": team_position,
                 "team_name": team_name,
                 "team_id": team_id,
                 "gamePk": game.get("gamePk"),
