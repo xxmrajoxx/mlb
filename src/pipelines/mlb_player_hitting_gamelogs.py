@@ -5,12 +5,12 @@ import logging
 import json
 from datetime import datetime
 
-from src.ingestion.mlb_player_id_indiv import fetch_single_team
+from src.ingestion.mlb_player_id_team import fetch_single_team
 
 logging.basicConfig(level=logging.INFO)
 
 def fetch_player_game_logs()->pd.DataFrame:
-    player_df = fetch_single_team(147)
+    player_df = fetch_single_team(109)
 
     if player_df.empty:
         logging.warning("No team found")
@@ -22,8 +22,9 @@ def fetch_player_game_logs()->pd.DataFrame:
         player_id = player_row["player_id"]
         player_name = player_row["player_name"]
         team_id = player_row["team_id"]
+        team_name = player_row.get("team_name")
 
-        url = f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season=2025"
+        url = f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season=2026"
         
         logging.info(f"Fetching game logs for {player_name} ({player_id})")
         
@@ -51,9 +52,11 @@ def fetch_player_game_logs()->pd.DataFrame:
             stat = s.get("stat", {})                            # print(hitting["stats"][0]["splits"][0]
             game = s.get("game", {})                            # print(hitting["stats"][0]["splits"][0]
 
+
             row = {
                 "player_id": player_id,
                 "player_name": player_name,
+                "team_name": team_name,
                 "team_id": team_id,
                 "gamePk": game.get("gamePk"),
                 "dayNight": game.get("dayNight"),
@@ -70,8 +73,8 @@ if __name__ == "__main__":
     print(df.head())
     print(df.shape)
     
-    today = datetime.today().strftime("%y%m%d")
-    df.to_csv(f"mlb_player_gamelogs_{today}.csv", index=False)
+    # today = datetime.today().strftime("%y%m%d")
+    # df.to_csv(f"mlb_player_gamelogs_{today}.csv", index=False)
 
 
 
