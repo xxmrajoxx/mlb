@@ -4,13 +4,6 @@ import time
 import logging
 import requests
 
-# url = "https://statsapi.mlb.com/api/v1/teams?sportId=1"
-# responses = requests.get(url)
-# responses.raise_for_status()
-# data = responses.json()
-# team_df = pd.DataFrame(data["teams"])
-# print(team_df[["id", "name"]])
-
 def fetch_single_team(team_id: str)-> pd.DataFrame:
  #   team_id = "133"
     url = f"https://statsapi.mlb.com/api/v1/teams/{team_id}/roster"
@@ -37,6 +30,17 @@ print(df.head())
 
 
 
+
+
+
+
+
+# url = "https://statsapi.mlb.com/api/v1/teams?sportId=1"
+# responses = requests.get(url)
+# responses.raise_for_status()
+# data = responses.json()
+# team_df = pd.DataFrame(data["teams"])
+# print(team_df[["id", "name"]])
 
 
 
