@@ -51,7 +51,12 @@ def fetch_player_game_logs()->pd.DataFrame:
         for s in splits:
             stat = s.get("stat", {})                            # print(hitting["stats"][0]["splits"][0]
             game = s.get("game", {})                            # print(hitting["stats"][0]["splits"][0]
+            game_date_raw = s.get("date")
 
+            if not game_date_raw:
+                continue
+
+            game_date = pd.to_datetime(game_date_raw).date()
 
             row = {
                 "player_id": player_id,
@@ -59,6 +64,7 @@ def fetch_player_game_logs()->pd.DataFrame:
                 "team_name": team_name,
                 "team_id": team_id,
                 "gamePk": game.get("gamePk"),
+                "game_date": game_date,
                 "dayNight": game.get("dayNight"),
                 **stat
             }
