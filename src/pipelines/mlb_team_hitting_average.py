@@ -5,7 +5,8 @@ import logging
 
 from src.ingestion.mlb_team_id import fetch_team_id
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 SEASONS = [2026, 2025, 2024, 2023]
 

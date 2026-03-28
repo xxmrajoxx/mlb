@@ -6,7 +6,8 @@ import time
 from src.ingestion.mlb_gamePk import fetch_gamePk_with_dates
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 MERGE_SQL = """
 MERGE mlb.dbo.fact_team_boxscore AS target
@@ -236,7 +237,7 @@ def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3)
 
 
 if __name__ == "__main__":
-    df = fetch_team_boxscores("2025-05-01", "2025-05-01")
+    df = fetch_team_boxscores("2026-03-25", "2026-03-28")
 
     if not df.empty:
         truncate_table("stg_fact_team_boxscore", schema="dbo")

@@ -6,7 +6,8 @@ from datetime import datetime, date
 from pybaseball import statcast_pitcher
 from src.ingestion.mlb_player_id_team import fetch_single_team
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 # https://github.com/jldbc/pybaseball/blob/master/docs/statcast_pitcher.md
 
@@ -28,7 +29,7 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
     all_pitch_data = []
     
     # then grabing the player_id and calling statcast_pitcher
-    for _, row in pitcher_df.iterrows():
+    for _, row in pitcher_df.iterrows():            #_ - I dont care about this value ((index, row) → ignore index, only use row)
         player_id = row["player_id"]
         player_name = row["player_name"]
 
@@ -45,11 +46,6 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
                 continue
 
             df = df.copy()
-
-            if "game_pk" in df.columns:
-                df = df.rename(columns={"game_pk": "gamePk"})
-            else:
-                logging.warning(f"....")
 
             meta_df = pd.DataFrame({
                 "player_id": [player_id] * len(df),
@@ -84,6 +80,8 @@ if __name__=="__main__":
 
     print(df.head())
     print(df.shape)
+
+    # df.to_csv("abc.csv" index=False)
 
 
   

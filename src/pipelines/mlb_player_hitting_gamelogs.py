@@ -7,7 +7,8 @@ from datetime import datetime
 
 from src.ingestion.mlb_player_id_team import fetch_single_team
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 def fetch_player_game_logs()->pd.DataFrame:
     player_df = fetch_single_team(109)
