@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 import logging
-from datetime import datetime, date
+from datetime import datetime, date, UTC
 
 from pybaseball import statcast_pitcher
 from src.ingestion.mlb_player_id_team import fetch_single_team
@@ -48,13 +48,17 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
 
             df = df.copy()
 
-            meta_df = pd.DataFrame({
-                "player_id": [player_id] * len(df),
-                "player_name": [player_name] * len(df),
-                "team_id": [team_id] * len(df),
-            })
+            now_dt = datetime.now(UTC).replace(tzinfo=None)
+            now_date = now_dt.date()
 
-            df = pd.concat([df.reset_index(drop=True), meta_df], axis=1)
+            if "player_id" not in df.columns:
+                df["player_id"] = player_id
+
+            if "team_id" not in df.columns:
+                df["team_id"] = team_id
+
+            df["extract_date"] = now_date
+            df["extract_ts"] = now_dt
 
             all_pitch_data.append(df)
 
@@ -306,7 +310,7 @@ if __name__=="__main__":
     df = player_pitch_stats(
         start_dt="2026-03-26",
         end_dt="2026-03-27",
-        team_id=109
+        team_id=116
     )
 
     load_player_bat_statcast(df)
