@@ -3,18 +3,25 @@ import pandas as pd
 import time
 import logging
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 
 from src.ingestion.mlb_player_id_team import fetch_single_team
+from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
-def fetch_player_game_logs()->pd.DataFrame:
+def fetch_player_game_logs(season: int = 2026)->pd.DataFrame:
     player_df = fetch_single_team(109)
 
     if player_df.empty:
         logging.warning("No team found")
+        return pd.DataFrame()
+    
+    player_df = player_df[player_df["position"] == "P"].copy()
+    
+    if player_df.empty:
+        logger.warning(f"No pitchers found")
         return pd.DataFrame()
     
     logs = []
@@ -26,7 +33,7 @@ def fetch_player_game_logs()->pd.DataFrame:
         team_name = player_row.get("team_name")
         team_position = player_row["position"]
         
-        url = f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=pitching&season=2026"
+        url = f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=pitching&season={season}"
         
         logging.info(f"Fetching game logs for {player_name} ({player_id})")
 
@@ -39,18 +46,19 @@ def fetch_player_game_logs()->pd.DataFrame:
             continue
 
         stats_list = pitching.get("stats", [])
-
         if not stats_list:
-            logging.warning(f"No stats for player_id={player_id}")
+            logging.warning(f"not splits foound for player_id = {player_id}")
             continue
 
-        spilts = stats_list[0].get("splits",[])
-
-        if not stats_list:
-            logging.warning(f"No splits for player_id={player_id}")
+        splits = stats_list[0].get("splits",[])
+        if not splits:
+            logging.warning("No player found")
             continue
 
-        for s in spilts:
+        now_dt = datetime.now(UTC).replace(tzinfo=None)
+        now_date = now_dt.date()
+
+        for s in splits:
             stat = s.get("stat", {})
             game = s.get("game", {})                                # why is it game?
             game_date_raw = s.get("date")
@@ -64,22 +72,212 @@ def fetch_player_game_logs()->pd.DataFrame:
                 "player_id": player_id,
                 "player_name": player_name,
                 "position": team_position,
-                "team_name": team_id,
-                "gamePk": game.get("gamePK"),
+                "team_name": team_name,
+                "team_id": team_id,
+                "gamePk": game.get("gamePk"),
                 "game_date": game_date,
                 "dayNight": game.get("dayNight"),
-                **stat
+                **stat,
+                "season": str(season),
+                "extract_date": now_date,
+                "extract_ts": now_dt,
             }
             logs.append(row)
 
         time.sleep(0.2)
+
+    if not logs:
+        logging.warning("No player pitcing game logs collected")
+        return pd.DataFrame()
     
-    return pd.DataFrame(logs)
+    final_df = pd.DataFrame(logs).copy()
+    return final_df
+
+merge_sql = """
+INSERT INTO mlb.dbo.fact_player_pitching_gamelogs (
+    player_id,
+    player_name,
+    position,
+    team_name,
+    team_id,
+    gamePk,
+    game_date,
+    dayNight,
+    summary,
+    gamesPlayed,
+    gamesStarted,
+    flyOuts,
+    groundOuts,
+    airOuts,
+    runs,
+    doubles,
+    triples,
+    homeRuns,
+    strikeOuts,
+    baseOnBalls,
+    intentionalWalks,
+    hits,
+    hitByPitch,
+    avg,
+    atBats,
+    obp,
+    slg,
+    ops,
+    caughtStealing,
+    stolenBases,
+    stolenBasePercentage,
+    caughtStealingPercentage,
+    groundIntoDoublePlay,
+    numberOfPitches,
+    era,
+    inningsPitched,
+    wins,
+    losses,
+    saves,
+    saveOpportunities,
+    holds,
+    blownSaves,
+    earnedRuns,
+    whip,
+    battersFaced,
+    outs,
+    gamesPitched,
+    completeGames,
+    shutouts,
+    strikes,
+    strikePercentage,
+    hitBatsmen,
+    balks,
+    wildPitches,
+    pickoffs,
+    totalBases,
+    groundOutsToAirouts,
+    winPercentage,
+    pitchesPerInning,
+    gamesFinished,
+    strikeoutWalkRatio,
+    strikeoutsPer9Inn,
+    walksPer9Inn,
+    hitsPer9Inn,
+    runsScoredPer9,
+    homeRunsPer9,
+    inheritedRunners,
+    inheritedRunnersScored,
+    catchersInterference,
+    sacBunts,
+    sacFlies,
+    season,
+    extract_date,
+    extract_ts
+)
+SELECT
+    s.player_id,
+    s.player_name,
+    s.position,
+    s.team_name,
+    s.team_id,
+    s.gamePk,
+    s.game_date,
+    s.dayNight,
+    s.summary,
+    s.gamesPlayed,
+    s.gamesStarted,
+    s.flyOuts,
+    s.groundOuts,
+    s.airOuts,
+    s.runs,
+    s.doubles,
+    s.triples,
+    s.homeRuns,
+    s.strikeOuts,
+    s.baseOnBalls,
+    s.intentionalWalks,
+    s.hits,
+    s.hitByPitch,
+    s.avg,
+    s.atBats,
+    s.obp,
+    s.slg,
+    s.ops,
+    s.caughtStealing,
+    s.stolenBases,
+    s.stolenBasePercentage,
+    s.caughtStealingPercentage,
+    s.groundIntoDoublePlay,
+    s.numberOfPitches,
+    s.era,
+    s.inningsPitched,
+    s.wins,
+    s.losses,
+    s.saves,
+    s.saveOpportunities,
+    s.holds,
+    s.blownSaves,
+    s.earnedRuns,
+    s.whip,
+    s.battersFaced,
+    s.outs,
+    s.gamesPitched,
+    s.completeGames,
+    s.shutouts,
+    s.strikes,
+    s.strikePercentage,
+    s.hitBatsmen,
+    s.balks,
+    s.wildPitches,
+    s.pickoffs,
+    s.totalBases,
+    s.groundOutsToAirouts,
+    s.winPercentage,
+    s.pitchesPerInning,
+    s.gamesFinished,
+    s.strikeoutWalkRatio,
+    s.strikeoutsPer9Inn,
+    s.walksPer9Inn,
+    s.hitsPer9Inn,
+    s.runsScoredPer9,
+    s.homeRunsPer9,
+    s.inheritedRunners,
+    s.inheritedRunnersScored,
+    s.catchersInterference,
+    s.sacBunts,
+    s.sacFlies,
+    s.season,
+    s.extract_date,
+    s.extract_ts
+FROM mlb.dbo.stg_player_pitching_gamelogs s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM mlb.dbo.fact_player_pitching_gamelogs f
+    WHERE f.player_id = s.player_id
+      AND f.gamePk = s.gamePk
+);
+"""
+
+def load_player_pitching_gamelogs(df: pd.DataFrame):
+    if df.empty:
+        logging.warning("No data to load into fact_player_pitching_gamelogs")
+        return
+    staging_table = "stg_player_pitching_gamelogs"
+
+    logger.info("Loading staging table")
+    load_dataframe(df, staging_table, if_exists="replace")
+
+    logger.info("Merging staging into fact table")
+    execute_sql(merge_sql)
+
+    logger.info("Truncating staging table after merge")
+    truncate_table(staging_table)
+    
 
 if __name__=="__main__":
-    df = fetch_player_game_logs()
+    df = fetch_player_game_logs(season=2026)
     print(df.head())
     print(df.shape) 
+    print(df.columns.tolist())
+
+    load_player_pitching_gamelogs(df)
+
 
 
 
