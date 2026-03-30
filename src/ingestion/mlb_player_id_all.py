@@ -4,7 +4,8 @@ import pandas as pd
 import time 
 import json
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def fetch_active_mlb_players():
@@ -13,21 +14,21 @@ def fetch_active_mlb_players():
     response.raise_for_status()
     teams = response.json()["teams"] 
 
-    logging.info(f"found {len(teams)} teams")
+    logger.info(f"found {len(teams)} teams")
 
     players = []
     for team in teams:
         team_id = team["id"]                        # Extract the team ID using loop variable using api (dic)
         team_name = team["name"]                    # Extract the team name using loop variable using api (dic)
 
-        logging.info(f"Fetching roster for: {team_name}")
+        logger.info(f"Fetching roster for: {team_name}")
 
         roster_url = f"https://statsapi.mlb.com/api/v1/teams/{team_id}/roster"
         roster_response = requests.get(roster_url)
         roster_response.raise_for_status()
         roster = roster_response.json()["roster"]
 
-        logging.info(f"{team_name} roster size: {len(roster)} players")
+        logger.info(f"{team_name} roster size: {len(roster)} players")
 
         time.sleep(0.3)
 
@@ -50,7 +51,7 @@ def fetch_active_mlb_players():
                             
             })
 
-        logging.info(f"Total players collected: {len(players)}")
+        logger.info(f"Total players collected: {len(players)}")
         
     return pd.DataFrame(players)
 
@@ -59,11 +60,11 @@ def fetch_active_mlb_players():
 
 if __name__ == "__main__":
 
-    logging.info("Starting MLB player extraction")
+    logger.info("Starting MLB player extraction")
 
     df = fetch_active_mlb_players()
 
-    logging.info("Extraction complete")    
+    logger.info("Extraction complete")    
 
     print(df.head())
     print(df.shape)

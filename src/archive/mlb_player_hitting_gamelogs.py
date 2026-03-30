@@ -15,7 +15,7 @@ def fetch_player_game_logs(season: int = 2026)->pd.DataFrame:
     player_df = fetch_single_team(109)
 
     if player_df.empty:
-        logging.warning("No team found")
+        logger.warning("No team found")
         return pd.DataFrame()
     
     logs = []
@@ -29,26 +29,26 @@ def fetch_player_game_logs(season: int = 2026)->pd.DataFrame:
 
         url = f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season={season}"
         
-        logging.info(f"Fetching game logs for {player_name} ({player_id})")
+        logger.info(f"Fetching game logs for {player_name} ({player_id})")
         
         try:
             response = requests.get(url, timeout=30)
             response.raise_for_status()
             hitting = response.json()
         except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed for player_id={player_id}: {e}")
+            logger.error(f"Request failed for player_id={player_id}: {e}")
             continue
 
         stats_list = hitting.get("stats",[])
 
         if not stats_list:
-            logging.warning(f"No stats for player_id={player_id}")
+            logger.warning(f"No stats for player_id={player_id}")
             continue
 
         splits = stats_list[0].get("splits",[])
 
         if not splits:
-            logging.warning(f"No Splits for player_id={player_id}")
+            logger.warning(f"No Splits for player_id={player_id}")
             continue
 
         now_dt = datetime.now(UTC).replace(tzinfo=None)
