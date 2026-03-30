@@ -280,3 +280,22 @@ ALTER TABLE mlbdbo.fact_player_pitching_gamelogs
 ADD CONSTRAINT uq_fact_player_pitching_gamelogs
 UNIQUE (player_id, gamePk);
 GO
+
+
+SELECT 
+    COLUMN_NAME,
+    DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'fact_player_pitching_gamelogs'
+ORDER BY ORDINAL_POSITION;
+
+SELECT 
+    s.COLUMN_NAME,
+    s.DATA_TYPE AS staging_type,
+    f.DATA_TYPE AS fact_type
+FROM INFORMATION_SCHEMA.COLUMNS s
+JOIN INFORMATION_SCHEMA.COLUMNS f
+    ON s.COLUMN_NAME = f.COLUMN_NAME
+WHERE s.TABLE_NAME = 'stg_player_pitching_gamelogs'
+AND f.TABLE_NAME = 'fact_player_pitching_gamelogs'
+ORDER BY s.COLUMN_NAME;
