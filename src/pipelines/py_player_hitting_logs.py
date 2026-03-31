@@ -4,7 +4,7 @@ import time
 from datetime import datetime, UTC
 
 from pybaseball import statcast_batter
-from src.ingestion.mlb_player_id_team import fetch_single_team
+from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 #https://github.com/jldbc/pybaseball/blob/master/docs/statcast_batter.md
 
-def player_hit_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame:
-    df_roster = fetch_single_team(team_id)
+def player_hit_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
+    df_roster = fetch_active_mlb_players()
 
     if df_roster.empty:
-        logger.warning(f"No player found for team_id={team_id}")
+        logger.warning(f"No player found")
         return pd.DataFrame()
 
     players = []
@@ -24,6 +24,7 @@ def player_hit_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame:
     for row in df_roster.itertuples(index=False):
         player_id = row.player_id
         player_name = row.player_name
+        team_id = row.team_id
 
         logger.info(f"Fetching statcast data for {player_name} ({player_id})")
 
@@ -298,9 +299,8 @@ def load_player_hit_statcast(df: pd.DataFrame):
 
 if __name__ == "__main__":
     df = player_hit_stats(
-        start_dt="2026-03-26",
-        end_dt="2026-03-27",
-        team_id=116
+        start_dt="2026-03-28",
+        end_dt="2026-03-28",
     )
 
     print(df.head())

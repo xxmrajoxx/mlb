@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, date, UTC
 
 from pybaseball import statcast_pitcher
-from src.ingestion.mlb_player_id_team import fetch_single_team
+from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
@@ -12,19 +12,19 @@ logger = logging.getLogger(__name__)
 
 # https://github.com/jldbc/pybaseball/blob/master/docs/statcast_pitcher.md
 
-def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame:
-    roster_df = fetch_single_team(team_id)
+def player_pitch_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
+    roster_df = fetch_active_mlb_players()
 
     # obtaining rooster of the team 
     if roster_df.empty:
-        logging.warning(f"No player found for team_id={team_id}")
+        logger.warning(f"No player found")
         return pd.DataFrame()
 
     # then filter by only selecting the pitcher     
     pitcher_df = roster_df[roster_df["position"] == "P"].copy()
 
     if pitcher_df.empty:
-        logging.warning(f"No pitcher found for team_id={team_id}")
+        logger.warning(f"No pitcher found")
         return pd.DataFrame()
 
     all_pitch_data = []
@@ -33,8 +33,9 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
     for _, row in pitcher_df.iterrows():            #_ - I dont care about this value ((index, row) → ignore index, only use row)
         player_id = row["player_id"]
         player_name = row["player_name"]
+        team_id = row["team_id"]
 
-        logging.info(f"fetching statcast data for {player_name}, ({player_id})")
+        logger.info(f"fetching statcast data for {player_name}, ({player_id})")
 
         try:
             df = statcast_pitcher(
@@ -43,7 +44,7 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
                 player_id=player_id   
             )
             if df is None or df.empty:
-                logging.info(f" No statcast data for {player_name} ({player_id})")
+                logger.info(f" No statcast data for {player_name} ({player_id})")
                 continue
 
             df = df.copy()
@@ -63,13 +64,13 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
             all_pitch_data.append(df)
 
         except Exception as e:
-            logging.error (f"failed for {player_name} ({player_id}): {e}")
+            logger.error (f"failed for {player_name} ({player_id}): {e}")
             continue
 
         time.sleep(1)
 
     if not all_pitch_data:
-        logging.warning("No pitching data collected")
+        logger.warning("No pitching data collected")
         return pd.DataFrame()
     
     final_df = pd.concat(all_pitch_data, ignore_index=True)
@@ -77,7 +78,7 @@ def player_pitch_stats(start_dt: str, end_dt: str, team_id: int) -> pd.DataFrame
 
 def load_player_bat_statcast(df: pd.DataFrame):
     if df.empty:
-        logging.warning("Dataframe is empty. Nothing to load")
+        logger.warning("Dataframe is empty. Nothing to load")
         return
     
     staging_table = "stg_player_pitch_statcast"
@@ -308,9 +309,8 @@ def load_player_bat_statcast(df: pd.DataFrame):
 
 if __name__=="__main__":
     df = player_pitch_stats(
-        start_dt="2026-03-26",
-        end_dt="2026-03-27",
-        team_id=116
+        start_dt="2026-03-28",
+        end_dt="2026-03-28"
     )
 
     load_player_bat_statcast(df)
