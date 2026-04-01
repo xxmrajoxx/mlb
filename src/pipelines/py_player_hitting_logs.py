@@ -281,7 +281,7 @@ def load_player_hit_statcast(df: pd.DataFrame):
     FROM mlb.dbo.stg_player_hit_statcast s
     WHERE NOT EXISTS (
         SELECT 1
-        FROM dbo.fact_player_hit_statcast f
+        FROM mlb.dbo.fact_player_hit_statcast f
         WHERE f.game_pk = s.game_pk
           AND f.at_bat_number = s.at_bat_number
           AND f.pitch_number = s.pitch_number
@@ -299,10 +299,10 @@ def load_player_hit_statcast(df: pd.DataFrame):
 
 if __name__ == "__main__":
     df = player_hit_stats(
-        start_dt="2026-03-28",
-        end_dt="2026-03-28",
+        start_dt="2026-03-25",
+        end_dt="2026-03-31",
     )
-
+# 2026-03-25 to 2026-03-31 
     print(df.head())
     print(df.shape)
 
