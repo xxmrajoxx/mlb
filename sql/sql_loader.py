@@ -24,18 +24,17 @@ def get_engine():
         f"?driver={DRIVER.replace(' ', '+')}"
         "&trusted_connection=yes"
     )
-    engine = create_engine(connection_string,
-                            fast_executemany=True)
+    engine = create_engine(connection_string)
     logger.info("SQL Server engine created")
 
     return engine
 
 engine = get_engine()
 
-def load_dataframe(df, table_name, if_exists="append", chunksize=2000):
+def load_dataframe(df, table_name, if_exists="append"):
     try:
         logger.info(f"Starting load for table {table_name}")
-        df.to_sql(table_name, con=engine, if_exists=if_exists, index=False, chunksize=chunksize, method="multi")
+        df.to_sql(table_name, con=engine, if_exists=if_exists, index=False)
         logger.info(f"Loaded {len(df)} rows into {table_name}")
     except Exception as e:
         logger.error(f"Error loading data into {table_name}: {e}")
