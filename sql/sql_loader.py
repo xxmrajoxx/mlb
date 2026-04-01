@@ -13,7 +13,7 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
- 
+  
 SERVER = "localhost"
 DATABASE = "mlb"
 DRIVER = "ODBC Driver 17 for SQL Server"
