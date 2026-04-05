@@ -2,16 +2,33 @@ import pandas as pd
 import requests
 import logging
 import time
+import os
 
+from dotenv import load_dotenv
 from src.ingestion.mlb_gamePk import fetch_gamePk_with_dates
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
+load_dotenv(override=True)
+
 MERGE_SQL = """
+WITH src AS (
+    SELECT *
+    FROM (
+        SELECT
+            s.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY s.gamePk, s.side
+                ORDER BY s.extract_date DESC
+            ) AS rn
+        FROM mlb.dbo.stg_fact_team_boxscore s
+    ) x
+    WHERE x.rn = 1
+)
 MERGE mlb.dbo.fact_team_boxscore AS target
-USING mlb.dbo.stg_fact_team_boxscore AS source
+USING src AS source
     ON target.gamePk = source.gamePk
    AND target.side = source.side
 
@@ -179,12 +196,15 @@ WHEN NOT MATCHED BY TARGET THEN
     );
 """
 
+
 def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3) -> pd.DataFrame:
     schedule_df = fetch_gamePk_with_dates(start_date, end_date)
 
     if schedule_df.empty:
         logging.warning("No games found for the given date range")
         return pd.DataFrame()
+    
+    schedule_df = schedule_df.drop_duplicates(subset=["gamePk"]).reset_index(drop=True)
 
     rows = []
 
@@ -232,12 +252,26 @@ def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3)
         time.sleep(sleep_sec)
 
     df = pd.DataFrame(rows)
-    logging.info(f"Collected {len(df)} rows")
+
+    if df.empty:
+        logging.warning("No rows collected")
+        return df
+
+    df = df.drop_duplicates(subset=["gamePk", "side"]).reset_index(drop=True)
+
+    logging.info(f"Collected {len(df)} rows after dedupe")
     return df
 
 
 if __name__ == "__main__":
-    df = fetch_team_boxscores("2026-03-25", "2026-03-28")
+    start_date = os.getenv("START_DATE") 
+    end_date = os.getenv("END_DATE")
+    df = fetch_team_boxscores(start_date=start_date,
+                               end_date=end_date)
+    if not start_date or not end_date:
+        raise ValueError("START_DATE and END_DATE must be set in .env file")
+    
+    logger.info(f"using start_dt = {start_date}, end_date = {end_date}")
 
     if not df.empty:
         truncate_table("stg_fact_team_boxscore", schema="dbo")
