@@ -4,13 +4,17 @@ import time
 import logging
 import json
 from datetime import UTC, datetime
+import os
 
+from dotenv import load_dotenv
 from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
 from src.ingestion.mlb_gamePk import fetch_completed_games
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
+
+load_dotenv(override=True)
 
 def fetch_player_game_logs(start_date: str, end_date: str, season: int = 2026)->pd.DataFrame:
     games_df = fetch_completed_games(start_date, end_date)
@@ -288,10 +292,19 @@ def load_player_pitching_gamelogs(df: pd.DataFrame):
     
 
 if __name__=="__main__":
-    df = fetch_player_game_logs(season=2026,
-                                start_date="2026-03-28",
-                                end_date="2026-03-28")
+    start_date = os.getenv("START_DATE")
+    end_date = os.getenv("END_DATE")
+    season = os.getenv("SEASON")
+
+    df = fetch_player_game_logs(season=season,
+                                start_date=start_date,
+                                end_date=end_date)
     
+    if not start_date or not end_date:
+        raise ValueError("check .env file")
+    
+    logger.info("xxxxx")
+
     if df.empty:
         logger.warning("No dataframe returned from fetch_player_game_logs")
     else:

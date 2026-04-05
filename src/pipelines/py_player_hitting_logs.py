@@ -2,7 +2,9 @@ import pandas as pd
 import logging
 import time
 from datetime import datetime, UTC
+import os
 
+from dotenv import load_dotenv
 from pybaseball import statcast_batter
 from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
@@ -10,9 +12,11 @@ from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
+load_dotenv()
+
 #https://github.com/jldbc/pybaseball/blob/master/docs/statcast_batter.md
 
-def player_hit_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
+def player_hit_stats(start_dt: str, end_dt: str, sleep_sec: float = 1.0) -> pd.DataFrame:
     df_roster = fetch_active_mlb_players()
 
     if df_roster.empty:
@@ -59,7 +63,7 @@ def player_hit_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
             logger.error(f"Failed for {player_name} ({player_id}): {e}")
             continue
 
-        time.sleep(1)
+        time.sleep(sleep_sec)
 
     if not players:
         logger.warning("No batting data collected")
@@ -298,12 +302,21 @@ def load_player_hit_statcast(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
+
+    start_dt = os.getenv("START_DATE")
+    end_dt = os.getenv("END_DATE")
+    sleep_sec = float(os.getenv("SLEEP_SECONDS", "1"))
+
+    if not start_dt or not end_dt:
+        raise ValueError("START_DATE and END_DATE must be set in the .env file")
+
     df = player_hit_stats(
-        start_dt="2026-03-25",
-        end_dt="2026-03-31",
+        start_dt=start_dt,
+        end_dt=end_dt,
+        sleep_sec=sleep_sec
     )
-# 2026-03-25 to 2026-03-31 
-    print(df.head())
-    print(df.shape)
+
+    # print(df.head())
+    # print(df.shape)
 
     load_player_hit_statcast(df)

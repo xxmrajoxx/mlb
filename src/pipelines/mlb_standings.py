@@ -1,17 +1,17 @@
 import pandas as pd
 import logging
+import os
 
+from dotenv import load_dotenv
 from src.ingestion.mlb_schedule import mlb_schedule
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
+load_dotenv(override=True)
 
 def create_mlb_standings_daily_table() -> None:
-    """
-    Create the standings table if it does not already exist.
-    """
 
     create_sql = """
     IF OBJECT_ID('mlb.dbo.mlb_standings_daily', 'U') IS NULL
@@ -33,9 +33,6 @@ def create_mlb_standings_daily_table() -> None:
 
 
 def build_standings_dataframe(schedule_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Convert MLB schedule data into one standings row per team per date.
-    """
 
     if schedule_df.empty:
         logger.warning("Schedule dataframe is empty")
@@ -133,10 +130,6 @@ def build_standings_dataframe(schedule_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def run_mlb_standings_daily() -> pd.DataFrame:
-    """
-    Refresh mlb_schedule, build standings dataframe, and load directly
-    into mlb.dbo.mlb_standings_daily.
-    """
 
     logger.info("Starting MLB standings daily pipeline")
 

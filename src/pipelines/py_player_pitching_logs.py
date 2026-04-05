@@ -2,13 +2,21 @@ import pandas as pd
 import time
 import logging
 from datetime import datetime, date, UTC
+import os
 
+from dotenv import load_dotenv
 from pybaseball import statcast_pitcher
 from src.ingestion.mlb_player_id_all import fetch_active_mlb_players
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
+
+load_dotenv(override=True)
+
+logger.info(f"cwd: {os.getcwd()}")
+logger.info(f"START_DATE from env: {os.getenv('START_DATE')}")
+logger.info(f"END_DATE from env: {os.getenv('END_DATE')}")
 
 # https://github.com/jldbc/pybaseball/blob/master/docs/statcast_pitcher.md
 
@@ -44,7 +52,7 @@ def player_pitch_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
                 player_id=player_id   
             )
             if df is None or df.empty:
-                logger.info(f" No statcast data for {player_name} ({player_id})")
+                logger.info(f"No statcast data for {player_name} ({player_id})")
                 continue
 
             df = df.copy()
@@ -76,7 +84,7 @@ def player_pitch_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
     final_df = pd.concat(all_pitch_data, ignore_index=True)
     return final_df
 
-def load_player_bat_statcast(df: pd.DataFrame):
+def load_player_pitch_statcast(df: pd.DataFrame):
     if df.empty:
         logger.warning("Dataframe is empty. Nothing to load")
         return
@@ -87,7 +95,7 @@ def load_player_bat_statcast(df: pd.DataFrame):
     truncate_table(staging_table)
 
     logger.info("Loading staging table")
-    load_dataframe(df, staging_table, if_exists="replace")
+    load_dataframe(df, staging_table, if_exists="append")
 
     merge_sql = """
     INSERT INTO mlb.dbo.fact_player_pitch_statcast (
@@ -308,12 +316,19 @@ def load_player_bat_statcast(df: pd.DataFrame):
 
 
 if __name__=="__main__":
-    df = player_pitch_stats(
-        start_dt="2026-03-28",
-        end_dt="2026-03-28"
-    )
+    start_dt = os.getenv("START_DATE")
+    end_dt = os.getenv("END_DATE")
 
-    load_player_bat_statcast(df)
+    if not start_dt or not end_dt:
+        raise ValueError("START_DATE and END_DATE must be set in the .env file")
+
+    logger.info("dates obtained from .env")
+
+    df = player_pitch_stats(
+        start_dt=start_dt,
+        end_dt=end_dt
+    )
+    load_player_pitch_statcast(df)
 
 
     # print(df.head())
