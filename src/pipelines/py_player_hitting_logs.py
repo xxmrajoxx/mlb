@@ -307,6 +307,8 @@ if __name__ == "__main__":
     end_dt = os.getenv("END_DATE")
     sleep_sec = float(os.getenv("SLEEP_SECONDS", "1"))
 
+    logger.info(f"start_dt: {start_dt}, end_dt: {end_dt}")
+    
     if not start_dt or not end_dt:
         raise ValueError("START_DATE and END_DATE must be set in the .env file")
 
@@ -318,5 +320,6 @@ if __name__ == "__main__":
 
     # print(df.head())
     # print(df.shape)
+
 
     load_player_hit_statcast(df)

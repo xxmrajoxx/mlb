@@ -85,11 +85,9 @@ primary_matchup AS (
         swings_vs_pitcher,
         whiffs_vs_pitcher,
         called_strikes_vs_pitcher,
-
         whiffs_vs_pitcher * 1.0 / NULLIF(swings_vs_pitcher, 0) AS matchup_whiff_rate,
         called_strikes_vs_pitcher * 1.0 / NULLIF(pitches_seen_vs_pitcher, 0) AS matchup_called_strike_rate,
         (whiffs_vs_pitcher + called_strikes_vs_pitcher) * 1.0 / NULLIF(pitches_seen_vs_pitcher, 0) AS matchup_csw_rate
-
     FROM ranked_matchups
     WHERE rn = 1
 )
@@ -108,7 +106,7 @@ SELECT
     h.team_id AS hitter_team_id,
     h.team_name AS hitter_team_name,
 
-    p.player_id AS pitcher_id,
+    m.pitcher_id AS pitcher_id,
     p.player_name AS pitcher_name,
     p.team_id AS pitcher_team_id,
     p.team_name AS pitcher_team_name,
@@ -137,7 +135,6 @@ SELECT
        ========================= */
     h.days_since_last_game AS hitter_days_since_last_game,
 
-    -- hitter last 3 simple
     h.avg_k_last_3 AS hitter_avg_k_last_3,
     h.avg_pa_last_3 AS hitter_avg_pa_last_3,
     h.avg_ab_last_3 AS hitter_avg_ab_last_3,
@@ -168,7 +165,6 @@ SELECT
     h.pct_1plus_k_last_3 AS hitter_pct_1plus_k_last_3,
     h.pct_2plus_k_last_3 AS hitter_pct_2plus_k_last_3,
 
-    -- hitter last 3 weighted
     h.wavg_k_last_3 AS hitter_wavg_k_last_3,
     h.wavg_pa_last_3 AS hitter_wavg_pa_last_3,
     h.wavg_ab_last_3 AS hitter_wavg_ab_last_3,
@@ -195,7 +191,6 @@ SELECT
     h.wavg_tb_rate_last_3 AS hitter_wavg_tb_rate_last_3,
     h.wavg_hr_rate_last_3 AS hitter_wavg_hr_rate_last_3,
 
-    -- hitter last 5 simple
     h.avg_k_last_5 AS hitter_avg_k_last_5,
     h.avg_pa_last_5 AS hitter_avg_pa_last_5,
     h.avg_ab_last_5 AS hitter_avg_ab_last_5,
@@ -226,7 +221,6 @@ SELECT
     h.pct_1plus_k_last_5 AS hitter_pct_1plus_k_last_5,
     h.pct_2plus_k_last_5 AS hitter_pct_2plus_k_last_5,
 
-    -- hitter last 5 weighted
     h.wavg_k_last_5 AS hitter_wavg_k_last_5,
     h.wavg_pa_last_5 AS hitter_wavg_pa_last_5,
     h.wavg_ab_last_5 AS hitter_wavg_ab_last_5,
@@ -253,7 +247,6 @@ SELECT
     h.wavg_tb_rate_last_5 AS hitter_wavg_tb_rate_last_5,
     h.wavg_hr_rate_last_5 AS hitter_wavg_hr_rate_last_5,
 
-    -- hitter last 10 simple
     h.avg_k_last_10 AS hitter_avg_k_last_10,
     h.avg_pa_last_10 AS hitter_avg_pa_last_10,
     h.avg_ab_last_10 AS hitter_avg_ab_last_10,
@@ -284,7 +277,6 @@ SELECT
     h.pct_1plus_k_last_10 AS hitter_pct_1plus_k_last_10,
     h.pct_2plus_k_last_10 AS hitter_pct_2plus_k_last_10,
 
-    -- hitter last 10 weighted
     h.wavg_k_last_10 AS hitter_wavg_k_last_10,
     h.wavg_pa_last_10 AS hitter_wavg_pa_last_10,
     h.wavg_ab_last_10 AS hitter_wavg_ab_last_10,
@@ -311,7 +303,6 @@ SELECT
     h.wavg_tb_rate_last_10 AS hitter_wavg_tb_rate_last_10,
     h.wavg_hr_rate_last_10 AS hitter_wavg_hr_rate_last_10,
 
-    -- hitter previous game
     h.prev_k AS hitter_prev_k,
     h.prev_pa AS hitter_prev_pa,
     h.prev_ab AS hitter_prev_ab,
@@ -322,11 +313,6 @@ SELECT
     h.prev_ops AS hitter_prev_ops,
     h.prev_k_rate AS hitter_prev_k_rate,
 
-    /* =========================
-       HITTER STATCAST FEATURES
-       ========================= */
-
-    -- last 3 simple
     h.avg_sc_pitches_seen_last_3 AS hitter_avg_sc_pitches_seen_last_3,
     h.avg_whiff_rate_last_3 AS hitter_avg_whiff_rate_last_3,
     h.avg_contact_rate_last_3 AS hitter_avg_contact_rate_last_3,
@@ -368,7 +354,6 @@ SELECT
     h.avg_whiff_rate_vs_rhp_last_3 AS hitter_avg_whiff_rate_vs_rhp_last_3,
     h.avg_whiff_rate_vs_lhp_last_3 AS hitter_avg_whiff_rate_vs_lhp_last_3,
 
-    -- last 3 weighted
     h.wavg_sc_pitches_seen_last_3 AS hitter_wavg_sc_pitches_seen_last_3,
     h.wavg_whiff_rate_last_3 AS hitter_wavg_whiff_rate_last_3,
     h.wavg_contact_rate_last_3 AS hitter_wavg_contact_rate_last_3,
@@ -410,7 +395,6 @@ SELECT
     h.wavg_whiff_rate_vs_rhp_last_3 AS hitter_wavg_whiff_rate_vs_rhp_last_3,
     h.wavg_whiff_rate_vs_lhp_last_3 AS hitter_wavg_whiff_rate_vs_lhp_last_3,
 
-    -- last 5 simple
     h.avg_sc_pitches_seen_last_5 AS hitter_avg_sc_pitches_seen_last_5,
     h.avg_whiff_rate_last_5 AS hitter_avg_whiff_rate_last_5,
     h.avg_contact_rate_last_5 AS hitter_avg_contact_rate_last_5,
@@ -427,7 +411,6 @@ SELECT
     h.avg_whiff_rate_vs_rhp_last_5 AS hitter_avg_whiff_rate_vs_rhp_last_5,
     h.avg_whiff_rate_vs_lhp_last_5 AS hitter_avg_whiff_rate_vs_lhp_last_5,
 
-    -- last 5 weighted
     h.wavg_sc_pitches_seen_last_5 AS hitter_wavg_sc_pitches_seen_last_5,
     h.wavg_whiff_rate_last_5 AS hitter_wavg_whiff_rate_last_5,
     h.wavg_contact_rate_last_5 AS hitter_wavg_contact_rate_last_5,
@@ -444,7 +427,6 @@ SELECT
     h.wavg_whiff_rate_vs_rhp_last_5 AS hitter_wavg_whiff_rate_vs_rhp_last_5,
     h.wavg_whiff_rate_vs_lhp_last_5 AS hitter_wavg_whiff_rate_vs_lhp_last_5,
 
-    -- last 10 simple
     h.avg_sc_pitches_seen_last_10 AS hitter_avg_sc_pitches_seen_last_10,
     h.avg_whiff_rate_last_10 AS hitter_avg_whiff_rate_last_10,
     h.avg_contact_rate_last_10 AS hitter_avg_contact_rate_last_10,
@@ -461,7 +443,6 @@ SELECT
     h.avg_whiff_rate_vs_rhp_last_10 AS hitter_avg_whiff_rate_vs_rhp_last_10,
     h.avg_whiff_rate_vs_lhp_last_10 AS hitter_avg_whiff_rate_vs_lhp_last_10,
 
-    -- last 10 weighted
     h.wavg_sc_pitches_seen_last_10 AS hitter_wavg_sc_pitches_seen_last_10,
     h.wavg_whiff_rate_last_10 AS hitter_wavg_whiff_rate_last_10,
     h.wavg_contact_rate_last_10 AS hitter_wavg_contact_rate_last_10,
@@ -478,7 +459,6 @@ SELECT
     h.wavg_whiff_rate_vs_rhp_last_10 AS hitter_wavg_whiff_rate_vs_rhp_last_10,
     h.wavg_whiff_rate_vs_lhp_last_10 AS hitter_wavg_whiff_rate_vs_lhp_last_10,
 
-    -- hitter previous statcast game
     h.prev_whiff_rate AS hitter_prev_whiff_rate,
     h.prev_contact_rate AS hitter_prev_contact_rate,
     h.prev_chase_rate AS hitter_prev_chase_rate,
@@ -491,8 +471,6 @@ SELECT
        ========================= */
     p.gamesStarted AS pitcher_gamesStarted,
     p.days_since_last_appearance AS pitcher_days_since_last_appearance,
-
-    -- pitcher rolling last 3 simple
     p.avg_games_started_last_3 AS pitcher_avg_games_started_last_3,
     p.avg_ip_last_3 AS pitcher_avg_ip_last_3,
     p.avg_bf_last_3 AS pitcher_avg_bf_last_3,
@@ -512,7 +490,6 @@ SELECT
     p.pct_5plus_ip_last_3 AS pitcher_pct_5plus_ip_last_3,
     p.pct_6plus_ip_last_3 AS pitcher_pct_6plus_ip_last_3,
 
-    -- pitcher rolling last 5 simple
     p.avg_games_started_last_5 AS pitcher_avg_games_started_last_5,
     p.avg_ip_last_5 AS pitcher_avg_ip_last_5,
     p.avg_bf_last_5 AS pitcher_avg_bf_last_5,
@@ -532,7 +509,6 @@ SELECT
     p.pct_5plus_ip_last_5 AS pitcher_pct_5plus_ip_last_5,
     p.pct_6plus_ip_last_5 AS pitcher_pct_6plus_ip_last_5,
 
-    -- pitcher rolling last 10 simple
     p.avg_games_started_last_10 AS pitcher_avg_games_started_last_10,
     p.avg_ip_last_10 AS pitcher_avg_ip_last_10,
     p.avg_bf_last_10 AS pitcher_avg_bf_last_10,
@@ -552,18 +528,12 @@ SELECT
     p.pct_5plus_ip_last_10 AS pitcher_pct_5plus_ip_last_10,
     p.pct_6plus_ip_last_10 AS pitcher_pct_6plus_ip_last_10,
 
-    -- pitcher previous game
     p.prev_k AS pitcher_prev_k,
     p.prev_ip AS pitcher_prev_ip,
     p.prev_bf AS pitcher_prev_bf,
     p.prev_pitches AS pitcher_prev_pitches,
     p.prev_k9 AS pitcher_prev_k9,
 
-    /* =========================
-       PITCHER STATCAST FEATURES
-       ========================= */
-
-    -- last 3 simple
     p.avg_whiff_rate_last_3 AS pitcher_avg_whiff_rate_last_3,
     p.avg_csw_rate_last_3 AS pitcher_avg_csw_rate_last_3,
     p.avg_putaway_rate_last_3 AS pitcher_avg_putaway_rate_last_3,
@@ -588,7 +558,6 @@ SELECT
     p.avg_sl_whiff_rate_last_3 AS pitcher_avg_sl_whiff_rate_last_3,
     p.avg_ff_whiff_rate_last_3 AS pitcher_avg_ff_whiff_rate_last_3,
 
-    -- last 5 simple
     p.avg_whiff_rate_last_5 AS pitcher_avg_whiff_rate_last_5,
     p.avg_csw_rate_last_5 AS pitcher_avg_csw_rate_last_5,
     p.avg_putaway_rate_last_5 AS pitcher_avg_putaway_rate_last_5,
@@ -600,7 +569,6 @@ SELECT
     p.avg_sl_whiff_rate_last_5 AS pitcher_avg_sl_whiff_rate_last_5,
     p.avg_ff_whiff_rate_last_5 AS pitcher_avg_ff_whiff_rate_last_5,
 
-    -- last 10 simple
     p.avg_whiff_rate_last_10 AS pitcher_avg_whiff_rate_last_10,
     p.avg_csw_rate_last_10 AS pitcher_avg_csw_rate_last_10,
     p.avg_putaway_rate_last_10 AS pitcher_avg_putaway_rate_last_10,
@@ -612,7 +580,6 @@ SELECT
     p.avg_sl_whiff_rate_last_10 AS pitcher_avg_sl_whiff_rate_last_10,
     p.avg_ff_whiff_rate_last_10 AS pitcher_avg_ff_whiff_rate_last_10,
 
-    -- pitcher previous statcast game
     p.prev_whiff_rate AS pitcher_prev_whiff_rate,
     p.prev_csw_rate AS pitcher_prev_csw_rate,
     p.prev_chase_rate AS pitcher_prev_chase_rate
@@ -623,7 +590,7 @@ INNER JOIN primary_matchup m
     ON h.gamePk = m.gamePk
    AND h.player_id = m.hitter_id
    AND h.season = m.season
-LEFT JOIN mlb.dbo.fact_pitcher_model_features p
+INNER JOIN mlb.dbo.fact_pitcher_model_features p
     ON m.gamePk = p.gamePk
    AND m.pitcher_id = p.player_id
    AND m.season = p.season;
