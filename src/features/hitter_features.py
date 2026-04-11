@@ -438,319 +438,228 @@ WITH base AS (
     FROM mlb.dbo.fact_hitter_statcast_game_agg
 ),
 
+prep AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, game_pk
+        ) AS rn
+    FROM base
+),
+
 rolling AS (
     SELECT
-        game_pk,
-        game_date,
-        season,
-        player_id,
-        player_name,
-        team_id,
+        p1.game_pk,
+        p1.game_date,
+        p1.season,
+        p1.player_id,
+        p1.player_name,
+        p1.team_id,
 
-        -- last 3
-        AVG(total_pitches_seen) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_pitches_seen_last_3,
+        /* -------------------- LAST 3 SIMPLE AVG -------------------- */
+        AVG(p2.total_pitches_seen) AS avg_sc_pitches_seen_last_3,
+        AVG(p2.whiff_rate) AS avg_whiff_rate_last_3,
+        AVG(p2.contact_rate) AS avg_contact_rate_last_3,
+        AVG(p2.swing_rate) AS avg_swing_rate_last_3,
+        AVG(p2.chase_rate) AS avg_chase_rate_last_3,
+        AVG(p2.zone_swing_rate) AS avg_zone_swing_rate_last_3,
+        AVG(p2.zone_rate) AS avg_zone_rate_last_3,
+        AVG(p2.called_strike_rate) AS avg_called_strike_rate_last_3,
+        AVG(p2.csw_against_rate) AS avg_csw_against_rate_last_3,
+        AVG(p2.two_strike_whiff_rate) AS avg_two_strike_whiff_rate_last_3,
+        AVG(p2.whiff_rate_0_2) AS avg_whiff_rate_0_2_last_3,
+        AVG(p2.whiff_rate_1_2) AS avg_whiff_rate_1_2_last_3,
+        AVG(p2.whiff_rate_2_2) AS avg_whiff_rate_2_2_last_3,
+        AVG(p2.avg_exit_velocity) AS avg_exit_velocity_last_3,
+        AVG(p2.max_exit_velocity) AS avg_max_exit_velocity_last_3,
+        AVG(p2.avg_launch_angle) AS avg_launch_angle_last_3,
+        AVG(p2.avg_hit_distance) AS avg_hit_distance_last_3,
+        AVG(p2.avg_xba) AS avg_xba_last_3,
+        AVG(p2.avg_xwoba) AS avg_xwoba_last_3,
+        AVG(p2.avg_woba_value) AS avg_woba_value_last_3,
+        AVG(p2.avg_babip_value) AS avg_babip_value_last_3,
+        AVG(p2.avg_iso_value) AS avg_iso_value_last_3,
+        AVG(p2.avg_bat_speed) AS avg_bat_speed_last_3,
+        AVG(p2.avg_swing_length) AS avg_swing_length_last_3,
+        AVG(p2.avg_pitch_velocity_seen) AS avg_pitch_velocity_seen_last_3,
+        AVG(p2.avg_pitch_spin_seen) AS avg_pitch_spin_seen_last_3,
+        AVG(p2.avg_pitch_extension_seen) AS avg_pitch_extension_seen_last_3,
+        AVG(p2.avg_horz_movement_seen) AS avg_horz_movement_seen_last_3,
+        AVG(p2.avg_vert_movement_seen) AS avg_vert_movement_seen_last_3,
+        AVG(p2.avg_plate_x_seen) AS avg_plate_x_seen_last_3,
+        AVG(p2.avg_plate_z_seen) AS avg_plate_z_seen_last_3,
+        AVG(p2.ff_seen_pct) AS avg_ff_seen_pct_last_3,
+        AVG(p2.si_seen_pct) AS avg_si_seen_pct_last_3,
+        AVG(p2.fc_seen_pct) AS avg_fc_seen_pct_last_3,
+        AVG(p2.sl_seen_pct) AS avg_sl_seen_pct_last_3,
+        AVG(p2.cu_seen_pct) AS avg_cu_seen_pct_last_3,
+        AVG(p2.ch_seen_pct) AS avg_ch_seen_pct_last_3,
+        AVG(p2.fs_seen_pct) AS avg_fs_seen_pct_last_3,
+        AVG(p2.whiff_rate_vs_rhp) AS avg_whiff_rate_vs_rhp_last_3,
+        AVG(p2.whiff_rate_vs_lhp) AS avg_whiff_rate_vs_lhp_last_3,
 
-        AVG(whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_last_3,
+        /* -------------------- LAST 3 WEIGHTED AVG -------------------- */
+        SUM(p2.total_pitches_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_sc_pitches_seen_last_3,
+        SUM(p2.whiff_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_whiff_rate_last_3,
+        SUM(p2.contact_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_contact_rate_last_3,
+        SUM(p2.swing_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_swing_rate_last_3,
+        SUM(p2.chase_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_chase_rate_last_3,
+        SUM(p2.zone_swing_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_zone_swing_rate_last_3,
+        SUM(p2.zone_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_zone_rate_last_3,
+        SUM(p2.called_strike_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_called_strike_rate_last_3,
+        SUM(p2.csw_against_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_csw_against_rate_last_3,
+        SUM(p2.two_strike_whiff_rate * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_two_strike_whiff_rate_last_3,
+        SUM(p2.whiff_rate_0_2 * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_whiff_rate_0_2_last_3,
+        SUM(p2.whiff_rate_1_2 * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_whiff_rate_1_2_last_3,
+        SUM(p2.whiff_rate_2_2 * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_whiff_rate_2_2_last_3,
+        SUM(p2.avg_exit_velocity * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_exit_velocity_last_3,
+        SUM(p2.max_exit_velocity * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_max_exit_velocity_last_3,
+        SUM(p2.avg_launch_angle * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_launch_angle_last_3,
+        SUM(p2.avg_hit_distance * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_hit_distance_last_3,
+        SUM(p2.avg_xba * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_xba_last_3,
+        SUM(p2.avg_xwoba * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_xwoba_last_3,
+        SUM(p2.avg_woba_value * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_woba_value_last_3,
+        SUM(p2.avg_babip_value * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_babip_value_last_3,
+        SUM(p2.avg_iso_value * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_iso_value_last_3,
+        SUM(p2.avg_bat_speed * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_bat_speed_last_3,
+        SUM(p2.avg_swing_length * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_swing_length_last_3,
+        SUM(p2.avg_pitch_velocity_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_pitch_velocity_seen_last_3,
+        SUM(p2.avg_pitch_spin_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_pitch_spin_seen_last_3,
+        SUM(p2.avg_pitch_extension_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_pitch_extension_seen_last_3,
+        SUM(p2.avg_horz_movement_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_horz_movement_seen_last_3,
+        SUM(p2.avg_vert_movement_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_vert_movement_seen_last_3,
+        SUM(p2.avg_plate_x_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_plate_x_seen_last_3,
+        SUM(p2.avg_plate_z_seen * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_plate_z_seen_last_3,
+        SUM(p2.ff_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_ff_seen_pct_last_3,
+        SUM(p2.si_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_si_seen_pct_last_3,
+        SUM(p2.fc_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_fc_seen_pct_last_3,
+        SUM(p2.sl_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_sl_seen_pct_last_3,
+        SUM(p2.cu_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_cu_seen_pct_last_3,
+        SUM(p2.ch_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_ch_seen_pct_last_3,
+        SUM(p2.fs_seen_pct * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_fs_seen_pct_last_3,
+        SUM(p2.whiff_rate_vs_rhp * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_whiff_rate_vs_rhp_last_3,
+        SUM(p2.whiff_rate_vs_lhp * (p2.rn - (p1.rn - 3))) / NULLIF(SUM(p2.rn - (p1.rn - 3)), 0) AS wavg_whiff_rate_vs_lhp_last_3,
 
-        AVG(contact_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_contact_rate_last_3,
+        /* -------------------- LAST 5 SIMPLE AVG -------------------- */
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.total_pitches_seen END) AS avg_sc_pitches_seen_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.whiff_rate END) AS avg_whiff_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.contact_rate END) AS avg_contact_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.swing_rate END) AS avg_swing_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.chase_rate END) AS avg_chase_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.zone_swing_rate END) AS avg_zone_swing_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.zone_rate END) AS avg_zone_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.called_strike_rate END) AS avg_called_strike_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.csw_against_rate END) AS avg_csw_against_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.two_strike_whiff_rate END) AS avg_two_strike_whiff_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.avg_exit_velocity END) AS avg_exit_velocity_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.avg_xwoba END) AS avg_xwoba_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.avg_bat_speed END) AS avg_bat_speed_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.whiff_rate_vs_rhp END) AS avg_whiff_rate_vs_rhp_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.whiff_rate_vs_lhp END) AS avg_whiff_rate_vs_lhp_last_5,
 
-        AVG(swing_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_swing_rate_last_3,
+        /* -------------------- LAST 5 WEIGHTED AVG -------------------- */
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.total_pitches_seen * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_sc_pitches_seen_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.whiff_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_whiff_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.contact_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_contact_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.swing_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_swing_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.chase_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_chase_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.zone_swing_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_zone_swing_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.zone_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_zone_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.called_strike_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_called_strike_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.csw_against_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_csw_against_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.two_strike_whiff_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_two_strike_whiff_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.avg_exit_velocity * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_exit_velocity_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.avg_xwoba * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_xwoba_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.avg_bat_speed * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_bat_speed_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.whiff_rate_vs_rhp * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_whiff_rate_vs_rhp_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.whiff_rate_vs_lhp * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_whiff_rate_vs_lhp_last_5,
 
-        AVG(chase_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_chase_rate_last_3,
+        /* -------------------- LAST 10 SIMPLE AVG -------------------- */
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.total_pitches_seen END) AS avg_sc_pitches_seen_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.whiff_rate END) AS avg_whiff_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.contact_rate END) AS avg_contact_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.swing_rate END) AS avg_swing_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.chase_rate END) AS avg_chase_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.zone_swing_rate END) AS avg_zone_swing_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.zone_rate END) AS avg_zone_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.called_strike_rate END) AS avg_called_strike_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.csw_against_rate END) AS avg_csw_against_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.two_strike_whiff_rate END) AS avg_two_strike_whiff_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.avg_exit_velocity END) AS avg_exit_velocity_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.avg_xwoba END) AS avg_xwoba_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.avg_bat_speed END) AS avg_bat_speed_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.whiff_rate_vs_rhp END) AS avg_whiff_rate_vs_rhp_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.whiff_rate_vs_lhp END) AS avg_whiff_rate_vs_lhp_last_10,
 
-        AVG(zone_swing_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_zone_swing_rate_last_3,
+        /* -------------------- LAST 10 WEIGHTED AVG -------------------- */
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.total_pitches_seen * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_sc_pitches_seen_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.whiff_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_whiff_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.contact_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_contact_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.swing_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_swing_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.chase_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_chase_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.zone_swing_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_zone_swing_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.zone_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_zone_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.called_strike_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_called_strike_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.csw_against_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_csw_against_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.two_strike_whiff_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_two_strike_whiff_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.avg_exit_velocity * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_exit_velocity_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.avg_xwoba * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_xwoba_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.avg_bat_speed * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_bat_speed_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.whiff_rate_vs_rhp * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_whiff_rate_vs_rhp_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.whiff_rate_vs_lhp * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_whiff_rate_vs_lhp_last_10,
 
-        AVG(zone_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_zone_rate_last_3,
+        /* -------------------- PREVIOUS GAME -------------------- */
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.whiff_rate END) AS prev_whiff_rate,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.contact_rate END) AS prev_contact_rate,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.chase_rate END) AS prev_chase_rate,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.avg_exit_velocity END) AS prev_exit_velocity,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.avg_xwoba END) AS prev_xwoba,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.avg_bat_speed END) AS prev_bat_speed
 
-        AVG(called_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_called_strike_rate_last_3,
-
-        AVG(csw_against_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_csw_against_rate_last_3,
-
-        AVG(two_strike_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_two_strike_whiff_rate_last_3,
-
-        AVG(whiff_rate_0_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_0_2_last_3,
-
-        AVG(whiff_rate_1_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_1_2_last_3,
-
-        AVG(whiff_rate_2_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_2_2_last_3,
-
-        AVG(avg_exit_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_exit_velocity_last_3,
-
-        AVG(max_exit_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_max_exit_velocity_last_3,
-
-        AVG(avg_launch_angle) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_launch_angle_last_3,
-
-        AVG(avg_hit_distance) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_hit_distance_last_3,
-
-        AVG(avg_xba) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_xba_last_3,
-
-        AVG(avg_xwoba) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_xwoba_last_3,
-
-        AVG(avg_woba_value) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_woba_value_last_3,
-
-        AVG(avg_babip_value) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_babip_value_last_3,
-
-        AVG(avg_iso_value) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_iso_value_last_3,
-
-        AVG(avg_bat_speed) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_bat_speed_last_3,
-
-        AVG(avg_swing_length) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_swing_length_last_3,
-
-        AVG(avg_pitch_velocity_seen) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_pitch_velocity_seen_last_3,
-
-        AVG(avg_pitch_spin_seen) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_pitch_spin_seen_last_3,
-
-        AVG(avg_horz_movement_seen) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_horz_movement_seen_last_3,
-
-        AVG(avg_vert_movement_seen) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_vert_movement_seen_last_3,
-
-        AVG(ff_seen_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_seen_pct_last_3,
-
-        AVG(sl_seen_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_seen_pct_last_3,
-
-        AVG(cu_seen_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_seen_pct_last_3,
-
-        AVG(ch_seen_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_seen_pct_last_3,
-
-        AVG(whiff_rate_vs_rhp) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_vs_rhp_last_3,
-
-        AVG(whiff_rate_vs_lhp) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_vs_lhp_last_3,
-
-        -- last 5
-        AVG(total_pitches_seen) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_pitches_seen_last_5,
-
-        AVG(whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_last_5,
-
-        AVG(contact_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_contact_rate_last_5,
-
-        AVG(chase_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_chase_rate_last_5,
-
-        AVG(zone_swing_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_zone_swing_rate_last_5,
-
-        AVG(csw_against_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_csw_against_rate_last_5,
-
-        AVG(avg_exit_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_exit_velocity_last_5,
-
-        AVG(avg_xwoba) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_xwoba_last_5,
-
-        AVG(avg_bat_speed) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_bat_speed_last_5,
-
-        AVG(whiff_rate_vs_rhp) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_vs_rhp_last_5,
-
-        AVG(whiff_rate_vs_lhp) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_vs_lhp_last_5,
-
-        -- previous game
-        LAG(whiff_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_whiff_rate,
-
-        LAG(contact_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_contact_rate,
-
-        LAG(chase_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_chase_rate,
-
-        LAG(avg_exit_velocity, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_exit_velocity,
-
-        LAG(avg_xwoba, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_xwoba,
-
-        LAG(avg_bat_speed, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_bat_speed
-
-    FROM base
+    FROM prep p1
+    LEFT JOIN prep p2
+        ON p1.player_id = p2.player_id
+       AND p1.season = p2.season
+       AND p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1
+    GROUP BY
+        p1.game_pk,
+        p1.game_date,
+        p1.season,
+        p1.player_id,
+        p1.player_name,
+        p1.team_id,
+        p1.rn
 )
 
 SELECT *
@@ -811,298 +720,311 @@ WITH base AS (
       AND gamePk IS NOT NULL
 ),
 
+prep AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+        ) AS rn
+    FROM base
+),
+
 rolling AS (
     SELECT
-        gamePk,
-        game_date,
-        season,
-        player_id,
-        player_name,
-        position,
-        team_id,
-        team_name,
+        p1.gamePk,
+        p1.game_date,
+        p1.season,
+        p1.player_id,
+        p1.player_name,
+        p1.position,
+        p1.team_id,
+        p1.team_name,
 
-        strikeOuts,
+        p1.strikeOuts,
 
         DATEDIFF(
             DAY,
-            LAG(game_date, 1) OVER (
-                PARTITION BY player_id, season
-                ORDER BY game_date, gamePk
-            ),
-            game_date
+            MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.game_date END),
+            p1.game_date
         ) AS days_since_last_game,
 
-        AVG(strikeOuts) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_k_last_3,
-        AVG(plateAppearances) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_pa_last_3,
-        AVG(atBats) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ab_last_3,
-        AVG(hits) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_hits_last_3,
-        AVG(homeRuns) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_hr_last_3,
-        AVG(baseOnBalls) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_bb_last_3,
-        AVG(numberOfPitches) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_pitches_last_3,
-        AVG(totalBases) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_tb_last_3,
-        AVG(rbi) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_rbi_last_3,
-        AVG(obp) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_obp_last_3,
-        AVG(slg) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_slg_last_3,
-        AVG(ops) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ops_last_3,
-        AVG(babip) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_babip_last_3,
-        AVG(batting_avg) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_batting_avg_last_3,
-        AVG(k_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_k_rate_last_3,
-        AVG(walk_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_walk_rate_last_3,
-        AVG(hit_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_hit_rate_last_3,
-        AVG(tb_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_tb_rate_last_3,
-        AVG(hr_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_hr_rate_last_3,
-        SUM(plateAppearances) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS sum_pa_last_3,
-        SUM(atBats) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS sum_ab_last_3,
-        AVG(CASE WHEN strikeOuts >= 1 THEN 1.0 ELSE 0.0 END) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS pct_1plus_k_last_3,
-        AVG(CASE WHEN strikeOuts >= 2 THEN 1.0 ELSE 0.0 END) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS pct_2plus_k_last_3,
+        /* -------------------- LAST 3 SIMPLE AVG -------------------- */
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.strikeOuts END) AS avg_k_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.plateAppearances END) AS avg_pa_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.atBats END) AS avg_ab_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hits END) AS avg_hits_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.homeRuns END) AS avg_hr_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.baseOnBalls END) AS avg_bb_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.numberOfPitches END) AS avg_pitches_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.totalBases END) AS avg_tb_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.rbi END) AS avg_rbi_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.leftOnBase END) AS avg_lob_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.obp END) AS avg_obp_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.slg END) AS avg_slg_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.ops END) AS avg_ops_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.babip END) AS avg_babip_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.batting_avg END) AS avg_batting_avg_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hitByPitch END) AS avg_hbp_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.sacFlies END) AS avg_sf_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.sacBunts END) AS avg_sbunts_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.stolenBases END) AS avg_stolen_bases_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.caughtStealing END) AS avg_caught_stealing_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.k_rate END) AS avg_k_rate_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.walk_rate END) AS avg_walk_rate_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hit_rate END) AS avg_hit_rate_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.tb_rate END) AS avg_tb_rate_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hr_rate END) AS avg_hr_rate_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.plateAppearances END) AS sum_pa_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.atBats END) AS sum_ab_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN CASE WHEN p2.strikeOuts >= 1 THEN 1.0 ELSE 0.0 END END) AS pct_1plus_k_last_3,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN CASE WHEN p2.strikeOuts >= 2 THEN 1.0 ELSE 0.0 END END) AS pct_2plus_k_last_3,
 
-        AVG(strikeOuts) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_k_last_5,
-        AVG(plateAppearances) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_pa_last_5,
-        AVG(atBats) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ab_last_5,
-        AVG(hits) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_hits_last_5,
-        AVG(homeRuns) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_hr_last_5,
-        AVG(baseOnBalls) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_bb_last_5,
-        AVG(numberOfPitches) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_pitches_last_5,
-        AVG(totalBases) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_tb_last_5,
-        AVG(rbi) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_rbi_last_5,
-        AVG(obp) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_obp_last_5,
-        AVG(slg) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_slg_last_5,
-        AVG(ops) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ops_last_5,
-        AVG(babip) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_babip_last_5,
-        AVG(batting_avg) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_batting_avg_last_5,
-        AVG(k_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_k_rate_last_5,
-        AVG(walk_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_walk_rate_last_5,
-        AVG(hit_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_hit_rate_last_5,
-        AVG(tb_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_tb_rate_last_5,
-        AVG(hr_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_hr_rate_last_5,
-        SUM(plateAppearances) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS sum_pa_last_5,
-        SUM(atBats) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS sum_ab_last_5,
-        AVG(CASE WHEN strikeOuts >= 1 THEN 1.0 ELSE 0.0 END) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS pct_1plus_k_last_5,
-        AVG(CASE WHEN strikeOuts >= 2 THEN 1.0 ELSE 0.0 END) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS pct_2plus_k_last_5,
+        /* -------------------- LAST 3 WEIGHTED AVG -------------------- */
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.strikeOuts * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_k_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.plateAppearances * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_pa_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.atBats * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_ab_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hits * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_hits_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.homeRuns * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_hr_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.baseOnBalls * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_bb_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.numberOfPitches * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_pitches_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.totalBases * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_tb_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.rbi * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_rbi_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.leftOnBase * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_lob_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.obp * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_obp_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.slg * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_slg_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.ops * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_ops_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.babip * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_babip_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.batting_avg * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_batting_avg_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hitByPitch * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_hbp_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.sacFlies * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_sf_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.sacBunts * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_sbunts_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.stolenBases * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_stolen_bases_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.caughtStealing * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_caught_stealing_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.k_rate * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_k_rate_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.walk_rate * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_walk_rate_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hit_rate * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_hit_rate_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.tb_rate * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_tb_rate_last_3,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN p2.hr_rate * (p2.rn - (p1.rn - 3)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 3 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 3)) END), 0) AS wavg_hr_rate_last_3,
 
-        LAG(strikeOuts, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_k,
-        LAG(plateAppearances, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_pa,
-        LAG(atBats, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_ab,
-        LAG(hits, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_hits,
-        LAG(homeRuns, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_hr,
-        LAG(baseOnBalls, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_bb,
-        LAG(numberOfPitches, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_pitches,
-        LAG(ops, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_ops,
-        LAG(k_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_k_rate
+        /* -------------------- LAST 5 SIMPLE AVG -------------------- */
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.strikeOuts END) AS avg_k_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.plateAppearances END) AS avg_pa_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.atBats END) AS avg_ab_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hits END) AS avg_hits_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.homeRuns END) AS avg_hr_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.baseOnBalls END) AS avg_bb_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.numberOfPitches END) AS avg_pitches_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.totalBases END) AS avg_tb_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.rbi END) AS avg_rbi_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.leftOnBase END) AS avg_lob_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.obp END) AS avg_obp_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.slg END) AS avg_slg_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.ops END) AS avg_ops_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.babip END) AS avg_babip_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.batting_avg END) AS avg_batting_avg_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hitByPitch END) AS avg_hbp_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.sacFlies END) AS avg_sf_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.sacBunts END) AS avg_sbunts_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.stolenBases END) AS avg_stolen_bases_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.caughtStealing END) AS avg_caught_stealing_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.k_rate END) AS avg_k_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.walk_rate END) AS avg_walk_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hit_rate END) AS avg_hit_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.tb_rate END) AS avg_tb_rate_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hr_rate END) AS avg_hr_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.plateAppearances END) AS sum_pa_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.atBats END) AS sum_ab_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN CASE WHEN p2.strikeOuts >= 1 THEN 1.0 ELSE 0.0 END END) AS pct_1plus_k_last_5,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN CASE WHEN p2.strikeOuts >= 2 THEN 1.0 ELSE 0.0 END END) AS pct_2plus_k_last_5,
 
-    FROM base
+        /* -------------------- LAST 5 WEIGHTED AVG -------------------- */
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.strikeOuts * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_k_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.plateAppearances * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_pa_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.atBats * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_ab_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hits * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_hits_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.homeRuns * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_hr_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.baseOnBalls * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_bb_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.numberOfPitches * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_pitches_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.totalBases * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_tb_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.rbi * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_rbi_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.leftOnBase * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_lob_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.obp * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_obp_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.slg * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_slg_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.ops * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_ops_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.babip * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_babip_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.batting_avg * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_batting_avg_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hitByPitch * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_hbp_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.sacFlies * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_sf_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.sacBunts * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_sbunts_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.stolenBases * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_stolen_bases_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.caughtStealing * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_caught_stealing_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.k_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_k_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.walk_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_walk_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hit_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_hit_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.tb_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_tb_rate_last_5,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN p2.hr_rate * (p2.rn - (p1.rn - 5)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 5 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 5)) END), 0) AS wavg_hr_rate_last_5,
+
+        /* -------------------- LAST 10 SIMPLE AVG -------------------- */
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.strikeOuts END) AS avg_k_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.plateAppearances END) AS avg_pa_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.atBats END) AS avg_ab_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hits END) AS avg_hits_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.homeRuns END) AS avg_hr_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.baseOnBalls END) AS avg_bb_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.numberOfPitches END) AS avg_pitches_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.totalBases END) AS avg_tb_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.rbi END) AS avg_rbi_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.leftOnBase END) AS avg_lob_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.obp END) AS avg_obp_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.slg END) AS avg_slg_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.ops END) AS avg_ops_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.babip END) AS avg_babip_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.batting_avg END) AS avg_batting_avg_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hitByPitch END) AS avg_hbp_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.sacFlies END) AS avg_sf_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.sacBunts END) AS avg_sbunts_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.stolenBases END) AS avg_stolen_bases_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.caughtStealing END) AS avg_caught_stealing_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.k_rate END) AS avg_k_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.walk_rate END) AS avg_walk_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hit_rate END) AS avg_hit_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.tb_rate END) AS avg_tb_rate_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hr_rate END) AS avg_hr_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.plateAppearances END) AS sum_pa_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.atBats END) AS sum_ab_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN CASE WHEN p2.strikeOuts >= 1 THEN 1.0 ELSE 0.0 END END) AS pct_1plus_k_last_10,
+        AVG(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN CASE WHEN p2.strikeOuts >= 2 THEN 1.0 ELSE 0.0 END END) AS pct_2plus_k_last_10,
+
+        /* -------------------- LAST 10 WEIGHTED AVG -------------------- */
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.strikeOuts * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_k_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.plateAppearances * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_pa_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.atBats * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_ab_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hits * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_hits_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.homeRuns * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_hr_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.baseOnBalls * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_bb_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.numberOfPitches * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_pitches_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.totalBases * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_tb_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.rbi * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_rbi_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.leftOnBase * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_lob_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.obp * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_obp_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.slg * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_slg_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.ops * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_ops_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.babip * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_babip_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.batting_avg * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_batting_avg_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hitByPitch * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_hbp_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.sacFlies * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_sf_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.sacBunts * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_sbunts_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.stolenBases * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_stolen_bases_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.caughtStealing * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_caught_stealing_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.k_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_k_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.walk_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_walk_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hit_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_hit_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.tb_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_tb_rate_last_10,
+        SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN p2.hr_rate * (p2.rn - (p1.rn - 10)) END)
+            / NULLIF(SUM(CASE WHEN p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1 THEN (p2.rn - (p1.rn - 10)) END), 0) AS wavg_hr_rate_last_10,
+
+        /* -------------------- PREVIOUS GAME -------------------- */
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.strikeOuts END) AS prev_k,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.plateAppearances END) AS prev_pa,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.atBats END) AS prev_ab,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.hits END) AS prev_hits,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.homeRuns END) AS prev_hr,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.baseOnBalls END) AS prev_bb,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.numberOfPitches END) AS prev_pitches,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.ops END) AS prev_ops,
+        MAX(CASE WHEN p2.rn = p1.rn - 1 THEN p2.k_rate END) AS prev_k_rate
+
+    FROM prep p1
+    LEFT JOIN prep p2
+        ON p1.player_id = p2.player_id
+       AND p1.season = p2.season
+       AND p2.rn BETWEEN p1.rn - 10 AND p1.rn - 1
+    GROUP BY
+        p1.gamePk,
+        p1.game_date,
+        p1.season,
+        p1.player_id,
+        p1.player_name,
+        p1.position,
+        p1.team_id,
+        p1.team_name,
+        p1.strikeOuts,
+        p1.rn
 )
 
 SELECT *
@@ -1132,8 +1054,10 @@ SELECT
     h.team_name,
     h.strikeOuts,
 
+    /* -------------------- hitter rolling -------------------- */
     h.days_since_last_game,
 
+    -- last 3 simple
     h.avg_k_last_3,
     h.avg_pa_last_3,
     h.avg_ab_last_3,
@@ -1143,11 +1067,17 @@ SELECT
     h.avg_pitches_last_3,
     h.avg_tb_last_3,
     h.avg_rbi_last_3,
+    h.avg_lob_last_3,
     h.avg_obp_last_3,
     h.avg_slg_last_3,
     h.avg_ops_last_3,
     h.avg_babip_last_3,
     h.avg_batting_avg_last_3,
+    h.avg_hbp_last_3,
+    h.avg_sf_last_3,
+    h.avg_sbunts_last_3,
+    h.avg_stolen_bases_last_3,
+    h.avg_caught_stealing_last_3,
     h.avg_k_rate_last_3,
     h.avg_walk_rate_last_3,
     h.avg_hit_rate_last_3,
@@ -1158,6 +1088,34 @@ SELECT
     h.pct_1plus_k_last_3,
     h.pct_2plus_k_last_3,
 
+    -- last 3 weighted
+    h.wavg_k_last_3,
+    h.wavg_pa_last_3,
+    h.wavg_ab_last_3,
+    h.wavg_hits_last_3,
+    h.wavg_hr_last_3,
+    h.wavg_bb_last_3,
+    h.wavg_pitches_last_3,
+    h.wavg_tb_last_3,
+    h.wavg_rbi_last_3,
+    h.wavg_lob_last_3,
+    h.wavg_obp_last_3,
+    h.wavg_slg_last_3,
+    h.wavg_ops_last_3,
+    h.wavg_babip_last_3,
+    h.wavg_batting_avg_last_3,
+    h.wavg_hbp_last_3,
+    h.wavg_sf_last_3,
+    h.wavg_sbunts_last_3,
+    h.wavg_stolen_bases_last_3,
+    h.wavg_caught_stealing_last_3,
+    h.wavg_k_rate_last_3,
+    h.wavg_walk_rate_last_3,
+    h.wavg_hit_rate_last_3,
+    h.wavg_tb_rate_last_3,
+    h.wavg_hr_rate_last_3,
+
+    -- last 5 simple
     h.avg_k_last_5,
     h.avg_pa_last_5,
     h.avg_ab_last_5,
@@ -1167,11 +1125,17 @@ SELECT
     h.avg_pitches_last_5,
     h.avg_tb_last_5,
     h.avg_rbi_last_5,
+    h.avg_lob_last_5,
     h.avg_obp_last_5,
     h.avg_slg_last_5,
     h.avg_ops_last_5,
     h.avg_babip_last_5,
     h.avg_batting_avg_last_5,
+    h.avg_hbp_last_5,
+    h.avg_sf_last_5,
+    h.avg_sbunts_last_5,
+    h.avg_stolen_bases_last_5,
+    h.avg_caught_stealing_last_5,
     h.avg_k_rate_last_5,
     h.avg_walk_rate_last_5,
     h.avg_hit_rate_last_5,
@@ -1182,6 +1146,92 @@ SELECT
     h.pct_1plus_k_last_5,
     h.pct_2plus_k_last_5,
 
+    -- last 5 weighted
+    h.wavg_k_last_5,
+    h.wavg_pa_last_5,
+    h.wavg_ab_last_5,
+    h.wavg_hits_last_5,
+    h.wavg_hr_last_5,
+    h.wavg_bb_last_5,
+    h.wavg_pitches_last_5,
+    h.wavg_tb_last_5,
+    h.wavg_rbi_last_5,
+    h.wavg_lob_last_5,
+    h.wavg_obp_last_5,
+    h.wavg_slg_last_5,
+    h.wavg_ops_last_5,
+    h.wavg_babip_last_5,
+    h.wavg_batting_avg_last_5,
+    h.wavg_hbp_last_5,
+    h.wavg_sf_last_5,
+    h.wavg_sbunts_last_5,
+    h.wavg_stolen_bases_last_5,
+    h.wavg_caught_stealing_last_5,
+    h.wavg_k_rate_last_5,
+    h.wavg_walk_rate_last_5,
+    h.wavg_hit_rate_last_5,
+    h.wavg_tb_rate_last_5,
+    h.wavg_hr_rate_last_5,
+
+    -- last 10 simple
+    h.avg_k_last_10,
+    h.avg_pa_last_10,
+    h.avg_ab_last_10,
+    h.avg_hits_last_10,
+    h.avg_hr_last_10,
+    h.avg_bb_last_10,
+    h.avg_pitches_last_10,
+    h.avg_tb_last_10,
+    h.avg_rbi_last_10,
+    h.avg_lob_last_10,
+    h.avg_obp_last_10,
+    h.avg_slg_last_10,
+    h.avg_ops_last_10,
+    h.avg_babip_last_10,
+    h.avg_batting_avg_last_10,
+    h.avg_hbp_last_10,
+    h.avg_sf_last_10,
+    h.avg_sbunts_last_10,
+    h.avg_stolen_bases_last_10,
+    h.avg_caught_stealing_last_10,
+    h.avg_k_rate_last_10,
+    h.avg_walk_rate_last_10,
+    h.avg_hit_rate_last_10,
+    h.avg_tb_rate_last_10,
+    h.avg_hr_rate_last_10,
+    h.sum_pa_last_10,
+    h.sum_ab_last_10,
+    h.pct_1plus_k_last_10,
+    h.pct_2plus_k_last_10,
+
+    -- last 10 weighted
+    h.wavg_k_last_10,
+    h.wavg_pa_last_10,
+    h.wavg_ab_last_10,
+    h.wavg_hits_last_10,
+    h.wavg_hr_last_10,
+    h.wavg_bb_last_10,
+    h.wavg_pitches_last_10,
+    h.wavg_tb_last_10,
+    h.wavg_rbi_last_10,
+    h.wavg_lob_last_10,
+    h.wavg_obp_last_10,
+    h.wavg_slg_last_10,
+    h.wavg_ops_last_10,
+    h.wavg_babip_last_10,
+    h.wavg_batting_avg_last_10,
+    h.wavg_hbp_last_10,
+    h.wavg_sf_last_10,
+    h.wavg_sbunts_last_10,
+    h.wavg_stolen_bases_last_10,
+    h.wavg_caught_stealing_last_10,
+    h.wavg_k_rate_last_10,
+    h.wavg_walk_rate_last_10,
+    h.wavg_hit_rate_last_10,
+    h.wavg_tb_rate_last_10,
+    h.wavg_hr_rate_last_10,
+
+    -- previous game
     h.prev_k,
     h.prev_pa,
     h.prev_ab,
@@ -1192,6 +1242,9 @@ SELECT
     h.prev_ops,
     h.prev_k_rate,
 
+    /* -------------------- hitter statcast rolling -------------------- */
+
+    -- last 3 simple
     s.avg_sc_pitches_seen_last_3,
     s.avg_whiff_rate_last_3,
     s.avg_contact_rate_last_3,
@@ -1218,27 +1271,132 @@ SELECT
     s.avg_swing_length_last_3,
     s.avg_pitch_velocity_seen_last_3,
     s.avg_pitch_spin_seen_last_3,
+    s.avg_pitch_extension_seen_last_3,
     s.avg_horz_movement_seen_last_3,
     s.avg_vert_movement_seen_last_3,
+    s.avg_plate_x_seen_last_3,
+    s.avg_plate_z_seen_last_3,
     s.avg_ff_seen_pct_last_3,
+    s.avg_si_seen_pct_last_3,
+    s.avg_fc_seen_pct_last_3,
     s.avg_sl_seen_pct_last_3,
     s.avg_cu_seen_pct_last_3,
     s.avg_ch_seen_pct_last_3,
+    s.avg_fs_seen_pct_last_3,
     s.avg_whiff_rate_vs_rhp_last_3,
     s.avg_whiff_rate_vs_lhp_last_3,
 
+    -- last 3 weighted
+    s.wavg_sc_pitches_seen_last_3,
+    s.wavg_whiff_rate_last_3,
+    s.wavg_contact_rate_last_3,
+    s.wavg_swing_rate_last_3,
+    s.wavg_chase_rate_last_3,
+    s.wavg_zone_swing_rate_last_3,
+    s.wavg_zone_rate_last_3,
+    s.wavg_called_strike_rate_last_3,
+    s.wavg_csw_against_rate_last_3,
+    s.wavg_two_strike_whiff_rate_last_3,
+    s.wavg_whiff_rate_0_2_last_3,
+    s.wavg_whiff_rate_1_2_last_3,
+    s.wavg_whiff_rate_2_2_last_3,
+    s.wavg_exit_velocity_last_3,
+    s.wavg_max_exit_velocity_last_3,
+    s.wavg_launch_angle_last_3,
+    s.wavg_hit_distance_last_3,
+    s.wavg_xba_last_3,
+    s.wavg_xwoba_last_3,
+    s.wavg_woba_value_last_3,
+    s.wavg_babip_value_last_3,
+    s.wavg_iso_value_last_3,
+    s.wavg_bat_speed_last_3,
+    s.wavg_swing_length_last_3,
+    s.wavg_pitch_velocity_seen_last_3,
+    s.wavg_pitch_spin_seen_last_3,
+    s.wavg_pitch_extension_seen_last_3,
+    s.wavg_horz_movement_seen_last_3,
+    s.wavg_vert_movement_seen_last_3,
+    s.wavg_plate_x_seen_last_3,
+    s.wavg_plate_z_seen_last_3,
+    s.wavg_ff_seen_pct_last_3,
+    s.wavg_si_seen_pct_last_3,
+    s.wavg_fc_seen_pct_last_3,
+    s.wavg_sl_seen_pct_last_3,
+    s.wavg_cu_seen_pct_last_3,
+    s.wavg_ch_seen_pct_last_3,
+    s.wavg_fs_seen_pct_last_3,
+    s.wavg_whiff_rate_vs_rhp_last_3,
+    s.wavg_whiff_rate_vs_lhp_last_3,
+
+    -- last 5 simple
     s.avg_sc_pitches_seen_last_5,
     s.avg_whiff_rate_last_5,
     s.avg_contact_rate_last_5,
+    s.avg_swing_rate_last_5,
     s.avg_chase_rate_last_5,
     s.avg_zone_swing_rate_last_5,
+    s.avg_zone_rate_last_5,
+    s.avg_called_strike_rate_last_5,
     s.avg_csw_against_rate_last_5,
+    s.avg_two_strike_whiff_rate_last_5,
     s.avg_exit_velocity_last_5,
     s.avg_xwoba_last_5,
     s.avg_bat_speed_last_5,
     s.avg_whiff_rate_vs_rhp_last_5,
     s.avg_whiff_rate_vs_lhp_last_5,
 
+    -- last 5 weighted
+    s.wavg_sc_pitches_seen_last_5,
+    s.wavg_whiff_rate_last_5,
+    s.wavg_contact_rate_last_5,
+    s.wavg_swing_rate_last_5,
+    s.wavg_chase_rate_last_5,
+    s.wavg_zone_swing_rate_last_5,
+    s.wavg_zone_rate_last_5,
+    s.wavg_called_strike_rate_last_5,
+    s.wavg_csw_against_rate_last_5,
+    s.wavg_two_strike_whiff_rate_last_5,
+    s.wavg_exit_velocity_last_5,
+    s.wavg_xwoba_last_5,
+    s.wavg_bat_speed_last_5,
+    s.wavg_whiff_rate_vs_rhp_last_5,
+    s.wavg_whiff_rate_vs_lhp_last_5,
+
+    -- last 10 simple
+    s.avg_sc_pitches_seen_last_10,
+    s.avg_whiff_rate_last_10,
+    s.avg_contact_rate_last_10,
+    s.avg_swing_rate_last_10,
+    s.avg_chase_rate_last_10,
+    s.avg_zone_swing_rate_last_10,
+    s.avg_zone_rate_last_10,
+    s.avg_called_strike_rate_last_10,
+    s.avg_csw_against_rate_last_10,
+    s.avg_two_strike_whiff_rate_last_10,
+    s.avg_exit_velocity_last_10,
+    s.avg_xwoba_last_10,
+    s.avg_bat_speed_last_10,
+    s.avg_whiff_rate_vs_rhp_last_10,
+    s.avg_whiff_rate_vs_lhp_last_10,
+
+    -- last 10 weighted
+    s.wavg_sc_pitches_seen_last_10,
+    s.wavg_whiff_rate_last_10,
+    s.wavg_contact_rate_last_10,
+    s.wavg_swing_rate_last_10,
+    s.wavg_chase_rate_last_10,
+    s.wavg_zone_swing_rate_last_10,
+    s.wavg_zone_rate_last_10,
+    s.wavg_called_strike_rate_last_10,
+    s.wavg_csw_against_rate_last_10,
+    s.wavg_two_strike_whiff_rate_last_10,
+    s.wavg_exit_velocity_last_10,
+    s.wavg_xwoba_last_10,
+    s.wavg_bat_speed_last_10,
+    s.wavg_whiff_rate_vs_rhp_last_10,
+    s.wavg_whiff_rate_vs_lhp_last_10,
+
+    -- previous statcast game
     s.prev_whiff_rate,
     s.prev_contact_rate,
     s.prev_chase_rate,
