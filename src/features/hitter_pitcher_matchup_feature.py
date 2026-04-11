@@ -582,7 +582,9 @@ SELECT
 
     p.prev_whiff_rate AS pitcher_prev_whiff_rate,
     p.prev_csw_rate AS pitcher_prev_csw_rate,
-    p.prev_chase_rate AS pitcher_prev_chase_rate
+    p.prev_chase_rate AS pitcher_prev_chase_rate,
+
+    pg.strikeOuts AS pitcher_strikeOuts
 
 INTO mlb.dbo.fact_hitter_pitcher_matchup_model_features
 FROM mlb.dbo.fact_hitter_model_features h
@@ -593,7 +595,10 @@ INNER JOIN primary_matchup m
 INNER JOIN mlb.dbo.fact_pitcher_model_features p
     ON m.gamePk = p.gamePk
    AND m.pitcher_id = p.player_id
-   AND m.season = p.season;
+   AND m.season = p.season
+LEFT JOIN mlb.dbo.fact_player_pitching_gamelogs pg
+    ON p.gamePk = pg.gamePk
+   AND p.player_id = pg.player_id;
     """
 
     execute_sql(sql)
