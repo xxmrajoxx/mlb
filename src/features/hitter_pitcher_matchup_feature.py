@@ -466,11 +466,13 @@ SELECT
     h.prev_xwoba AS hitter_prev_xwoba,
     h.prev_bat_speed AS hitter_prev_bat_speed,
 
-    /* =========================
+        /* =========================
        PITCHER FEATURES
        ========================= */
     p.gamesStarted AS pitcher_gamesStarted,
     p.days_since_last_appearance AS pitcher_days_since_last_appearance,
+
+    -- pitcher rolling last 3 simple
     p.avg_games_started_last_3 AS pitcher_avg_games_started_last_3,
     p.avg_ip_last_3 AS pitcher_avg_ip_last_3,
     p.avg_bf_last_3 AS pitcher_avg_bf_last_3,
@@ -490,6 +492,7 @@ SELECT
     p.pct_5plus_ip_last_3 AS pitcher_pct_5plus_ip_last_3,
     p.pct_6plus_ip_last_3 AS pitcher_pct_6plus_ip_last_3,
 
+    -- pitcher rolling last 5 simple
     p.avg_games_started_last_5 AS pitcher_avg_games_started_last_5,
     p.avg_ip_last_5 AS pitcher_avg_ip_last_5,
     p.avg_bf_last_5 AS pitcher_avg_bf_last_5,
@@ -509,6 +512,7 @@ SELECT
     p.pct_5plus_ip_last_5 AS pitcher_pct_5plus_ip_last_5,
     p.pct_6plus_ip_last_5 AS pitcher_pct_6plus_ip_last_5,
 
+    -- pitcher rolling last 10 simple
     p.avg_games_started_last_10 AS pitcher_avg_games_started_last_10,
     p.avg_ip_last_10 AS pitcher_avg_ip_last_10,
     p.avg_bf_last_10 AS pitcher_avg_bf_last_10,
@@ -528,12 +532,47 @@ SELECT
     p.pct_5plus_ip_last_10 AS pitcher_pct_5plus_ip_last_10,
     p.pct_6plus_ip_last_10 AS pitcher_pct_6plus_ip_last_10,
 
+    -- pitcher weighted rolling last 3
+    p.weighted_k_last_3 AS pitcher_weighted_k_last_3,
+    p.weighted_ip_last_3 AS pitcher_weighted_ip_last_3,
+    p.weighted_bf_last_3 AS pitcher_weighted_bf_last_3,
+    p.weighted_pitches_last_3 AS pitcher_weighted_pitches_last_3,
+    p.weighted_strike_pct_last_3 AS pitcher_weighted_strike_pct_last_3,
+    p.weighted_k9_last_3 AS pitcher_weighted_k9_last_3,
+    p.weighted_bb_last_3 AS pitcher_weighted_bb_last_3,
+    p.weighted_whip_last_3 AS pitcher_weighted_whip_last_3,
+    p.weighted_outs_last_3 AS pitcher_weighted_outs_last_3,
+
+    -- pitcher weighted rolling last 5
+    p.weighted_k_last_5 AS pitcher_weighted_k_last_5,
+    p.weighted_ip_last_5 AS pitcher_weighted_ip_last_5,
+    p.weighted_bf_last_5 AS pitcher_weighted_bf_last_5,
+    p.weighted_pitches_last_5 AS pitcher_weighted_pitches_last_5,
+    p.weighted_strike_pct_last_5 AS pitcher_weighted_strike_pct_last_5,
+    p.weighted_k9_last_5 AS pitcher_weighted_k9_last_5,
+    p.weighted_bb_last_5 AS pitcher_weighted_bb_last_5,
+    p.weighted_whip_last_5 AS pitcher_weighted_whip_last_5,
+    p.weighted_outs_last_5 AS pitcher_weighted_outs_last_5,
+
+    -- pitcher weighted rolling last 10
+    p.weighted_k_last_10 AS pitcher_weighted_k_last_10,
+    p.weighted_ip_last_10 AS pitcher_weighted_ip_last_10,
+    p.weighted_bf_last_10 AS pitcher_weighted_bf_last_10,
+    p.weighted_pitches_last_10 AS pitcher_weighted_pitches_last_10,
+    p.weighted_strike_pct_last_10 AS pitcher_weighted_strike_pct_last_10,
+    p.weighted_k9_last_10 AS pitcher_weighted_k9_last_10,
+    p.weighted_bb_last_10 AS pitcher_weighted_bb_last_10,
+    p.weighted_whip_last_10 AS pitcher_weighted_whip_last_10,
+    p.weighted_outs_last_10 AS pitcher_weighted_outs_last_10,
+
+    -- pitcher previous game
     p.prev_k AS pitcher_prev_k,
     p.prev_ip AS pitcher_prev_ip,
     p.prev_bf AS pitcher_prev_bf,
     p.prev_pitches AS pitcher_prev_pitches,
     p.prev_k9 AS pitcher_prev_k9,
 
+    -- pitcher statcast last 3 simple
     p.avg_whiff_rate_last_3 AS pitcher_avg_whiff_rate_last_3,
     p.avg_csw_rate_last_3 AS pitcher_avg_csw_rate_last_3,
     p.avg_putaway_rate_last_3 AS pitcher_avg_putaway_rate_last_3,
@@ -558,6 +597,7 @@ SELECT
     p.avg_sl_whiff_rate_last_3 AS pitcher_avg_sl_whiff_rate_last_3,
     p.avg_ff_whiff_rate_last_3 AS pitcher_avg_ff_whiff_rate_last_3,
 
+    -- pitcher statcast last 5 simple
     p.avg_whiff_rate_last_5 AS pitcher_avg_whiff_rate_last_5,
     p.avg_csw_rate_last_5 AS pitcher_avg_csw_rate_last_5,
     p.avg_putaway_rate_last_5 AS pitcher_avg_putaway_rate_last_5,
@@ -569,6 +609,7 @@ SELECT
     p.avg_sl_whiff_rate_last_5 AS pitcher_avg_sl_whiff_rate_last_5,
     p.avg_ff_whiff_rate_last_5 AS pitcher_avg_ff_whiff_rate_last_5,
 
+    -- pitcher statcast last 10 simple
     p.avg_whiff_rate_last_10 AS pitcher_avg_whiff_rate_last_10,
     p.avg_csw_rate_last_10 AS pitcher_avg_csw_rate_last_10,
     p.avg_putaway_rate_last_10 AS pitcher_avg_putaway_rate_last_10,
@@ -580,10 +621,42 @@ SELECT
     p.avg_sl_whiff_rate_last_10 AS pitcher_avg_sl_whiff_rate_last_10,
     p.avg_ff_whiff_rate_last_10 AS pitcher_avg_ff_whiff_rate_last_10,
 
+    -- pitcher weighted statcast last 3
+    p.weighted_sc_pitches_last_3 AS pitcher_weighted_sc_pitches_last_3,
+    p.weighted_whiff_rate_last_3 AS pitcher_weighted_whiff_rate_last_3,
+    p.weighted_csw_rate_last_3 AS pitcher_weighted_csw_rate_last_3,
+    p.weighted_sc_strike_rate_last_3 AS pitcher_weighted_sc_strike_rate_last_3,
+    p.weighted_velocity_last_3 AS pitcher_weighted_velocity_last_3,
+    p.weighted_spin_rate_last_3 AS pitcher_weighted_spin_rate_last_3,
+    p.weighted_chase_rate_last_3 AS pitcher_weighted_chase_rate_last_3,
+    p.weighted_putaway_rate_last_3 AS pitcher_weighted_putaway_rate_last_3,
+
+    -- pitcher weighted statcast last 5
+    p.weighted_sc_pitches_last_5 AS pitcher_weighted_sc_pitches_last_5,
+    p.weighted_whiff_rate_last_5 AS pitcher_weighted_whiff_rate_last_5,
+    p.weighted_csw_rate_last_5 AS pitcher_weighted_csw_rate_last_5,
+    p.weighted_sc_strike_rate_last_5 AS pitcher_weighted_sc_strike_rate_last_5,
+    p.weighted_velocity_last_5 AS pitcher_weighted_velocity_last_5,
+    p.weighted_spin_rate_last_5 AS pitcher_weighted_spin_rate_last_5,
+    p.weighted_chase_rate_last_5 AS pitcher_weighted_chase_rate_last_5,
+    p.weighted_putaway_rate_last_5 AS pitcher_weighted_putaway_rate_last_5,
+
+    -- pitcher weighted statcast last 10
+    p.weighted_sc_pitches_last_10 AS pitcher_weighted_sc_pitches_last_10,
+    p.weighted_whiff_rate_last_10 AS pitcher_weighted_whiff_rate_last_10,
+    p.weighted_csw_rate_last_10 AS pitcher_weighted_csw_rate_last_10,
+    p.weighted_sc_strike_rate_last_10 AS pitcher_weighted_sc_strike_rate_last_10,
+    p.weighted_velocity_last_10 AS pitcher_weighted_velocity_last_10,
+    p.weighted_spin_rate_last_10 AS pitcher_weighted_spin_rate_last_10,
+    p.weighted_chase_rate_last_10 AS pitcher_weighted_chase_rate_last_10,
+    p.weighted_putaway_rate_last_10 AS pitcher_weighted_putaway_rate_last_10,
+
+    -- pitcher previous statcast game
     p.prev_whiff_rate AS pitcher_prev_whiff_rate,
     p.prev_csw_rate AS pitcher_prev_csw_rate,
     p.prev_chase_rate AS pitcher_prev_chase_rate,
 
+    -- pitcher target
     pg.strikeOuts AS pitcher_strikeOuts
 
 INTO mlb.dbo.fact_hitter_pitcher_matchup_model_features
