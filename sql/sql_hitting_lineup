@@ -1,0 +1,36 @@
+IF OBJECT_ID('mlb.dbo.stg_fact_hitter_lineup', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.stg_fact_hitter_lineup;
+
+CREATE TABLE mlb.dbo.stg_fact_hitter_lineup (
+    gamePk BIGINT,
+    game_date DATE,
+    side VARCHAR(10),
+    team_id INT,
+    team_name VARCHAR(100),
+    batting_order INT,
+    player_id INT,
+    player_name VARCHAR(100),
+    position_abbreviation VARCHAR(20),
+    position_name VARCHAR(50),
+    extract_date DATETIME2
+);
+
+IF OBJECT_ID('mlb.dbo.fact_hitter_lineup', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.fact_hitter_lineup;
+
+CREATE TABLE mlb.dbo.fact_hitter_lineup (
+    gamePk BIGINT NOT NULL,
+    game_date DATE NULL,
+    side VARCHAR(10) NOT NULL,
+    team_id INT NULL,
+    team_name VARCHAR(100) NULL,
+    batting_order INT NOT NULL,
+    player_id INT NULL,
+    player_name VARCHAR(100) NULL,
+    position_abbreviation VARCHAR(20) NULL,
+    position_name VARCHAR(50) NULL,
+    extract_date DATETIME2 NULL
+);
+
+CREATE UNIQUE INDEX UX_fact_hitter_lineup
+    ON mlb.dbo.fact_hitter_lineup (gamePk, side, batting_order);
