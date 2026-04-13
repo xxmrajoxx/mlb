@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 load_dotenv(override=True)
 
 CREATE_STG_SQL = """
-IF OBJECT_ID('mlb.dbo.stg_fact_hitter_plate_appearances', 'U') IS NULL
+IF OBJECT_ID('mlb.dbo.stg_hitter_plate_appearances', 'U') IS NULL
 BEGIN
-    CREATE TABLE mlb.dbo.stg_fact_hitter_plate_appearances (
+    CREATE TABLE mlb.dbo.stg_hitter_plate_appearances (
         gamePk BIGINT,
         game_date DATE,
         inning INT,
@@ -110,7 +110,7 @@ WITH src AS (
                 PARTITION BY s.gamePk, s.at_bat_index
                 ORDER BY s.extract_date DESC
             ) AS rn
-        FROM mlb.dbo.stg_fact_hitter_plate_appearances s
+        FROM mlb.dbo.stg_hitter_plate_appearances s
     ) x
     WHERE x.rn = 1
 )
@@ -424,8 +424,8 @@ if __name__ == "__main__":
     print(df.head(20))
 
     if not df.empty:
-        truncate_table("stg_fact_hitter_plate_appearances", schema="dbo")
-        load_dataframe(df, "stg_fact_hitter_plate_appearances", if_exists="append")
+        truncate_table("stg_hitter_plate_appearances", schema="dbo")
+        load_dataframe(df, "stg_hitter_plate_appearances", if_exists="append")
         logger.info("Loaded dataframe to staging table")
 
         execute_sql(MERGE_SQL)

@@ -91,6 +91,224 @@ primary_matchup AS (
     FROM ranked_matchups
     WHERE rn = 1
 )
+, hitter_pa_game AS (
+    SELECT
+        CAST(gamePk AS int) AS gamePk,
+        CAST(game_date AS date) AS game_date,
+        YEAR(CAST(game_date AS date)) AS season,
+        CAST(batter_id AS int) AS hitter_id,
+        batter_name AS hitter_name,
+        SUM(COALESCE(plate_appearances, 0)) AS hitter_game_plate_appearances,
+        SUM(COALESCE(strikeouts, 0)) AS hitter_game_strikeouts
+    FROM mlb.dbo.fact_hitter_pitcher_pa_game_agg
+    GROUP BY
+        CAST(gamePk AS int),
+        CAST(game_date AS date),
+        YEAR(CAST(game_date AS date)),
+        CAST(batter_id AS int),
+        batter_name
+),
+
+hitter_pa_game_ranked AS (
+    SELECT
+        x.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY x.hitter_id, x.season
+            ORDER BY x.game_date, x.gamePk
+        ) AS rn
+    FROM hitter_pa_game x
+),
+
+hitter_pa_game_features AS (
+    SELECT
+        cur.gamePk,
+        cur.game_date,
+        cur.season,
+        cur.hitter_id,
+        cur.hitter_name,
+        cur.hitter_game_plate_appearances,
+        cur.hitter_game_strikeouts,
+
+        COALESCE(
+            AVG(CASE WHEN prev.rn BETWEEN cur.rn - 3 AND cur.rn - 1
+                     THEN prev.hitter_game_plate_appearances * 1.0 END),
+            cur.hitter_game_plate_appearances * 1.0
+        ) AS hitter_game_avg_pa_last_3,
+
+        COALESCE(
+            AVG(CASE WHEN prev.rn BETWEEN cur.rn - 5 AND cur.rn - 1
+                     THEN prev.hitter_game_plate_appearances * 1.0 END),
+            cur.hitter_game_plate_appearances * 1.0
+        ) AS hitter_game_avg_pa_last_5,
+
+        COALESCE(
+            AVG(CASE WHEN prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+                     THEN prev.hitter_game_plate_appearances * 1.0 END),
+            cur.hitter_game_plate_appearances * 1.0
+        ) AS hitter_game_avg_pa_last_10,
+
+        COALESCE(
+            AVG(CASE WHEN prev.rn BETWEEN cur.rn - 3 AND cur.rn - 1
+                     THEN prev.hitter_game_strikeouts * 1.0 END),
+            cur.hitter_game_strikeouts * 1.0
+        ) AS hitter_game_avg_strikeouts_last_3,
+
+        COALESCE(
+            AVG(CASE WHEN prev.rn BETWEEN cur.rn - 5 AND cur.rn - 1
+                     THEN prev.hitter_game_strikeouts * 1.0 END),
+            cur.hitter_game_strikeouts * 1.0
+        ) AS hitter_game_avg_strikeouts_last_5,
+
+        COALESCE(
+            AVG(CASE WHEN prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+                     THEN prev.hitter_game_strikeouts * 1.0 END),
+            cur.hitter_game_strikeouts * 1.0
+        ) AS hitter_game_avg_strikeouts_last_10,
+
+        COALESCE(
+            SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_plate_appearances * 3.0
+                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_plate_appearances * 2.0
+                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_plate_appearances * 1.0
+                END)
+            / NULLIF(SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN 3.0
+                    WHEN prev.rn = cur.rn - 2 THEN 2.0
+                    WHEN prev.rn = cur.rn - 3 THEN 1.0
+                END), 0),
+            cur.hitter_game_plate_appearances * 1.0
+        ) AS hitter_game_wavg_pa_last_3,
+
+        COALESCE(
+            SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_strikeouts * 3.0
+                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_strikeouts * 2.0
+                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_strikeouts * 1.0
+                END)
+            / NULLIF(SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN 3.0
+                    WHEN prev.rn = cur.rn - 2 THEN 2.0
+                    WHEN prev.rn = cur.rn - 3 THEN 1.0
+                END), 0),
+            cur.hitter_game_strikeouts * 1.0
+        ) AS hitter_game_wavg_strikeouts_last_3,
+
+        COALESCE(
+            SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_plate_appearances * 5.0
+                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_plate_appearances * 4.0
+                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_plate_appearances * 3.0
+                    WHEN prev.rn = cur.rn - 4 THEN prev.hitter_game_plate_appearances * 2.0
+                    WHEN prev.rn = cur.rn - 5 THEN prev.hitter_game_plate_appearances * 1.0
+                END)
+            / NULLIF(SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN 5.0
+                    WHEN prev.rn = cur.rn - 2 THEN 4.0
+                    WHEN prev.rn = cur.rn - 3 THEN 3.0
+                    WHEN prev.rn = cur.rn - 4 THEN 2.0
+                    WHEN prev.rn = cur.rn - 5 THEN 1.0
+                END), 0),
+            cur.hitter_game_plate_appearances * 1.0
+        ) AS hitter_game_wavg_pa_last_5,
+
+        COALESCE(
+            SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_strikeouts * 5.0
+                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_strikeouts * 4.0
+                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_strikeouts * 3.0
+                    WHEN prev.rn = cur.rn - 4 THEN prev.hitter_game_strikeouts * 2.0
+                    WHEN prev.rn = cur.rn - 5 THEN prev.hitter_game_strikeouts * 1.0
+                END)
+            / NULLIF(SUM(CASE
+                    WHEN prev.rn = cur.rn - 1 THEN 5.0
+                    WHEN prev.rn = cur.rn - 2 THEN 4.0
+                    WHEN prev.rn = cur.rn - 3 THEN 3.0
+                    WHEN prev.rn = cur.rn - 4 THEN 2.0
+                    WHEN prev.rn = cur.rn - 5 THEN 1.0
+                END), 0),
+            cur.hitter_game_strikeouts * 1.0
+        ) AS hitter_game_wavg_strikeouts_last_5,
+
+        COALESCE(
+            SUM(CASE
+                    WHEN prev.rn = cur.rn - 1  THEN prev.hitter_game_plate_appearances * 10.0
+                    WHEN prev.rn = cur.rn - 2  THEN prev.hitter_game_plate_appearances * 9.0
+                    WHEN prev.rn = cur.rn - 3  THEN prev.hitter_game_plate_appearances * 8.0
+                    WHEN prev.rn = cur.rn - 4  THEN prev.hitter_game_plate_appearances * 7.0
+                    WHEN prev.rn = cur.rn - 5  THEN prev.hitter_game_plate_appearances * 6.0
+                    WHEN prev.rn = cur.rn - 6  THEN prev.hitter_game_plate_appearances * 5.0
+                    WHEN prev.rn = cur.rn - 7  THEN prev.hitter_game_plate_appearances * 4.0
+                    WHEN prev.rn = cur.rn - 8  THEN prev.hitter_game_plate_appearances * 3.0
+                    WHEN prev.rn = cur.rn - 9  THEN prev.hitter_game_plate_appearances * 2.0
+                    WHEN prev.rn = cur.rn - 10 THEN prev.hitter_game_plate_appearances * 1.0
+                END)
+            / NULLIF(SUM(CASE
+                    WHEN prev.rn = cur.rn - 1  THEN 10.0
+                    WHEN prev.rn = cur.rn - 2  THEN 9.0
+                    WHEN prev.rn = cur.rn - 3  THEN 8.0
+                    WHEN prev.rn = cur.rn - 4  THEN 7.0
+                    WHEN prev.rn = cur.rn - 5  THEN 6.0
+                    WHEN prev.rn = cur.rn - 6  THEN 5.0
+                    WHEN prev.rn = cur.rn - 7  THEN 4.0
+                    WHEN prev.rn = cur.rn - 8  THEN 3.0
+                    WHEN prev.rn = cur.rn - 9  THEN 2.0
+                    WHEN prev.rn = cur.rn - 10 THEN 1.0
+                END), 0),
+            cur.hitter_game_plate_appearances * 1.0
+        ) AS hitter_game_wavg_pa_last_10,
+
+        COALESCE(
+            SUM(CASE
+                    WHEN prev.rn = cur.rn - 1  THEN prev.hitter_game_strikeouts * 10.0
+                    WHEN prev.rn = cur.rn - 2  THEN prev.hitter_game_strikeouts * 9.0
+                    WHEN prev.rn = cur.rn - 3  THEN prev.hitter_game_strikeouts * 8.0
+                    WHEN prev.rn = cur.rn - 4  THEN prev.hitter_game_strikeouts * 7.0
+                    WHEN prev.rn = cur.rn - 5  THEN prev.hitter_game_strikeouts * 6.0
+                    WHEN prev.rn = cur.rn - 6  THEN prev.hitter_game_strikeouts * 5.0
+                    WHEN prev.rn = cur.rn - 7  THEN prev.hitter_game_strikeouts * 4.0
+                    WHEN prev.rn = cur.rn - 8  THEN prev.hitter_game_strikeouts * 3.0
+                    WHEN prev.rn = cur.rn - 9  THEN prev.hitter_game_strikeouts * 2.0
+                    WHEN prev.rn = cur.rn - 10 THEN prev.hitter_game_strikeouts * 1.0
+                END)
+            / NULLIF(SUM(CASE
+                    WHEN prev.rn = cur.rn - 1  THEN 10.0
+                    WHEN prev.rn = cur.rn - 2  THEN 9.0
+                    WHEN prev.rn = cur.rn - 3  THEN 8.0
+                    WHEN prev.rn = cur.rn - 4  THEN 7.0
+                    WHEN prev.rn = cur.rn - 5  THEN 6.0
+                    WHEN prev.rn = cur.rn - 6  THEN 5.0
+                    WHEN prev.rn = cur.rn - 7  THEN 4.0
+                    WHEN prev.rn = cur.rn - 8  THEN 3.0
+                    WHEN prev.rn = cur.rn - 9  THEN 2.0
+                    WHEN prev.rn = cur.rn - 10 THEN 1.0
+                END), 0),
+            cur.hitter_game_strikeouts * 1.0
+        ) AS hitter_game_wavg_strikeouts_last_10
+    FROM hitter_pa_game_ranked cur
+    LEFT JOIN hitter_pa_game_ranked prev
+        ON cur.hitter_id = prev.hitter_id
+       AND cur.season = prev.season
+       AND prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+    GROUP BY
+        cur.gamePk,
+        cur.game_date,
+        cur.season,
+        cur.hitter_id,
+        cur.hitter_name,
+        cur.hitter_game_plate_appearances,
+        cur.hitter_game_strikeouts,
+        cur.rn
+),
+
+hitter_lineup AS (
+    SELECT
+        CAST(gamePk AS int) AS gamePk,
+        CAST(player_id AS int) AS hitter_id,
+        CAST(batting_order AS int) AS hitter_batting_order,
+        position_abbreviation AS hitter_lineup_position,
+        position_name AS hitter_lineup_position_name
+    FROM mlb.dbo.fact_hitter_lineup
+)
 
 SELECT
     /* =========================
@@ -467,6 +685,31 @@ SELECT
     h.prev_bat_speed AS hitter_prev_bat_speed,
 
         /* =========================
+       NEW HITTER LINEUP FEATURES
+       ========================= */
+    hl.hitter_batting_order,
+    hl.hitter_lineup_position,
+    hl.hitter_lineup_position_name,
+
+    /* =========================
+       NEW HITTER GAME PA / K FEATURES
+       ========================= */
+    hpg.hitter_game_plate_appearances,
+    hpg.hitter_game_strikeouts,
+    hpg.hitter_game_avg_pa_last_3,
+    hpg.hitter_game_avg_pa_last_5,
+    hpg.hitter_game_avg_pa_last_10,
+    hpg.hitter_game_avg_strikeouts_last_3,
+    hpg.hitter_game_avg_strikeouts_last_5,
+    hpg.hitter_game_avg_strikeouts_last_10,
+    hpg.hitter_game_wavg_pa_last_3,
+    hpg.hitter_game_wavg_pa_last_5,
+    hpg.hitter_game_wavg_pa_last_10,
+    hpg.hitter_game_wavg_strikeouts_last_3,
+    hpg.hitter_game_wavg_strikeouts_last_5,
+    hpg.hitter_game_wavg_strikeouts_last_10,
+
+        /* =========================
        PITCHER FEATURES
        ========================= */
     p.gamesStarted AS pitcher_gamesStarted,
@@ -671,7 +914,14 @@ INNER JOIN mlb.dbo.fact_pitcher_model_features p
    AND m.season = p.season
 LEFT JOIN mlb.dbo.fact_player_pitching_gamelogs pg
     ON p.gamePk = pg.gamePk
-   AND p.player_id = pg.player_id;
+   AND p.player_id = pg.player_id
+LEFT JOIN hitter_pa_game_features hpg
+    ON h.gamePk = hpg.gamePk
+   AND h.player_id = hpg.hitter_id
+   AND h.season = hpg.season
+LEFT JOIN hitter_lineup hl
+    ON h.gamePk = hl.gamePk
+   AND h.player_id = hl.hitter_id;
     """
 
     execute_sql(sql)
