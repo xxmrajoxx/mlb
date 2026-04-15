@@ -375,9 +375,113 @@ joined AS (
        AND p.pitcher_team_id <> l.team_id
 )
 
-SELECT *
+SELECT
+    j.*,
+
+    /* -------------------- PITCH EFFICIENCY: PER BATTER -------------------- */
+    CAST(j.avg_pitches_last_3  / NULLIF(j.avg_bf_last_3,  0) AS DECIMAL(10,4)) AS avg_pitches_per_batter_last_3,
+    CAST(j.avg_pitches_last_5  / NULLIF(j.avg_bf_last_5,  0) AS DECIMAL(10,4)) AS avg_pitches_per_batter_last_5,
+    CAST(j.avg_pitches_last_10 / NULLIF(j.avg_bf_last_10, 0) AS DECIMAL(10,4)) AS avg_pitches_per_batter_last_10,
+
+    CAST(j.weighted_pitches_last_3  / NULLIF(j.weighted_bf_last_3,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_batter_last_3,
+    CAST(j.weighted_pitches_last_5  / NULLIF(j.weighted_bf_last_5,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_batter_last_5,
+    CAST(j.weighted_pitches_last_10 / NULLIF(j.weighted_bf_last_10, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_batter_last_10,
+
+    /* -------------------- PITCH EFFICIENCY: EXACT PER INNING (USING OUTS) -------------------- */
+    CAST((j.avg_pitches_last_3  * 3.0) / NULLIF(j.avg_outs_last_3,  0) AS DECIMAL(10,4)) AS exact_pitches_per_inning_last_3,
+    CAST((j.avg_pitches_last_5  * 3.0) / NULLIF(j.avg_outs_last_5,  0) AS DECIMAL(10,4)) AS exact_pitches_per_inning_last_5,
+    CAST((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0) AS DECIMAL(10,4)) AS exact_pitches_per_inning_last_10,
+
+    CAST((j.weighted_pitches_last_3  * 3.0) / NULLIF(j.weighted_outs_last_3,  0) AS DECIMAL(10,4)) AS weighted_exact_pitches_per_inning_last_3,
+    CAST((j.weighted_pitches_last_5  * 3.0) / NULLIF(j.weighted_outs_last_5,  0) AS DECIMAL(10,4)) AS weighted_exact_pitches_per_inning_last_5,
+    CAST((j.weighted_pitches_last_10 * 3.0) / NULLIF(j.weighted_outs_last_10, 0) AS DECIMAL(10,4)) AS weighted_exact_pitches_per_inning_last_10,
+
+    /* -------------------- PITCH EFFICIENCY: PER STRIKEOUT -------------------- */
+    CAST(j.avg_pitches_last_3  / NULLIF(j.avg_k_last_3,  0) AS DECIMAL(10,4)) AS avg_pitches_per_strikeout_last_3,
+    CAST(j.avg_pitches_last_5  / NULLIF(j.avg_k_last_5,  0) AS DECIMAL(10,4)) AS avg_pitches_per_strikeout_last_5,
+    CAST(j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0) AS DECIMAL(10,4)) AS avg_pitches_per_strikeout_last_10,
+
+    CAST(j.weighted_pitches_last_3  / NULLIF(j.weighted_k_last_3,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_3,
+    CAST(j.weighted_pitches_last_5  / NULLIF(j.weighted_k_last_5,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_5,
+    CAST(j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_10,
+
+    /* -------------------- EFFICIENCY LABELS: PER BATTER -------------------- */
+    CASE
+        WHEN j.avg_bf_last_3 IS NULL OR j.avg_bf_last_3 = 0 OR j.avg_pitches_last_3 IS NULL THEN NULL
+        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_bf_last_3, 0)) <= 3.60 THEN 'elite'
+        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_bf_last_3, 0)) <= 3.90 THEN 'good'
+        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_bf_last_3, 0)) <= 4.20 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_batter_efficiency_last_3,
+
+    CASE
+        WHEN j.avg_bf_last_5 IS NULL OR j.avg_bf_last_5 = 0 OR j.avg_pitches_last_5 IS NULL THEN NULL
+        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_bf_last_5, 0)) <= 3.60 THEN 'elite'
+        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_bf_last_5, 0)) <= 3.90 THEN 'good'
+        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_bf_last_5, 0)) <= 4.20 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_batter_efficiency_last_5,
+
+    CASE
+        WHEN j.avg_bf_last_10 IS NULL OR j.avg_bf_last_10 = 0 OR j.avg_pitches_last_10 IS NULL THEN NULL
+        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_bf_last_10, 0)) <= 3.60 THEN 'elite'
+        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_bf_last_10, 0)) <= 3.90 THEN 'good'
+        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_bf_last_10, 0)) <= 4.20 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_batter_efficiency_last_10,
+
+    /* -------------------- EFFICIENCY LABELS: PER INNING -------------------- */
+    CASE
+        WHEN j.avg_outs_last_3 IS NULL OR j.avg_outs_last_3 = 0 OR j.avg_pitches_last_3 IS NULL THEN NULL
+        WHEN ((j.avg_pitches_last_3 * 3.0) / NULLIF(j.avg_outs_last_3, 0)) <= 13.50 THEN 'elite'
+        WHEN ((j.avg_pitches_last_3 * 3.0) / NULLIF(j.avg_outs_last_3, 0)) <= 15.00 THEN 'good'
+        WHEN ((j.avg_pitches_last_3 * 3.0) / NULLIF(j.avg_outs_last_3, 0)) <= 17.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_inning_efficiency_last_3,
+
+    CASE
+        WHEN j.avg_outs_last_5 IS NULL OR j.avg_outs_last_5 = 0 OR j.avg_pitches_last_5 IS NULL THEN NULL
+        WHEN ((j.avg_pitches_last_5 * 3.0) / NULLIF(j.avg_outs_last_5, 0)) <= 13.50 THEN 'elite'
+        WHEN ((j.avg_pitches_last_5 * 3.0) / NULLIF(j.avg_outs_last_5, 0)) <= 15.00 THEN 'good'
+        WHEN ((j.avg_pitches_last_5 * 3.0) / NULLIF(j.avg_outs_last_5, 0)) <= 17.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_inning_efficiency_last_5,
+
+    CASE
+        WHEN j.avg_outs_last_10 IS NULL OR j.avg_outs_last_10 = 0 OR j.avg_pitches_last_10 IS NULL THEN NULL
+        WHEN ((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0)) <= 13.50 THEN 'elite'
+        WHEN ((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0)) <= 15.00 THEN 'good'
+        WHEN ((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0)) <= 17.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_inning_efficiency_last_10,
+
+    /* -------------------- EFFICIENCY LABELS: PER STRIKEOUT -------------------- */
+    CASE
+        WHEN j.avg_k_last_3 IS NULL OR j.avg_k_last_3 = 0 OR j.avg_pitches_last_3 IS NULL THEN NULL
+        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_k_last_3, 0)) <= 12.00 THEN 'elite'
+        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_k_last_3, 0)) <= 15.00 THEN 'good'
+        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_k_last_3, 0)) <= 18.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_strikeout_efficiency_last_3,
+
+    CASE
+        WHEN j.avg_k_last_5 IS NULL OR j.avg_k_last_5 = 0 OR j.avg_pitches_last_5 IS NULL THEN NULL
+        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 12.00 THEN 'elite'
+        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 15.00 THEN 'good'
+        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 18.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_strikeout_efficiency_last_5,
+
+    CASE
+        WHEN j.avg_k_last_10 IS NULL OR j.avg_k_last_10 = 0 OR j.avg_pitches_last_10 IS NULL THEN NULL
+        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 12.00 THEN 'elite'
+        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 15.00 THEN 'good'
+        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 18.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS pitches_per_strikeout_efficiency_last_10
+
 INTO mlb.dbo.fact_pitcher_vs_lineup_features
-FROM joined;
+FROM joined j;
     """
 
     execute_sql(sql)
