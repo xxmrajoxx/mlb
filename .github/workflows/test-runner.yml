@@ -1,0 +1,17 @@
+name: Test Self Hosted Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: [self-hosted, windows, x64]
+
+    steps:
+      - name: Show machine info
+        shell: powershell
+        run: |
+          Write-Host "Runner is working"
+          Write-Host "Computer name: $env:COMPUTERNAME"
+          Write-Host "User: $env:USERNAME"
+          python --version
