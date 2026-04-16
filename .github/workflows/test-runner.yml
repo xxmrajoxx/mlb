@@ -14,4 +14,4 @@ jobs:
           Write-Host "Runner is working"
           Write-Host "Computer name: $env:COMPUTERNAME"
           Write-Host "User: $env:USERNAME"
-          python --version
+          & "C:\Users\andre\anaconda3\python.exe" --version
