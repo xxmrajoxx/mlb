@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 load_dotenv(override=True)
 
 logger.info(f"cwd: {os.getcwd()}")
-logger.info(f"START_DATE from env: {os.getenv('START_DATE')}")
-logger.info(f"END_DATE from env: {os.getenv('END_DATE')}")
+logger.info(f"start_dt from env: {os.getenv('start_dt')}")
+logger.info(f"end_dt from env: {os.getenv('end_dt')}")
 
 # https://github.com/jldbc/pybaseball/blob/master/docs/statcast_pitcher.md
 
@@ -316,11 +316,11 @@ def load_player_pitch_statcast(df: pd.DataFrame):
 
 
 if __name__=="__main__":
-    start_dt = os.getenv("START_DATE")
-    end_dt = os.getenv("END_DATE")
+    start_dt = os.getenv("start_dt")
+    end_dt = os.getenv("end_dt")
 
     if not start_dt or not end_dt:
-        raise ValueError("START_DATE and END_DATE must be set in the .env file")
+        raise ValueError("start_dt and end_dt must be set in the .env file")
 
     logger.info("dates obtained from .env")
 

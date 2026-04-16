@@ -303,14 +303,14 @@ def load_player_hit_statcast(df: pd.DataFrame):
 
 if __name__ == "__main__":
 
-    start_dt = os.getenv("START_DATE")
-    end_dt = os.getenv("END_DATE")
+    start_dt = os.getenv("start_dt")
+    end_dt = os.getenv("end_dt")
     sleep_sec = float(os.getenv("SLEEP_SECONDS", "1"))
 
     logger.info(f"start_dt: {start_dt}, end_dt: {end_dt}")
     
     if not start_dt or not end_dt:
-        raise ValueError("START_DATE and END_DATE must be set in the .env file")
+        raise ValueError("start_dt and end_dt must be set in the .env file")
 
     df = player_hit_stats(
         start_dt=start_dt,

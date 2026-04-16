@@ -16,20 +16,20 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(override=True)
 
-def fetch_player_game_logs(start_date: str, end_date:str, season: int = 2026)->pd.DataFrame:
+def fetch_player_game_logs(start_dt: str, end_dt:str, season: int = 2026)->pd.DataFrame:
     player_df = fetch_active_mlb_players()
 
     if player_df.empty:
         logger.warning("No team found")
         return pd.DataFrame()
     
-    if start_date is None:
-        start_date = f"{season}-03-01"
+    if start_dt is None:
+        start_dt = f"{season}-03-01"
     
-    if end_date is None:
-        end_date = datetime.now(UTC).date().isoformat()
+    if end_dt is None:
+        end_dt = datetime.now(UTC).date().isoformat()
 
-    completed_games_df = fetch_completed_games(start_date, end_date)
+    completed_games_df = fetch_completed_games(start_dt, end_dt)
 
     if completed_games_df.empty:
         logger.warning("No games in range")
@@ -243,14 +243,14 @@ def load_player_hitting_gamelogs(df: pd.DataFrame):
 
 if __name__ == "__main__":
 
-    start_date = os.getenv("START_DATE")
-    end_date = os.getenv("END_DATE")
+    start_dt = os.getenv("start_dt")
+    end_dt = os.getenv("end_dt")
     season = os.getenv("SEASON")
     df = fetch_player_game_logs(season=season, 
-                                start_date=start_date,
-                                end_date=end_date)
+                                start_dt=start_dt,
+                                end_dt=end_dt)
 
-    if not start_date or not end_date:
+    if not start_dt or not end_dt:
         raise ValueError("check .env file")
     
     logger.info("xoxoxoxo")

@@ -197,8 +197,8 @@ WHEN NOT MATCHED BY TARGET THEN
 """
 
 
-def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3) -> pd.DataFrame:
-    schedule_df = fetch_gamePk_with_dates(start_date, end_date)
+def fetch_team_boxscores(start_dt: str, end_dt: str, sleep_sec: float = 0.3) -> pd.DataFrame:
+    schedule_df = fetch_gamePk_with_dates(start_dt, end_dt)
 
     if schedule_df.empty:
         logging.warning("No games found for the given date range")
@@ -264,14 +264,14 @@ def fetch_team_boxscores(start_date: str, end_date: str, sleep_sec: float = 0.3)
 
 
 if __name__ == "__main__":
-    start_date = os.getenv("START_DATE") 
-    end_date = os.getenv("END_DATE")
-    df = fetch_team_boxscores(start_date=start_date,
-                               end_date=end_date)
-    if not start_date or not end_date:
-        raise ValueError("START_DATE and END_DATE must be set in .env file")
+    start_dt = os.getenv("start_dt") 
+    end_dt = os.getenv("end_dt")
+    df = fetch_team_boxscores(start_dt=start_dt,
+                               end_dt=end_dt)
+    if not start_dt or not end_dt:
+        raise ValueError("start_dt and end_dt must be set in .env file")
     
-    logger.info(f"using start_dt = {start_date}, end_date = {end_date}")
+    logger.info(f"using start_dt = {start_dt}, end_dt = {end_dt}")
 
     if not df.empty:
         truncate_table("stg_fact_team_boxscore", schema="dbo")

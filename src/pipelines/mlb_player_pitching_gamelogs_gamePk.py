@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(override=True)
 
-def fetch_player_game_logs(start_date: str, end_date: str, season: int = 2026)->pd.DataFrame:
-    games_df = fetch_completed_games(start_date, end_date)
+def fetch_player_game_logs(start_dt: str, end_dt: str, season: int = 2026)->pd.DataFrame:
+    games_df = fetch_completed_games(start_dt, end_dt)
 
     if games_df.empty:
         logger.warning("No completed games found")
@@ -292,15 +292,15 @@ def load_player_pitching_gamelogs(df: pd.DataFrame):
     
 
 if __name__=="__main__":
-    start_date = os.getenv("START_DATE")
-    end_date = os.getenv("END_DATE")
+    start_dt = os.getenv("start_dt")
+    end_dt = os.getenv("end_dt")
     season = os.getenv("SEASON")
 
     df = fetch_player_game_logs(season=season,
-                                start_date=start_date,
-                                end_date=end_date)
+                                start_dt=start_dt,
+                                end_dt=end_dt)
     
-    if not start_date or not end_date:
+    if not start_dt or not end_dt:
         raise ValueError("check .env file")
     
     logger.info("xxxxx")

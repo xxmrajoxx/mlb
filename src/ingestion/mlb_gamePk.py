@@ -5,13 +5,13 @@ from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO)
 
-def fetch_gamePk_with_dates(start_date: str=None, end_date: str=None) -> pd.DataFrame:
+def fetch_gamePk_with_dates(start_dt: str=None, end_dt: str=None) -> pd.DataFrame:
     url = (
         "https://statsapi.mlb.com/api/v1/schedule"
-        f"?sportId=1&startDate={start_date}&endDate={end_date}&gameType=R"
+        f"?sportId=1&startDate={start_dt}&endDate={end_dt}&gameType=R"
     )
 
-    logging.info(f"Fetching MLB schedule from {start_date} to {end_date}")
+    logging.info(f"Fetching MLB schedule from {start_dt} to {end_dt}")
 
     try:
         response = requests.get(url, timeout=15)
@@ -43,8 +43,8 @@ def fetch_gamePk_with_dates(start_date: str=None, end_date: str=None) -> pd.Data
 
     return df
 
-def fetch_completed_games(start_date:str, end_date:str)-> pd.DataFrame:
-    df = fetch_gamePk_with_dates(start_date, end_date)
+def fetch_completed_games(start_dt:str, end_dt:str)-> pd.DataFrame:
+    df = fetch_gamePk_with_dates(start_dt, end_dt)
 
     if df.empty:
         logging.error("No games found")

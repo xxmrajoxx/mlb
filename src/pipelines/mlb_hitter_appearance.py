@@ -4,6 +4,7 @@ import logging
 import time
 import os
 
+from src.utils.date_utils import get_start_end_dates
 from dotenv import load_dotenv
 from src.ingestion.mlb_gamePk import fetch_gamePk_with_dates
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
@@ -268,8 +269,8 @@ def get_pitcher_team_info(half_inning: str, home_team: dict, away_team: dict):
     return away_team
 
 
-def fetch_hitter_plate_appearances(start_date: str, end_date: str, sleep_sec: float = 0.3) -> pd.DataFrame:
-    schedule_df = fetch_gamePk_with_dates(start_date, end_date)
+def fetch_hitter_plate_appearances(start_dt: str, end_dt: str, sleep_sec: float = 0.3) -> pd.DataFrame:
+    schedule_df = fetch_gamePk_with_dates(start_dt, end_dt)
 
     if schedule_df.empty:
         logger.warning("No games found for the given date range")
@@ -407,18 +408,18 @@ def fetch_hitter_plate_appearances(start_date: str, end_date: str, sleep_sec: fl
 
 
 if __name__ == "__main__":
-    start_date = os.getenv("START_DATE")
-    end_date = os.getenv("END_DATE")
+    start_dt = os.getenv("start_dt")
+    end_dt = os.getenv("end_dt")
 
-    if not start_date or not end_date:
-        raise ValueError("START_DATE and END_DATE must be set in .env file")
+    if not start_dt or not end_dt:
+        raise ValueError("start_dt and end_dt must be set in .env file")
 
-    logger.info("Using start_date=%s, end_date=%s", start_date, end_date)
+    logger.info("Using start_dt=%s, end_dt=%s", start_dt, end_dt)
 
     execute_sql(CREATE_STG_SQL)
     execute_sql(CREATE_FACT_SQL)
 
-    df = fetch_hitter_plate_appearances(start_date=start_date, end_date=end_date)
+    df = fetch_hitter_plate_appearances(start_dt=start_dt, end_dt=end_dt)
 
     logger.info("Final dataframe shape: %s", df.shape)
     print(df.head(20))
