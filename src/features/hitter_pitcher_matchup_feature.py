@@ -62,17 +62,7 @@ WITH matchup_counts AS (
         pitcher
 ),
 
-ranked_matchups AS (
-    SELECT
-        *,
-        ROW_NUMBER() OVER (
-            PARTITION BY gamePk, hitter_id
-            ORDER BY pitches_seen_vs_pitcher DESC, pitcher_id
-        ) AS rn
-    FROM matchup_counts
-),
-
-primary_matchup AS (
+matchup_features AS (
     SELECT
         gamePk,
         game_date,
@@ -88,10 +78,56 @@ primary_matchup AS (
         whiffs_vs_pitcher * 1.0 / NULLIF(swings_vs_pitcher, 0) AS matchup_whiff_rate,
         called_strikes_vs_pitcher * 1.0 / NULLIF(pitches_seen_vs_pitcher, 0) AS matchup_called_strike_rate,
         (whiffs_vs_pitcher + called_strikes_vs_pitcher) * 1.0 / NULLIF(pitches_seen_vs_pitcher, 0) AS matchup_csw_rate
-    FROM ranked_matchups
-    WHERE rn = 1
-)
-, hitter_pa_game AS (
+    FROM matchup_counts
+),
+
+pa_base AS (
+    SELECT
+        CAST(gamePk AS int) AS gamePk,
+        CAST(game_date AS date) AS game_date,
+        YEAR(CAST(game_date AS date)) AS season,
+
+        CAST(batter_id AS int) AS hitter_id,
+        batter_name AS hitter_name,
+        CAST(pitcher_id AS int) AS pitcher_id,
+        pitcher_name,
+
+        CAST(batter_team_id AS int) AS hitter_team_id,
+        batter_team_name AS hitter_team_name,
+        CAST(pitcher_team_id AS int) AS pitcher_team_id,
+        pitcher_team_name,
+
+        SUM(COALESCE(plate_appearances, 0)) AS plate_appearances,
+        SUM(COALESCE(hits, 0)) AS hits,
+        SUM(COALESCE(singles, 0)) AS singles,
+        SUM(COALESCE(doubles, 0)) AS doubles,
+        SUM(COALESCE(triples, 0)) AS triples,
+        SUM(COALESCE(home_runs, 0)) AS home_runs,
+        SUM(COALESCE(walks, 0)) AS walks,
+        SUM(COALESCE(strikeouts, 0)) AS strikeouts,
+        SUM(COALESCE(hit_by_pitch, 0)) AS hit_by_pitch,
+        SUM(COALESCE(sac_flies, 0)) AS sac_flies,
+        SUM(COALESCE(sac_bunts, 0)) AS sac_bunts,
+        SUM(COALESCE(outs_recorded, 0)) AS outs_recorded,
+        SUM(COALESCE(rbi, 0)) AS rbi,
+        MIN(COALESCE(first_inning_faced, 0)) AS first_inning_faced
+
+    FROM mlb.dbo.fact_hitter_pitcher_pa_game_agg
+    GROUP BY
+        CAST(gamePk AS int),
+        CAST(game_date AS date),
+        YEAR(CAST(game_date AS date)),
+        CAST(batter_id AS int),
+        batter_name,
+        CAST(pitcher_id AS int),
+        pitcher_name,
+        CAST(batter_team_id AS int),
+        batter_team_name,
+        CAST(pitcher_team_id AS int),
+        pitcher_team_name
+),
+
+hitter_pa_game AS (
     SELECT
         CAST(gamePk AS int) AS gamePk,
         CAST(game_date AS date) AS game_date,
@@ -314,17 +350,17 @@ SELECT
     /* =========================
        IDENTIFIERS
        ========================= */
-    h.gamePk,
-    h.game_date,
-    h.season,
+    pa.gamePk,
+    pa.game_date,
+    pa.season,
 
-    h.player_id AS hitter_id,
-    h.player_name AS hitter_name,
+    pa.hitter_id,
+    pa.hitter_name,
     h.position AS hitter_position,
-    h.team_id AS hitter_team_id,
-    h.team_name AS hitter_team_name,
+    pa.hitter_team_id,
+    pa.hitter_team_name,
 
-    m.pitcher_id AS pitcher_id,
+    pa.pitcher_id,
     p.player_name AS pitcher_name,
     p.team_id AS pitcher_team_id,
     p.team_name AS pitcher_team_name,
@@ -335,7 +371,7 @@ SELECT
     /* =========================
        TARGET
        ========================= */
-    h.strikeOuts AS hitter_strikeOuts,
+    pa.strikeouts AS hitter_strikeOuts,
 
     /* =========================
        DIRECT MATCHUP FEATURES
@@ -347,6 +383,23 @@ SELECT
     m.matchup_whiff_rate,
     m.matchup_called_strike_rate,
     m.matchup_csw_rate,
+
+    /* =========================
+       PA-GAME OUTCOME FEATURES
+       ========================= */
+    pa.plate_appearances AS hitter_pitcher_plate_appearances,
+    pa.hits AS hitter_pitcher_hits,
+    pa.singles AS hitter_pitcher_singles,
+    pa.doubles AS hitter_pitcher_doubles,
+    pa.triples AS hitter_pitcher_triples,
+    pa.home_runs AS hitter_pitcher_home_runs,
+    pa.walks AS hitter_pitcher_walks,
+    pa.hit_by_pitch AS hitter_pitcher_hit_by_pitch,
+    pa.sac_flies AS hitter_pitcher_sac_flies,
+    pa.sac_bunts AS hitter_pitcher_sac_bunts,
+    pa.outs_recorded AS hitter_pitcher_outs_recorded,
+    pa.rbi AS hitter_pitcher_rbi,
+    pa.first_inning_faced AS hitter_pitcher_first_inning_faced,
 
     /* =========================
        HITTER FEATURES
@@ -684,15 +737,15 @@ SELECT
     h.prev_xwoba AS hitter_prev_xwoba,
     h.prev_bat_speed AS hitter_prev_bat_speed,
 
-        /* =========================
-       NEW HITTER LINEUP FEATURES
+    /* =========================
+       LINEUP FEATURES
        ========================= */
     hl.hitter_batting_order,
     hl.hitter_lineup_position,
     hl.hitter_lineup_position_name,
 
     /* =========================
-       NEW HITTER GAME PA / K FEATURES
+       HITTER GAME FEATURES
        ========================= */
     hpg.hitter_game_plate_appearances,
     hpg.hitter_game_strikeouts,
@@ -709,13 +762,12 @@ SELECT
     hpg.hitter_game_wavg_strikeouts_last_5,
     hpg.hitter_game_wavg_strikeouts_last_10,
 
-        /* =========================
+    /* =========================
        PITCHER FEATURES
        ========================= */
     p.gamesStarted AS pitcher_gamesStarted,
     p.days_since_last_appearance AS pitcher_days_since_last_appearance,
 
-    -- pitcher rolling last 3 simple
     p.avg_games_started_last_3 AS pitcher_avg_games_started_last_3,
     p.avg_ip_last_3 AS pitcher_avg_ip_last_3,
     p.avg_bf_last_3 AS pitcher_avg_bf_last_3,
@@ -735,7 +787,6 @@ SELECT
     p.pct_5plus_ip_last_3 AS pitcher_pct_5plus_ip_last_3,
     p.pct_6plus_ip_last_3 AS pitcher_pct_6plus_ip_last_3,
 
-    -- pitcher rolling last 5 simple
     p.avg_games_started_last_5 AS pitcher_avg_games_started_last_5,
     p.avg_ip_last_5 AS pitcher_avg_ip_last_5,
     p.avg_bf_last_5 AS pitcher_avg_bf_last_5,
@@ -755,7 +806,6 @@ SELECT
     p.pct_5plus_ip_last_5 AS pitcher_pct_5plus_ip_last_5,
     p.pct_6plus_ip_last_5 AS pitcher_pct_6plus_ip_last_5,
 
-    -- pitcher rolling last 10 simple
     p.avg_games_started_last_10 AS pitcher_avg_games_started_last_10,
     p.avg_ip_last_10 AS pitcher_avg_ip_last_10,
     p.avg_bf_last_10 AS pitcher_avg_bf_last_10,
@@ -775,7 +825,6 @@ SELECT
     p.pct_5plus_ip_last_10 AS pitcher_pct_5plus_ip_last_10,
     p.pct_6plus_ip_last_10 AS pitcher_pct_6plus_ip_last_10,
 
-    -- pitcher weighted rolling last 3
     p.weighted_k_last_3 AS pitcher_weighted_k_last_3,
     p.weighted_ip_last_3 AS pitcher_weighted_ip_last_3,
     p.weighted_bf_last_3 AS pitcher_weighted_bf_last_3,
@@ -786,7 +835,6 @@ SELECT
     p.weighted_whip_last_3 AS pitcher_weighted_whip_last_3,
     p.weighted_outs_last_3 AS pitcher_weighted_outs_last_3,
 
-    -- pitcher weighted rolling last 5
     p.weighted_k_last_5 AS pitcher_weighted_k_last_5,
     p.weighted_ip_last_5 AS pitcher_weighted_ip_last_5,
     p.weighted_bf_last_5 AS pitcher_weighted_bf_last_5,
@@ -797,7 +845,6 @@ SELECT
     p.weighted_whip_last_5 AS pitcher_weighted_whip_last_5,
     p.weighted_outs_last_5 AS pitcher_weighted_outs_last_5,
 
-    -- pitcher weighted rolling last 10
     p.weighted_k_last_10 AS pitcher_weighted_k_last_10,
     p.weighted_ip_last_10 AS pitcher_weighted_ip_last_10,
     p.weighted_bf_last_10 AS pitcher_weighted_bf_last_10,
@@ -808,14 +855,12 @@ SELECT
     p.weighted_whip_last_10 AS pitcher_weighted_whip_last_10,
     p.weighted_outs_last_10 AS pitcher_weighted_outs_last_10,
 
-    -- pitcher previous game
     p.prev_k AS pitcher_prev_k,
     p.prev_ip AS pitcher_prev_ip,
     p.prev_bf AS pitcher_prev_bf,
     p.prev_pitches AS pitcher_prev_pitches,
     p.prev_k9 AS pitcher_prev_k9,
 
-    -- pitcher statcast last 3 simple
     p.avg_whiff_rate_last_3 AS pitcher_avg_whiff_rate_last_3,
     p.avg_csw_rate_last_3 AS pitcher_avg_csw_rate_last_3,
     p.avg_putaway_rate_last_3 AS pitcher_avg_putaway_rate_last_3,
@@ -840,7 +885,6 @@ SELECT
     p.avg_sl_whiff_rate_last_3 AS pitcher_avg_sl_whiff_rate_last_3,
     p.avg_ff_whiff_rate_last_3 AS pitcher_avg_ff_whiff_rate_last_3,
 
-    -- pitcher statcast last 5 simple
     p.avg_whiff_rate_last_5 AS pitcher_avg_whiff_rate_last_5,
     p.avg_csw_rate_last_5 AS pitcher_avg_csw_rate_last_5,
     p.avg_putaway_rate_last_5 AS pitcher_avg_putaway_rate_last_5,
@@ -852,7 +896,6 @@ SELECT
     p.avg_sl_whiff_rate_last_5 AS pitcher_avg_sl_whiff_rate_last_5,
     p.avg_ff_whiff_rate_last_5 AS pitcher_avg_ff_whiff_rate_last_5,
 
-    -- pitcher statcast last 10 simple
     p.avg_whiff_rate_last_10 AS pitcher_avg_whiff_rate_last_10,
     p.avg_csw_rate_last_10 AS pitcher_avg_csw_rate_last_10,
     p.avg_putaway_rate_last_10 AS pitcher_avg_putaway_rate_last_10,
@@ -864,7 +907,6 @@ SELECT
     p.avg_sl_whiff_rate_last_10 AS pitcher_avg_sl_whiff_rate_last_10,
     p.avg_ff_whiff_rate_last_10 AS pitcher_avg_ff_whiff_rate_last_10,
 
-    -- pitcher weighted statcast last 3
     p.weighted_sc_pitches_last_3 AS pitcher_weighted_sc_pitches_last_3,
     p.weighted_whiff_rate_last_3 AS pitcher_weighted_whiff_rate_last_3,
     p.weighted_csw_rate_last_3 AS pitcher_weighted_csw_rate_last_3,
@@ -874,7 +916,6 @@ SELECT
     p.weighted_chase_rate_last_3 AS pitcher_weighted_chase_rate_last_3,
     p.weighted_putaway_rate_last_3 AS pitcher_weighted_putaway_rate_last_3,
 
-    -- pitcher weighted statcast last 5
     p.weighted_sc_pitches_last_5 AS pitcher_weighted_sc_pitches_last_5,
     p.weighted_whiff_rate_last_5 AS pitcher_weighted_whiff_rate_last_5,
     p.weighted_csw_rate_last_5 AS pitcher_weighted_csw_rate_last_5,
@@ -884,7 +925,6 @@ SELECT
     p.weighted_chase_rate_last_5 AS pitcher_weighted_chase_rate_last_5,
     p.weighted_putaway_rate_last_5 AS pitcher_weighted_putaway_rate_last_5,
 
-    -- pitcher weighted statcast last 10
     p.weighted_sc_pitches_last_10 AS pitcher_weighted_sc_pitches_last_10,
     p.weighted_whiff_rate_last_10 AS pitcher_weighted_whiff_rate_last_10,
     p.weighted_csw_rate_last_10 AS pitcher_weighted_csw_rate_last_10,
@@ -894,16 +934,16 @@ SELECT
     p.weighted_chase_rate_last_10 AS pitcher_weighted_chase_rate_last_10,
     p.weighted_putaway_rate_last_10 AS pitcher_weighted_putaway_rate_last_10,
 
-    -- pitcher previous statcast game
     p.prev_whiff_rate AS pitcher_prev_whiff_rate,
     p.prev_csw_rate AS pitcher_prev_csw_rate,
     p.prev_chase_rate AS pitcher_prev_chase_rate,
 
-    -- pitcher target
     pg.strikeOuts AS pitcher_strikeOuts,
 
-	-- mlb.dbo.fact_lineup_agg_features
-	la.lineup_spots,
+    /* =========================
+       LINEUP AGG FEATURES
+       ========================= */
+    la.lineup_spots,
     la.matched_hitter_feature_rows,
 
     la.lineup_avg_k_last_3,
@@ -944,29 +984,34 @@ SELECT
     la.lineup_num_strong_bats
 
 INTO mlb.dbo.fact_hitter_pitcher_matchup_model_features
-FROM mlb.dbo.fact_hitter_model_features h
-INNER JOIN primary_matchup m
-    ON h.gamePk = m.gamePk
-   AND h.player_id = m.hitter_id
-   AND h.season = m.season
+FROM pa_base pa
+INNER JOIN mlb.dbo.fact_hitter_model_features h
+    ON pa.gamePk = h.gamePk
+   AND pa.hitter_id = h.player_id
+   AND pa.season = h.season
+INNER JOIN matchup_features m
+    ON pa.gamePk = m.gamePk
+   AND pa.hitter_id = m.hitter_id
+   AND pa.pitcher_id = m.pitcher_id
+   AND pa.season = m.season
 INNER JOIN mlb.dbo.fact_pitcher_model_features p
-    ON m.gamePk = p.gamePk
-   AND m.pitcher_id = p.player_id
-   AND m.season = p.season
+    ON pa.gamePk = p.gamePk
+   AND pa.pitcher_id = p.player_id
+   AND pa.season = p.season
 LEFT JOIN mlb.dbo.fact_player_pitching_gamelogs pg
-    ON p.gamePk = pg.gamePk
-   AND p.player_id = pg.player_id
+    ON pa.gamePk = pg.gamePk
+   AND pa.pitcher_id = pg.player_id
 LEFT JOIN hitter_pa_game_features hpg
-    ON h.gamePk = hpg.gamePk
-   AND h.player_id = hpg.hitter_id
-   AND h.season = hpg.season
+    ON pa.gamePk = hpg.gamePk
+   AND pa.hitter_id = hpg.hitter_id
+   AND pa.season = hpg.season
 LEFT JOIN hitter_lineup hl
-    ON h.gamePk = hl.gamePk
-   AND h.player_id = hl.hitter_id
-   LEFT JOIN mlb.dbo.fact_lineup_agg_features la
-    ON h.gamePk = la.gamePk
-   AND h.season = la.season
-   AND h.team_id = la.team_id;
+    ON pa.gamePk = hl.gamePk
+   AND pa.hitter_id = hl.hitter_id
+LEFT JOIN mlb.dbo.fact_lineup_agg_features la
+    ON pa.gamePk = la.gamePk
+   AND pa.season = la.season
+   AND pa.hitter_team_id = la.team_id;
     """
 
     execute_sql(sql)
