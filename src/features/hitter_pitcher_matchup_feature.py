@@ -201,125 +201,55 @@ hitter_pa_game_features AS (
             cur.hitter_game_strikeouts * 1.0
         ) AS hitter_game_avg_strikeouts_last_10,
 
+        /* volume-weighted by plate appearances */
         COALESCE(
-            SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_plate_appearances * 3.0
-                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_plate_appearances * 2.0
-                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_plate_appearances * 1.0
-                END)
-            / NULLIF(SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN 3.0
-                    WHEN prev.rn = cur.rn - 2 THEN 2.0
-                    WHEN prev.rn = cur.rn - 3 THEN 1.0
-                END), 0),
+            SUM(CASE WHEN prev.rn BETWEEN cur.rn - 3 AND cur.rn - 1
+                     THEN prev.hitter_game_plate_appearances * prev.hitter_game_plate_appearances END)
+            / NULLIF(SUM(CASE WHEN prev.rn BETWEEN cur.rn - 3 AND cur.rn - 1
+                              THEN prev.hitter_game_plate_appearances END), 0),
             cur.hitter_game_plate_appearances * 1.0
-        ) AS hitter_game_wavg_pa_last_3,
+        ) AS hitter_game_weighted_pa_last_3,
 
         COALESCE(
-            SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_strikeouts * 3.0
-                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_strikeouts * 2.0
-                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_strikeouts * 1.0
-                END)
-            / NULLIF(SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN 3.0
-                    WHEN prev.rn = cur.rn - 2 THEN 2.0
-                    WHEN prev.rn = cur.rn - 3 THEN 1.0
-                END), 0),
+            SUM(CASE WHEN prev.rn BETWEEN cur.rn - 3 AND cur.rn - 1
+                     THEN prev.hitter_game_strikeouts * prev.hitter_game_plate_appearances END)
+            / NULLIF(SUM(CASE WHEN prev.rn BETWEEN cur.rn - 3 AND cur.rn - 1
+                              THEN prev.hitter_game_plate_appearances END), 0),
             cur.hitter_game_strikeouts * 1.0
-        ) AS hitter_game_wavg_strikeouts_last_3,
+        ) AS hitter_game_weighted_strikeouts_last_3,
 
         COALESCE(
-            SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_plate_appearances * 5.0
-                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_plate_appearances * 4.0
-                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_plate_appearances * 3.0
-                    WHEN prev.rn = cur.rn - 4 THEN prev.hitter_game_plate_appearances * 2.0
-                    WHEN prev.rn = cur.rn - 5 THEN prev.hitter_game_plate_appearances * 1.0
-                END)
-            / NULLIF(SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN 5.0
-                    WHEN prev.rn = cur.rn - 2 THEN 4.0
-                    WHEN prev.rn = cur.rn - 3 THEN 3.0
-                    WHEN prev.rn = cur.rn - 4 THEN 2.0
-                    WHEN prev.rn = cur.rn - 5 THEN 1.0
-                END), 0),
+            SUM(CASE WHEN prev.rn BETWEEN cur.rn - 5 AND cur.rn - 1
+                     THEN prev.hitter_game_plate_appearances * prev.hitter_game_plate_appearances END)
+            / NULLIF(SUM(CASE WHEN prev.rn BETWEEN cur.rn - 5 AND cur.rn - 1
+                              THEN prev.hitter_game_plate_appearances END), 0),
             cur.hitter_game_plate_appearances * 1.0
-        ) AS hitter_game_wavg_pa_last_5,
+        ) AS hitter_game_weighted_pa_last_5,
 
         COALESCE(
-            SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN prev.hitter_game_strikeouts * 5.0
-                    WHEN prev.rn = cur.rn - 2 THEN prev.hitter_game_strikeouts * 4.0
-                    WHEN prev.rn = cur.rn - 3 THEN prev.hitter_game_strikeouts * 3.0
-                    WHEN prev.rn = cur.rn - 4 THEN prev.hitter_game_strikeouts * 2.0
-                    WHEN prev.rn = cur.rn - 5 THEN prev.hitter_game_strikeouts * 1.0
-                END)
-            / NULLIF(SUM(CASE
-                    WHEN prev.rn = cur.rn - 1 THEN 5.0
-                    WHEN prev.rn = cur.rn - 2 THEN 4.0
-                    WHEN prev.rn = cur.rn - 3 THEN 3.0
-                    WHEN prev.rn = cur.rn - 4 THEN 2.0
-                    WHEN prev.rn = cur.rn - 5 THEN 1.0
-                END), 0),
+            SUM(CASE WHEN prev.rn BETWEEN cur.rn - 5 AND cur.rn - 1
+                     THEN prev.hitter_game_strikeouts * prev.hitter_game_plate_appearances END)
+            / NULLIF(SUM(CASE WHEN prev.rn BETWEEN cur.rn - 5 AND cur.rn - 1
+                              THEN prev.hitter_game_plate_appearances END), 0),
             cur.hitter_game_strikeouts * 1.0
-        ) AS hitter_game_wavg_strikeouts_last_5,
+        ) AS hitter_game_weighted_strikeouts_last_5,
 
         COALESCE(
-            SUM(CASE
-                    WHEN prev.rn = cur.rn - 1  THEN prev.hitter_game_plate_appearances * 10.0
-                    WHEN prev.rn = cur.rn - 2  THEN prev.hitter_game_plate_appearances * 9.0
-                    WHEN prev.rn = cur.rn - 3  THEN prev.hitter_game_plate_appearances * 8.0
-                    WHEN prev.rn = cur.rn - 4  THEN prev.hitter_game_plate_appearances * 7.0
-                    WHEN prev.rn = cur.rn - 5  THEN prev.hitter_game_plate_appearances * 6.0
-                    WHEN prev.rn = cur.rn - 6  THEN prev.hitter_game_plate_appearances * 5.0
-                    WHEN prev.rn = cur.rn - 7  THEN prev.hitter_game_plate_appearances * 4.0
-                    WHEN prev.rn = cur.rn - 8  THEN prev.hitter_game_plate_appearances * 3.0
-                    WHEN prev.rn = cur.rn - 9  THEN prev.hitter_game_plate_appearances * 2.0
-                    WHEN prev.rn = cur.rn - 10 THEN prev.hitter_game_plate_appearances * 1.0
-                END)
-            / NULLIF(SUM(CASE
-                    WHEN prev.rn = cur.rn - 1  THEN 10.0
-                    WHEN prev.rn = cur.rn - 2  THEN 9.0
-                    WHEN prev.rn = cur.rn - 3  THEN 8.0
-                    WHEN prev.rn = cur.rn - 4  THEN 7.0
-                    WHEN prev.rn = cur.rn - 5  THEN 6.0
-                    WHEN prev.rn = cur.rn - 6  THEN 5.0
-                    WHEN prev.rn = cur.rn - 7  THEN 4.0
-                    WHEN prev.rn = cur.rn - 8  THEN 3.0
-                    WHEN prev.rn = cur.rn - 9  THEN 2.0
-                    WHEN prev.rn = cur.rn - 10 THEN 1.0
-                END), 0),
+            SUM(CASE WHEN prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+                     THEN prev.hitter_game_plate_appearances * prev.hitter_game_plate_appearances END)
+            / NULLIF(SUM(CASE WHEN prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+                              THEN prev.hitter_game_plate_appearances END), 0),
             cur.hitter_game_plate_appearances * 1.0
-        ) AS hitter_game_wavg_pa_last_10,
+        ) AS hitter_game_weighted_pa_last_10,
 
         COALESCE(
-            SUM(CASE
-                    WHEN prev.rn = cur.rn - 1  THEN prev.hitter_game_strikeouts * 10.0
-                    WHEN prev.rn = cur.rn - 2  THEN prev.hitter_game_strikeouts * 9.0
-                    WHEN prev.rn = cur.rn - 3  THEN prev.hitter_game_strikeouts * 8.0
-                    WHEN prev.rn = cur.rn - 4  THEN prev.hitter_game_strikeouts * 7.0
-                    WHEN prev.rn = cur.rn - 5  THEN prev.hitter_game_strikeouts * 6.0
-                    WHEN prev.rn = cur.rn - 6  THEN prev.hitter_game_strikeouts * 5.0
-                    WHEN prev.rn = cur.rn - 7  THEN prev.hitter_game_strikeouts * 4.0
-                    WHEN prev.rn = cur.rn - 8  THEN prev.hitter_game_strikeouts * 3.0
-                    WHEN prev.rn = cur.rn - 9  THEN prev.hitter_game_strikeouts * 2.0
-                    WHEN prev.rn = cur.rn - 10 THEN prev.hitter_game_strikeouts * 1.0
-                END)
-            / NULLIF(SUM(CASE
-                    WHEN prev.rn = cur.rn - 1  THEN 10.0
-                    WHEN prev.rn = cur.rn - 2  THEN 9.0
-                    WHEN prev.rn = cur.rn - 3  THEN 8.0
-                    WHEN prev.rn = cur.rn - 4  THEN 7.0
-                    WHEN prev.rn = cur.rn - 5  THEN 6.0
-                    WHEN prev.rn = cur.rn - 6  THEN 5.0
-                    WHEN prev.rn = cur.rn - 7  THEN 4.0
-                    WHEN prev.rn = cur.rn - 8  THEN 3.0
-                    WHEN prev.rn = cur.rn - 9  THEN 2.0
-                    WHEN prev.rn = cur.rn - 10 THEN 1.0
-                END), 0),
+            SUM(CASE WHEN prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+                     THEN prev.hitter_game_strikeouts * prev.hitter_game_plate_appearances END)
+            / NULLIF(SUM(CASE WHEN prev.rn BETWEEN cur.rn - 10 AND cur.rn - 1
+                              THEN prev.hitter_game_plate_appearances END), 0),
             cur.hitter_game_strikeouts * 1.0
-        ) AS hitter_game_wavg_strikeouts_last_10
+        ) AS hitter_game_weighted_strikeouts_last_10
+
     FROM hitter_pa_game_ranked cur
     LEFT JOIN hitter_pa_game_ranked prev
         ON cur.hitter_id = prev.hitter_id
@@ -406,6 +336,7 @@ SELECT
        ========================= */
     h.days_since_last_game AS hitter_days_since_last_game,
 
+    -- simple last 3
     h.avg_k_last_3 AS hitter_avg_k_last_3,
     h.avg_pa_last_3 AS hitter_avg_pa_last_3,
     h.avg_ab_last_3 AS hitter_avg_ab_last_3,
@@ -436,32 +367,20 @@ SELECT
     h.pct_1plus_k_last_3 AS hitter_pct_1plus_k_last_3,
     h.pct_2plus_k_last_3 AS hitter_pct_2plus_k_last_3,
 
-    h.wavg_k_last_3 AS hitter_wavg_k_last_3,
-    h.wavg_pa_last_3 AS hitter_wavg_pa_last_3,
-    h.wavg_ab_last_3 AS hitter_wavg_ab_last_3,
-    h.wavg_hits_last_3 AS hitter_wavg_hits_last_3,
-    h.wavg_hr_last_3 AS hitter_wavg_hr_last_3,
-    h.wavg_bb_last_3 AS hitter_wavg_bb_last_3,
-    h.wavg_pitches_last_3 AS hitter_wavg_pitches_last_3,
-    h.wavg_tb_last_3 AS hitter_wavg_tb_last_3,
-    h.wavg_rbi_last_3 AS hitter_wavg_rbi_last_3,
-    h.wavg_lob_last_3 AS hitter_wavg_lob_last_3,
-    h.wavg_obp_last_3 AS hitter_wavg_obp_last_3,
-    h.wavg_slg_last_3 AS hitter_wavg_slg_last_3,
-    h.wavg_ops_last_3 AS hitter_wavg_ops_last_3,
-    h.wavg_babip_last_3 AS hitter_wavg_babip_last_3,
-    h.wavg_batting_avg_last_3 AS hitter_wavg_batting_avg_last_3,
-    h.wavg_hbp_last_3 AS hitter_wavg_hbp_last_3,
-    h.wavg_sf_last_3 AS hitter_wavg_sf_last_3,
-    h.wavg_sbunts_last_3 AS hitter_wavg_sbunts_last_3,
-    h.wavg_stolen_bases_last_3 AS hitter_wavg_stolen_bases_last_3,
-    h.wavg_caught_stealing_last_3 AS hitter_wavg_caught_stealing_last_3,
-    h.wavg_k_rate_last_3 AS hitter_wavg_k_rate_last_3,
-    h.wavg_walk_rate_last_3 AS hitter_wavg_walk_rate_last_3,
-    h.wavg_hit_rate_last_3 AS hitter_wavg_hit_rate_last_3,
-    h.wavg_tb_rate_last_3 AS hitter_wavg_tb_rate_last_3,
-    h.wavg_hr_rate_last_3 AS hitter_wavg_hr_rate_last_3,
+    -- weighted last 3
+    h.weighted_k_rate_last_3 AS hitter_weighted_k_rate_last_3,
+    h.weighted_walk_rate_last_3 AS hitter_weighted_walk_rate_last_3,
+    h.weighted_hit_rate_last_3 AS hitter_weighted_hit_rate_last_3,
+    h.weighted_tb_rate_last_3 AS hitter_weighted_tb_rate_last_3,
+    h.weighted_hr_rate_last_3 AS hitter_weighted_hr_rate_last_3,
+    h.weighted_batting_avg_last_3 AS hitter_weighted_batting_avg_last_3,
+    h.weighted_pitches_per_pa_last_3 AS hitter_weighted_pitches_per_pa_last_3,
+    h.weighted_obp_last_3 AS hitter_weighted_obp_last_3,
+    h.weighted_slg_last_3 AS hitter_weighted_slg_last_3,
+    h.weighted_ops_last_3 AS hitter_weighted_ops_last_3,
+    h.weighted_babip_last_3 AS hitter_weighted_babip_last_3,
 
+    -- simple last 5
     h.avg_k_last_5 AS hitter_avg_k_last_5,
     h.avg_pa_last_5 AS hitter_avg_pa_last_5,
     h.avg_ab_last_5 AS hitter_avg_ab_last_5,
@@ -492,32 +411,20 @@ SELECT
     h.pct_1plus_k_last_5 AS hitter_pct_1plus_k_last_5,
     h.pct_2plus_k_last_5 AS hitter_pct_2plus_k_last_5,
 
-    h.wavg_k_last_5 AS hitter_wavg_k_last_5,
-    h.wavg_pa_last_5 AS hitter_wavg_pa_last_5,
-    h.wavg_ab_last_5 AS hitter_wavg_ab_last_5,
-    h.wavg_hits_last_5 AS hitter_wavg_hits_last_5,
-    h.wavg_hr_last_5 AS hitter_wavg_hr_last_5,
-    h.wavg_bb_last_5 AS hitter_wavg_bb_last_5,
-    h.wavg_pitches_last_5 AS hitter_wavg_pitches_last_5,
-    h.wavg_tb_last_5 AS hitter_wavg_tb_last_5,
-    h.wavg_rbi_last_5 AS hitter_wavg_rbi_last_5,
-    h.wavg_lob_last_5 AS hitter_wavg_lob_last_5,
-    h.wavg_obp_last_5 AS hitter_wavg_obp_last_5,
-    h.wavg_slg_last_5 AS hitter_wavg_slg_last_5,
-    h.wavg_ops_last_5 AS hitter_wavg_ops_last_5,
-    h.wavg_babip_last_5 AS hitter_wavg_babip_last_5,
-    h.wavg_batting_avg_last_5 AS hitter_wavg_batting_avg_last_5,
-    h.wavg_hbp_last_5 AS hitter_wavg_hbp_last_5,
-    h.wavg_sf_last_5 AS hitter_wavg_sf_last_5,
-    h.wavg_sbunts_last_5 AS hitter_wavg_sbunts_last_5,
-    h.wavg_stolen_bases_last_5 AS hitter_wavg_stolen_bases_last_5,
-    h.wavg_caught_stealing_last_5 AS hitter_wavg_caught_stealing_last_5,
-    h.wavg_k_rate_last_5 AS hitter_wavg_k_rate_last_5,
-    h.wavg_walk_rate_last_5 AS hitter_wavg_walk_rate_last_5,
-    h.wavg_hit_rate_last_5 AS hitter_wavg_hit_rate_last_5,
-    h.wavg_tb_rate_last_5 AS hitter_wavg_tb_rate_last_5,
-    h.wavg_hr_rate_last_5 AS hitter_wavg_hr_rate_last_5,
+    -- weighted last 5
+    h.weighted_k_rate_last_5 AS hitter_weighted_k_rate_last_5,
+    h.weighted_walk_rate_last_5 AS hitter_weighted_walk_rate_last_5,
+    h.weighted_hit_rate_last_5 AS hitter_weighted_hit_rate_last_5,
+    h.weighted_tb_rate_last_5 AS hitter_weighted_tb_rate_last_5,
+    h.weighted_hr_rate_last_5 AS hitter_weighted_hr_rate_last_5,
+    h.weighted_batting_avg_last_5 AS hitter_weighted_batting_avg_last_5,
+    h.weighted_pitches_per_pa_last_5 AS hitter_weighted_pitches_per_pa_last_5,
+    h.weighted_obp_last_5 AS hitter_weighted_obp_last_5,
+    h.weighted_slg_last_5 AS hitter_weighted_slg_last_5,
+    h.weighted_ops_last_5 AS hitter_weighted_ops_last_5,
+    h.weighted_babip_last_5 AS hitter_weighted_babip_last_5,
 
+    -- simple last 10
     h.avg_k_last_10 AS hitter_avg_k_last_10,
     h.avg_pa_last_10 AS hitter_avg_pa_last_10,
     h.avg_ab_last_10 AS hitter_avg_ab_last_10,
@@ -548,32 +455,20 @@ SELECT
     h.pct_1plus_k_last_10 AS hitter_pct_1plus_k_last_10,
     h.pct_2plus_k_last_10 AS hitter_pct_2plus_k_last_10,
 
-    h.wavg_k_last_10 AS hitter_wavg_k_last_10,
-    h.wavg_pa_last_10 AS hitter_wavg_pa_last_10,
-    h.wavg_ab_last_10 AS hitter_wavg_ab_last_10,
-    h.wavg_hits_last_10 AS hitter_wavg_hits_last_10,
-    h.wavg_hr_last_10 AS hitter_wavg_hr_last_10,
-    h.wavg_bb_last_10 AS hitter_wavg_bb_last_10,
-    h.wavg_pitches_last_10 AS hitter_wavg_pitches_last_10,
-    h.wavg_tb_last_10 AS hitter_wavg_tb_last_10,
-    h.wavg_rbi_last_10 AS hitter_wavg_rbi_last_10,
-    h.wavg_lob_last_10 AS hitter_wavg_lob_last_10,
-    h.wavg_obp_last_10 AS hitter_wavg_obp_last_10,
-    h.wavg_slg_last_10 AS hitter_wavg_slg_last_10,
-    h.wavg_ops_last_10 AS hitter_wavg_ops_last_10,
-    h.wavg_babip_last_10 AS hitter_wavg_babip_last_10,
-    h.wavg_batting_avg_last_10 AS hitter_wavg_batting_avg_last_10,
-    h.wavg_hbp_last_10 AS hitter_wavg_hbp_last_10,
-    h.wavg_sf_last_10 AS hitter_wavg_sf_last_10,
-    h.wavg_sbunts_last_10 AS hitter_wavg_sbunts_last_10,
-    h.wavg_stolen_bases_last_10 AS hitter_wavg_stolen_bases_last_10,
-    h.wavg_caught_stealing_last_10 AS hitter_wavg_caught_stealing_last_10,
-    h.wavg_k_rate_last_10 AS hitter_wavg_k_rate_last_10,
-    h.wavg_walk_rate_last_10 AS hitter_wavg_walk_rate_last_10,
-    h.wavg_hit_rate_last_10 AS hitter_wavg_hit_rate_last_10,
-    h.wavg_tb_rate_last_10 AS hitter_wavg_tb_rate_last_10,
-    h.wavg_hr_rate_last_10 AS hitter_wavg_hr_rate_last_10,
+    -- weighted last 10
+    h.weighted_k_rate_last_10 AS hitter_weighted_k_rate_last_10,
+    h.weighted_walk_rate_last_10 AS hitter_weighted_walk_rate_last_10,
+    h.weighted_hit_rate_last_10 AS hitter_weighted_hit_rate_last_10,
+    h.weighted_tb_rate_last_10 AS hitter_weighted_tb_rate_last_10,
+    h.weighted_hr_rate_last_10 AS hitter_weighted_hr_rate_last_10,
+    h.weighted_batting_avg_last_10 AS hitter_weighted_batting_avg_last_10,
+    h.weighted_pitches_per_pa_last_10 AS hitter_weighted_pitches_per_pa_last_10,
+    h.weighted_obp_last_10 AS hitter_weighted_obp_last_10,
+    h.weighted_slg_last_10 AS hitter_weighted_slg_last_10,
+    h.weighted_ops_last_10 AS hitter_weighted_ops_last_10,
+    h.weighted_babip_last_10 AS hitter_weighted_babip_last_10,
 
+    -- hitter previous
     h.prev_k AS hitter_prev_k,
     h.prev_pa AS hitter_prev_pa,
     h.prev_ab AS hitter_prev_ab,
@@ -584,6 +479,7 @@ SELECT
     h.prev_ops AS hitter_prev_ops,
     h.prev_k_rate AS hitter_prev_k_rate,
 
+    -- hitter statcast simple 3
     h.avg_sc_pitches_seen_last_3 AS hitter_avg_sc_pitches_seen_last_3,
     h.avg_whiff_rate_last_3 AS hitter_avg_whiff_rate_last_3,
     h.avg_contact_rate_last_3 AS hitter_avg_contact_rate_last_3,
@@ -625,47 +521,30 @@ SELECT
     h.avg_whiff_rate_vs_rhp_last_3 AS hitter_avg_whiff_rate_vs_rhp_last_3,
     h.avg_whiff_rate_vs_lhp_last_3 AS hitter_avg_whiff_rate_vs_lhp_last_3,
 
-    h.wavg_sc_pitches_seen_last_3 AS hitter_wavg_sc_pitches_seen_last_3,
-    h.wavg_whiff_rate_last_3 AS hitter_wavg_whiff_rate_last_3,
-    h.wavg_contact_rate_last_3 AS hitter_wavg_contact_rate_last_3,
-    h.wavg_swing_rate_last_3 AS hitter_wavg_swing_rate_last_3,
-    h.wavg_chase_rate_last_3 AS hitter_wavg_chase_rate_last_3,
-    h.wavg_zone_swing_rate_last_3 AS hitter_wavg_zone_swing_rate_last_3,
-    h.wavg_zone_rate_last_3 AS hitter_wavg_zone_rate_last_3,
-    h.wavg_called_strike_rate_last_3 AS hitter_wavg_called_strike_rate_last_3,
-    h.wavg_csw_against_rate_last_3 AS hitter_wavg_csw_against_rate_last_3,
-    h.wavg_two_strike_whiff_rate_last_3 AS hitter_wavg_two_strike_whiff_rate_last_3,
-    h.wavg_whiff_rate_0_2_last_3 AS hitter_wavg_whiff_rate_0_2_last_3,
-    h.wavg_whiff_rate_1_2_last_3 AS hitter_wavg_whiff_rate_1_2_last_3,
-    h.wavg_whiff_rate_2_2_last_3 AS hitter_wavg_whiff_rate_2_2_last_3,
-    h.wavg_exit_velocity_last_3 AS hitter_wavg_exit_velocity_last_3,
-    h.wavg_max_exit_velocity_last_3 AS hitter_wavg_max_exit_velocity_last_3,
-    h.wavg_launch_angle_last_3 AS hitter_wavg_launch_angle_last_3,
-    h.wavg_hit_distance_last_3 AS hitter_wavg_hit_distance_last_3,
-    h.wavg_xba_last_3 AS hitter_wavg_xba_last_3,
-    h.wavg_xwoba_last_3 AS hitter_wavg_xwoba_last_3,
-    h.wavg_woba_value_last_3 AS hitter_wavg_woba_value_last_3,
-    h.wavg_babip_value_last_3 AS hitter_wavg_babip_value_last_3,
-    h.wavg_iso_value_last_3 AS hitter_wavg_iso_value_last_3,
-    h.wavg_bat_speed_last_3 AS hitter_wavg_bat_speed_last_3,
-    h.wavg_swing_length_last_3 AS hitter_wavg_swing_length_last_3,
-    h.wavg_pitch_velocity_seen_last_3 AS hitter_wavg_pitch_velocity_seen_last_3,
-    h.wavg_pitch_spin_seen_last_3 AS hitter_wavg_pitch_spin_seen_last_3,
-    h.wavg_pitch_extension_seen_last_3 AS hitter_wavg_pitch_extension_seen_last_3,
-    h.wavg_horz_movement_seen_last_3 AS hitter_wavg_horz_movement_seen_last_3,
-    h.wavg_vert_movement_seen_last_3 AS hitter_wavg_vert_movement_seen_last_3,
-    h.wavg_plate_x_seen_last_3 AS hitter_wavg_plate_x_seen_last_3,
-    h.wavg_plate_z_seen_last_3 AS hitter_wavg_plate_z_seen_last_3,
-    h.wavg_ff_seen_pct_last_3 AS hitter_wavg_ff_seen_pct_last_3,
-    h.wavg_si_seen_pct_last_3 AS hitter_wavg_si_seen_pct_last_3,
-    h.wavg_fc_seen_pct_last_3 AS hitter_wavg_fc_seen_pct_last_3,
-    h.wavg_sl_seen_pct_last_3 AS hitter_wavg_sl_seen_pct_last_3,
-    h.wavg_cu_seen_pct_last_3 AS hitter_wavg_cu_seen_pct_last_3,
-    h.wavg_ch_seen_pct_last_3 AS hitter_wavg_ch_seen_pct_last_3,
-    h.wavg_fs_seen_pct_last_3 AS hitter_wavg_fs_seen_pct_last_3,
-    h.wavg_whiff_rate_vs_rhp_last_3 AS hitter_wavg_whiff_rate_vs_rhp_last_3,
-    h.wavg_whiff_rate_vs_lhp_last_3 AS hitter_wavg_whiff_rate_vs_lhp_last_3,
+    -- hitter statcast weighted 3
+    h.weighted_whiff_rate_last_3 AS hitter_weighted_whiff_rate_last_3,
+    h.weighted_contact_rate_last_3 AS hitter_weighted_contact_rate_last_3,
+    h.weighted_swing_rate_last_3 AS hitter_weighted_swing_rate_last_3,
+    h.weighted_chase_rate_last_3 AS hitter_weighted_chase_rate_last_3,
+    h.weighted_zone_swing_rate_last_3 AS hitter_weighted_zone_swing_rate_last_3,
+    h.weighted_zone_rate_last_3 AS hitter_weighted_zone_rate_last_3,
+    h.weighted_called_strike_rate_last_3 AS hitter_weighted_called_strike_rate_last_3,
+    h.weighted_csw_against_rate_last_3 AS hitter_weighted_csw_against_rate_last_3,
+    h.weighted_two_strike_whiff_rate_last_3 AS hitter_weighted_two_strike_whiff_rate_last_3,
+    h.weighted_whiff_rate_0_2_last_3 AS hitter_weighted_whiff_rate_0_2_last_3,
+    h.weighted_whiff_rate_1_2_last_3 AS hitter_weighted_whiff_rate_1_2_last_3,
+    h.weighted_whiff_rate_2_2_last_3 AS hitter_weighted_whiff_rate_2_2_last_3,
+    h.weighted_ff_seen_pct_last_3 AS hitter_weighted_ff_seen_pct_last_3,
+    h.weighted_si_seen_pct_last_3 AS hitter_weighted_si_seen_pct_last_3,
+    h.weighted_fc_seen_pct_last_3 AS hitter_weighted_fc_seen_pct_last_3,
+    h.weighted_sl_seen_pct_last_3 AS hitter_weighted_sl_seen_pct_last_3,
+    h.weighted_cu_seen_pct_last_3 AS hitter_weighted_cu_seen_pct_last_3,
+    h.weighted_ch_seen_pct_last_3 AS hitter_weighted_ch_seen_pct_last_3,
+    h.weighted_fs_seen_pct_last_3 AS hitter_weighted_fs_seen_pct_last_3,
+    h.weighted_whiff_rate_vs_rhp_last_3 AS hitter_weighted_whiff_rate_vs_rhp_last_3,
+    h.weighted_whiff_rate_vs_lhp_last_3 AS hitter_weighted_whiff_rate_vs_lhp_last_3,
 
+    -- hitter statcast simple 5
     h.avg_sc_pitches_seen_last_5 AS hitter_avg_sc_pitches_seen_last_5,
     h.avg_whiff_rate_last_5 AS hitter_avg_whiff_rate_last_5,
     h.avg_contact_rate_last_5 AS hitter_avg_contact_rate_last_5,
@@ -682,22 +561,30 @@ SELECT
     h.avg_whiff_rate_vs_rhp_last_5 AS hitter_avg_whiff_rate_vs_rhp_last_5,
     h.avg_whiff_rate_vs_lhp_last_5 AS hitter_avg_whiff_rate_vs_lhp_last_5,
 
-    h.wavg_sc_pitches_seen_last_5 AS hitter_wavg_sc_pitches_seen_last_5,
-    h.wavg_whiff_rate_last_5 AS hitter_wavg_whiff_rate_last_5,
-    h.wavg_contact_rate_last_5 AS hitter_wavg_contact_rate_last_5,
-    h.wavg_swing_rate_last_5 AS hitter_wavg_swing_rate_last_5,
-    h.wavg_chase_rate_last_5 AS hitter_wavg_chase_rate_last_5,
-    h.wavg_zone_swing_rate_last_5 AS hitter_wavg_zone_swing_rate_last_5,
-    h.wavg_zone_rate_last_5 AS hitter_wavg_zone_rate_last_5,
-    h.wavg_called_strike_rate_last_5 AS hitter_wavg_called_strike_rate_last_5,
-    h.wavg_csw_against_rate_last_5 AS hitter_wavg_csw_against_rate_last_5,
-    h.wavg_two_strike_whiff_rate_last_5 AS hitter_wavg_two_strike_whiff_rate_last_5,
-    h.wavg_exit_velocity_last_5 AS hitter_wavg_exit_velocity_last_5,
-    h.wavg_xwoba_last_5 AS hitter_wavg_xwoba_last_5,
-    h.wavg_bat_speed_last_5 AS hitter_wavg_bat_speed_last_5,
-    h.wavg_whiff_rate_vs_rhp_last_5 AS hitter_wavg_whiff_rate_vs_rhp_last_5,
-    h.wavg_whiff_rate_vs_lhp_last_5 AS hitter_wavg_whiff_rate_vs_lhp_last_5,
+    -- hitter statcast weighted 5
+    h.weighted_whiff_rate_last_5 AS hitter_weighted_whiff_rate_last_5,
+    h.weighted_contact_rate_last_5 AS hitter_weighted_contact_rate_last_5,
+    h.weighted_swing_rate_last_5 AS hitter_weighted_swing_rate_last_5,
+    h.weighted_chase_rate_last_5 AS hitter_weighted_chase_rate_last_5,
+    h.weighted_zone_swing_rate_last_5 AS hitter_weighted_zone_swing_rate_last_5,
+    h.weighted_zone_rate_last_5 AS hitter_weighted_zone_rate_last_5,
+    h.weighted_called_strike_rate_last_5 AS hitter_weighted_called_strike_rate_last_5,
+    h.weighted_csw_against_rate_last_5 AS hitter_weighted_csw_against_rate_last_5,
+    h.weighted_two_strike_whiff_rate_last_5 AS hitter_weighted_two_strike_whiff_rate_last_5,
+    h.weighted_whiff_rate_0_2_last_5 AS hitter_weighted_whiff_rate_0_2_last_5,
+    h.weighted_whiff_rate_1_2_last_5 AS hitter_weighted_whiff_rate_1_2_last_5,
+    h.weighted_whiff_rate_2_2_last_5 AS hitter_weighted_whiff_rate_2_2_last_5,
+    h.weighted_ff_seen_pct_last_5 AS hitter_weighted_ff_seen_pct_last_5,
+    h.weighted_si_seen_pct_last_5 AS hitter_weighted_si_seen_pct_last_5,
+    h.weighted_fc_seen_pct_last_5 AS hitter_weighted_fc_seen_pct_last_5,
+    h.weighted_sl_seen_pct_last_5 AS hitter_weighted_sl_seen_pct_last_5,
+    h.weighted_cu_seen_pct_last_5 AS hitter_weighted_cu_seen_pct_last_5,
+    h.weighted_ch_seen_pct_last_5 AS hitter_weighted_ch_seen_pct_last_5,
+    h.weighted_fs_seen_pct_last_5 AS hitter_weighted_fs_seen_pct_last_5,
+    h.weighted_whiff_rate_vs_rhp_last_5 AS hitter_weighted_whiff_rate_vs_rhp_last_5,
+    h.weighted_whiff_rate_vs_lhp_last_5 AS hitter_weighted_whiff_rate_vs_lhp_last_5,
 
+    -- hitter statcast simple 10
     h.avg_sc_pitches_seen_last_10 AS hitter_avg_sc_pitches_seen_last_10,
     h.avg_whiff_rate_last_10 AS hitter_avg_whiff_rate_last_10,
     h.avg_contact_rate_last_10 AS hitter_avg_contact_rate_last_10,
@@ -714,21 +601,28 @@ SELECT
     h.avg_whiff_rate_vs_rhp_last_10 AS hitter_avg_whiff_rate_vs_rhp_last_10,
     h.avg_whiff_rate_vs_lhp_last_10 AS hitter_avg_whiff_rate_vs_lhp_last_10,
 
-    h.wavg_sc_pitches_seen_last_10 AS hitter_wavg_sc_pitches_seen_last_10,
-    h.wavg_whiff_rate_last_10 AS hitter_wavg_whiff_rate_last_10,
-    h.wavg_contact_rate_last_10 AS hitter_wavg_contact_rate_last_10,
-    h.wavg_swing_rate_last_10 AS hitter_wavg_swing_rate_last_10,
-    h.wavg_chase_rate_last_10 AS hitter_wavg_chase_rate_last_10,
-    h.wavg_zone_swing_rate_last_10 AS hitter_wavg_zone_swing_rate_last_10,
-    h.wavg_zone_rate_last_10 AS hitter_wavg_zone_rate_last_10,
-    h.wavg_called_strike_rate_last_10 AS hitter_wavg_called_strike_rate_last_10,
-    h.wavg_csw_against_rate_last_10 AS hitter_wavg_csw_against_rate_last_10,
-    h.wavg_two_strike_whiff_rate_last_10 AS hitter_wavg_two_strike_whiff_rate_last_10,
-    h.wavg_exit_velocity_last_10 AS hitter_wavg_exit_velocity_last_10,
-    h.wavg_xwoba_last_10 AS hitter_wavg_xwoba_last_10,
-    h.wavg_bat_speed_last_10 AS hitter_wavg_bat_speed_last_10,
-    h.wavg_whiff_rate_vs_rhp_last_10 AS hitter_wavg_whiff_rate_vs_rhp_last_10,
-    h.wavg_whiff_rate_vs_lhp_last_10 AS hitter_wavg_whiff_rate_vs_lhp_last_10,
+    -- hitter statcast weighted 10
+    h.weighted_whiff_rate_last_10 AS hitter_weighted_whiff_rate_last_10,
+    h.weighted_contact_rate_last_10 AS hitter_weighted_contact_rate_last_10,
+    h.weighted_swing_rate_last_10 AS hitter_weighted_swing_rate_last_10,
+    h.weighted_chase_rate_last_10 AS hitter_weighted_chase_rate_last_10,
+    h.weighted_zone_swing_rate_last_10 AS hitter_weighted_zone_swing_rate_last_10,
+    h.weighted_zone_rate_last_10 AS hitter_weighted_zone_rate_last_10,
+    h.weighted_called_strike_rate_last_10 AS hitter_weighted_called_strike_rate_last_10,
+    h.weighted_csw_against_rate_last_10 AS hitter_weighted_csw_against_rate_last_10,
+    h.weighted_two_strike_whiff_rate_last_10 AS hitter_weighted_two_strike_whiff_rate_last_10,
+    h.weighted_whiff_rate_0_2_last_10 AS hitter_weighted_whiff_rate_0_2_last_10,
+    h.weighted_whiff_rate_1_2_last_10 AS hitter_weighted_whiff_rate_1_2_last_10,
+    h.weighted_whiff_rate_2_2_last_10 AS hitter_weighted_whiff_rate_2_2_last_10,
+    h.weighted_ff_seen_pct_last_10 AS hitter_weighted_ff_seen_pct_last_10,
+    h.weighted_si_seen_pct_last_10 AS hitter_weighted_si_seen_pct_last_10,
+    h.weighted_fc_seen_pct_last_10 AS hitter_weighted_fc_seen_pct_last_10,
+    h.weighted_sl_seen_pct_last_10 AS hitter_weighted_sl_seen_pct_last_10,
+    h.weighted_cu_seen_pct_last_10 AS hitter_weighted_cu_seen_pct_last_10,
+    h.weighted_ch_seen_pct_last_10 AS hitter_weighted_ch_seen_pct_last_10,
+    h.weighted_fs_seen_pct_last_10 AS hitter_weighted_fs_seen_pct_last_10,
+    h.weighted_whiff_rate_vs_rhp_last_10 AS hitter_weighted_whiff_rate_vs_rhp_last_10,
+    h.weighted_whiff_rate_vs_lhp_last_10 AS hitter_weighted_whiff_rate_vs_lhp_last_10,
 
     h.prev_whiff_rate AS hitter_prev_whiff_rate,
     h.prev_contact_rate AS hitter_prev_contact_rate,
@@ -755,12 +649,12 @@ SELECT
     hpg.hitter_game_avg_strikeouts_last_3,
     hpg.hitter_game_avg_strikeouts_last_5,
     hpg.hitter_game_avg_strikeouts_last_10,
-    hpg.hitter_game_wavg_pa_last_3,
-    hpg.hitter_game_wavg_pa_last_5,
-    hpg.hitter_game_wavg_pa_last_10,
-    hpg.hitter_game_wavg_strikeouts_last_3,
-    hpg.hitter_game_wavg_strikeouts_last_5,
-    hpg.hitter_game_wavg_strikeouts_last_10,
+    hpg.hitter_game_weighted_pa_last_3,
+    hpg.hitter_game_weighted_pa_last_5,
+    hpg.hitter_game_weighted_pa_last_10,
+    hpg.hitter_game_weighted_strikeouts_last_3,
+    hpg.hitter_game_weighted_strikeouts_last_5,
+    hpg.hitter_game_weighted_strikeouts_last_10,
 
     /* =========================
        PITCHER FEATURES
@@ -768,6 +662,7 @@ SELECT
     p.gamesStarted AS pitcher_gamesStarted,
     p.days_since_last_appearance AS pitcher_days_since_last_appearance,
 
+    -- pitcher simple 3
     p.avg_games_started_last_3 AS pitcher_avg_games_started_last_3,
     p.avg_ip_last_3 AS pitcher_avg_ip_last_3,
     p.avg_bf_last_3 AS pitcher_avg_bf_last_3,
@@ -787,6 +682,7 @@ SELECT
     p.pct_5plus_ip_last_3 AS pitcher_pct_5plus_ip_last_3,
     p.pct_6plus_ip_last_3 AS pitcher_pct_6plus_ip_last_3,
 
+    -- pitcher simple 5
     p.avg_games_started_last_5 AS pitcher_avg_games_started_last_5,
     p.avg_ip_last_5 AS pitcher_avg_ip_last_5,
     p.avg_bf_last_5 AS pitcher_avg_bf_last_5,
@@ -806,6 +702,7 @@ SELECT
     p.pct_5plus_ip_last_5 AS pitcher_pct_5plus_ip_last_5,
     p.pct_6plus_ip_last_5 AS pitcher_pct_6plus_ip_last_5,
 
+    -- pitcher simple 10
     p.avg_games_started_last_10 AS pitcher_avg_games_started_last_10,
     p.avg_ip_last_10 AS pitcher_avg_ip_last_10,
     p.avg_bf_last_10 AS pitcher_avg_bf_last_10,
@@ -825,35 +722,42 @@ SELECT
     p.pct_5plus_ip_last_10 AS pitcher_pct_5plus_ip_last_10,
     p.pct_6plus_ip_last_10 AS pitcher_pct_6plus_ip_last_10,
 
-    p.weighted_k_last_3 AS pitcher_weighted_k_last_3,
-    p.weighted_ip_last_3 AS pitcher_weighted_ip_last_3,
-    p.weighted_bf_last_3 AS pitcher_weighted_bf_last_3,
-    p.weighted_pitches_last_3 AS pitcher_weighted_pitches_last_3,
+    -- pitcher weighted
+    p.weighted_k_per_bf_last_3 AS pitcher_weighted_k_per_bf_last_3,
+    p.weighted_bb_per_bf_last_3 AS pitcher_weighted_bb_per_bf_last_3,
+    p.weighted_baa_last_3 AS pitcher_weighted_baa_last_3,
+    p.weighted_hr_per_bf_last_3 AS pitcher_weighted_hr_per_bf_last_3,
     p.weighted_strike_pct_last_3 AS pitcher_weighted_strike_pct_last_3,
+    p.weighted_pitches_per_inning_last_3 AS pitcher_weighted_pitches_per_inning_last_3,
     p.weighted_k9_last_3 AS pitcher_weighted_k9_last_3,
-    p.weighted_bb_last_3 AS pitcher_weighted_bb_last_3,
+    p.weighted_bb9_last_3 AS pitcher_weighted_bb9_last_3,
     p.weighted_whip_last_3 AS pitcher_weighted_whip_last_3,
-    p.weighted_outs_last_3 AS pitcher_weighted_outs_last_3,
+    p.weighted_kbb_last_3 AS pitcher_weighted_kbb_last_3,
+    p.weighted_inherited_runner_score_pct_last_3 AS pitcher_weighted_inherited_runner_score_pct_last_3,
 
-    p.weighted_k_last_5 AS pitcher_weighted_k_last_5,
-    p.weighted_ip_last_5 AS pitcher_weighted_ip_last_5,
-    p.weighted_bf_last_5 AS pitcher_weighted_bf_last_5,
-    p.weighted_pitches_last_5 AS pitcher_weighted_pitches_last_5,
+    p.weighted_k_per_bf_last_5 AS pitcher_weighted_k_per_bf_last_5,
+    p.weighted_bb_per_bf_last_5 AS pitcher_weighted_bb_per_bf_last_5,
+    p.weighted_baa_last_5 AS pitcher_weighted_baa_last_5,
+    p.weighted_hr_per_bf_last_5 AS pitcher_weighted_hr_per_bf_last_5,
     p.weighted_strike_pct_last_5 AS pitcher_weighted_strike_pct_last_5,
+    p.weighted_pitches_per_inning_last_5 AS pitcher_weighted_pitches_per_inning_last_5,
     p.weighted_k9_last_5 AS pitcher_weighted_k9_last_5,
-    p.weighted_bb_last_5 AS pitcher_weighted_bb_last_5,
+    p.weighted_bb9_last_5 AS pitcher_weighted_bb9_last_5,
     p.weighted_whip_last_5 AS pitcher_weighted_whip_last_5,
-    p.weighted_outs_last_5 AS pitcher_weighted_outs_last_5,
+    p.weighted_kbb_last_5 AS pitcher_weighted_kbb_last_5,
+    p.weighted_inherited_runner_score_pct_last_5 AS pitcher_weighted_inherited_runner_score_pct_last_5,
 
-    p.weighted_k_last_10 AS pitcher_weighted_k_last_10,
-    p.weighted_ip_last_10 AS pitcher_weighted_ip_last_10,
-    p.weighted_bf_last_10 AS pitcher_weighted_bf_last_10,
-    p.weighted_pitches_last_10 AS pitcher_weighted_pitches_last_10,
+    p.weighted_k_per_bf_last_10 AS pitcher_weighted_k_per_bf_last_10,
+    p.weighted_bb_per_bf_last_10 AS pitcher_weighted_bb_per_bf_last_10,
+    p.weighted_baa_last_10 AS pitcher_weighted_baa_last_10,
+    p.weighted_hr_per_bf_last_10 AS pitcher_weighted_hr_per_bf_last_10,
     p.weighted_strike_pct_last_10 AS pitcher_weighted_strike_pct_last_10,
+    p.weighted_pitches_per_inning_last_10 AS pitcher_weighted_pitches_per_inning_last_10,
     p.weighted_k9_last_10 AS pitcher_weighted_k9_last_10,
-    p.weighted_bb_last_10 AS pitcher_weighted_bb_last_10,
+    p.weighted_bb9_last_10 AS pitcher_weighted_bb9_last_10,
     p.weighted_whip_last_10 AS pitcher_weighted_whip_last_10,
-    p.weighted_outs_last_10 AS pitcher_weighted_outs_last_10,
+    p.weighted_kbb_last_10 AS pitcher_weighted_kbb_last_10,
+    p.weighted_inherited_runner_score_pct_last_10 AS pitcher_weighted_inherited_runner_score_pct_last_10,
 
     p.prev_k AS pitcher_prev_k,
     p.prev_ip AS pitcher_prev_ip,
@@ -861,6 +765,7 @@ SELECT
     p.prev_pitches AS pitcher_prev_pitches,
     p.prev_k9 AS pitcher_prev_k9,
 
+    -- pitcher statcast simple
     p.avg_whiff_rate_last_3 AS pitcher_avg_whiff_rate_last_3,
     p.avg_csw_rate_last_3 AS pitcher_avg_csw_rate_last_3,
     p.avg_putaway_rate_last_3 AS pitcher_avg_putaway_rate_last_3,
@@ -907,30 +812,22 @@ SELECT
     p.avg_sl_whiff_rate_last_10 AS pitcher_avg_sl_whiff_rate_last_10,
     p.avg_ff_whiff_rate_last_10 AS pitcher_avg_ff_whiff_rate_last_10,
 
-    p.weighted_sc_pitches_last_3 AS pitcher_weighted_sc_pitches_last_3,
+    -- pitcher statcast weighted
     p.weighted_whiff_rate_last_3 AS pitcher_weighted_whiff_rate_last_3,
     p.weighted_csw_rate_last_3 AS pitcher_weighted_csw_rate_last_3,
     p.weighted_sc_strike_rate_last_3 AS pitcher_weighted_sc_strike_rate_last_3,
-    p.weighted_velocity_last_3 AS pitcher_weighted_velocity_last_3,
-    p.weighted_spin_rate_last_3 AS pitcher_weighted_spin_rate_last_3,
     p.weighted_chase_rate_last_3 AS pitcher_weighted_chase_rate_last_3,
     p.weighted_putaway_rate_last_3 AS pitcher_weighted_putaway_rate_last_3,
 
-    p.weighted_sc_pitches_last_5 AS pitcher_weighted_sc_pitches_last_5,
     p.weighted_whiff_rate_last_5 AS pitcher_weighted_whiff_rate_last_5,
     p.weighted_csw_rate_last_5 AS pitcher_weighted_csw_rate_last_5,
     p.weighted_sc_strike_rate_last_5 AS pitcher_weighted_sc_strike_rate_last_5,
-    p.weighted_velocity_last_5 AS pitcher_weighted_velocity_last_5,
-    p.weighted_spin_rate_last_5 AS pitcher_weighted_spin_rate_last_5,
     p.weighted_chase_rate_last_5 AS pitcher_weighted_chase_rate_last_5,
     p.weighted_putaway_rate_last_5 AS pitcher_weighted_putaway_rate_last_5,
 
-    p.weighted_sc_pitches_last_10 AS pitcher_weighted_sc_pitches_last_10,
     p.weighted_whiff_rate_last_10 AS pitcher_weighted_whiff_rate_last_10,
     p.weighted_csw_rate_last_10 AS pitcher_weighted_csw_rate_last_10,
     p.weighted_sc_strike_rate_last_10 AS pitcher_weighted_sc_strike_rate_last_10,
-    p.weighted_velocity_last_10 AS pitcher_weighted_velocity_last_10,
-    p.weighted_spin_rate_last_10 AS pitcher_weighted_spin_rate_last_10,
     p.weighted_chase_rate_last_10 AS pitcher_weighted_chase_rate_last_10,
     p.weighted_putaway_rate_last_10 AS pitcher_weighted_putaway_rate_last_10,
 
@@ -977,6 +874,54 @@ SELECT
     la.lineup_wavg_csw_against_rate_last_3,
     la.lineup_wavg_csw_against_rate_last_5,
     la.lineup_wavg_csw_against_rate_last_10,
+
+    la.lineup_weighted_k_rate_last_3,
+    la.lineup_weighted_k_rate_last_5,
+    la.lineup_weighted_k_rate_last_10,
+
+    la.lineup_weighted_walk_rate_last_3,
+    la.lineup_weighted_walk_rate_last_5,
+    la.lineup_weighted_walk_rate_last_10,
+
+    la.lineup_weighted_hit_rate_last_3,
+    la.lineup_weighted_hit_rate_last_5,
+    la.lineup_weighted_hit_rate_last_10,
+
+    la.lineup_weighted_tb_rate_last_3,
+    la.lineup_weighted_tb_rate_last_5,
+    la.lineup_weighted_tb_rate_last_10,
+
+    la.lineup_weighted_hr_rate_last_3,
+    la.lineup_weighted_hr_rate_last_5,
+    la.lineup_weighted_hr_rate_last_10,
+
+    la.lineup_weighted_obp_last_3,
+    la.lineup_weighted_obp_last_5,
+    la.lineup_weighted_obp_last_10,
+
+    la.lineup_weighted_slg_last_3,
+    la.lineup_weighted_slg_last_5,
+    la.lineup_weighted_slg_last_10,
+
+    la.lineup_weighted_ops_last_3,
+    la.lineup_weighted_ops_last_5,
+    la.lineup_weighted_ops_last_10,
+
+    la.lineup_weighted_whiff_rate_last_3,
+    la.lineup_weighted_whiff_rate_last_5,
+    la.lineup_weighted_whiff_rate_last_10,
+
+    la.lineup_weighted_csw_against_rate_last_3,
+    la.lineup_weighted_csw_against_rate_last_5,
+    la.lineup_weighted_csw_against_rate_last_10,
+
+    la.lineup_weighted_whiff_rate_vs_rhp_last_3,
+    la.lineup_weighted_whiff_rate_vs_rhp_last_5,
+    la.lineup_weighted_whiff_rate_vs_rhp_last_10,
+
+    la.lineup_weighted_whiff_rate_vs_lhp_last_3,
+    la.lineup_weighted_whiff_rate_vs_lhp_last_5,
+    la.lineup_weighted_whiff_rate_vs_lhp_last_10,
 
     la.lineup_num_high_k_hitters,
     la.lineup_num_power_hitters,

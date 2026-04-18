@@ -66,10 +66,6 @@ joined AS (
         TRY_CAST(h.avg_k_last_5 AS float) AS avg_k_last_5,
         TRY_CAST(h.avg_k_last_10 AS float) AS avg_k_last_10,
 
-        TRY_CAST(h.wavg_k_last_3 AS float) AS wavg_k_last_3,
-        TRY_CAST(h.wavg_k_last_5 AS float) AS wavg_k_last_5,
-        TRY_CAST(h.wavg_k_last_10 AS float) AS wavg_k_last_10,
-
         TRY_CAST(h.avg_pa_last_3 AS float) AS avg_pa_last_3,
         TRY_CAST(h.avg_pa_last_5 AS float) AS avg_pa_last_5,
         TRY_CAST(h.avg_pa_last_10 AS float) AS avg_pa_last_10,
@@ -146,6 +142,51 @@ joined AS (
         TRY_CAST(h.pct_2plus_k_last_5 AS float) AS pct_2plus_k_last_5,
         TRY_CAST(h.pct_2plus_k_last_10 AS float) AS pct_2plus_k_last_10,
 
+        /* -------------------- NEW VOLUME-WEIGHTED HITTER ROLLING -------------------- */
+        TRY_CAST(h.weighted_k_rate_last_3 AS float) AS weighted_k_rate_last_3,
+        TRY_CAST(h.weighted_k_rate_last_5 AS float) AS weighted_k_rate_last_5,
+        TRY_CAST(h.weighted_k_rate_last_10 AS float) AS weighted_k_rate_last_10,
+
+        TRY_CAST(h.weighted_walk_rate_last_3 AS float) AS weighted_walk_rate_last_3,
+        TRY_CAST(h.weighted_walk_rate_last_5 AS float) AS weighted_walk_rate_last_5,
+        TRY_CAST(h.weighted_walk_rate_last_10 AS float) AS weighted_walk_rate_last_10,
+
+        TRY_CAST(h.weighted_hit_rate_last_3 AS float) AS weighted_hit_rate_last_3,
+        TRY_CAST(h.weighted_hit_rate_last_5 AS float) AS weighted_hit_rate_last_5,
+        TRY_CAST(h.weighted_hit_rate_last_10 AS float) AS weighted_hit_rate_last_10,
+
+        TRY_CAST(h.weighted_tb_rate_last_3 AS float) AS weighted_tb_rate_last_3,
+        TRY_CAST(h.weighted_tb_rate_last_5 AS float) AS weighted_tb_rate_last_5,
+        TRY_CAST(h.weighted_tb_rate_last_10 AS float) AS weighted_tb_rate_last_10,
+
+        TRY_CAST(h.weighted_hr_rate_last_3 AS float) AS weighted_hr_rate_last_3,
+        TRY_CAST(h.weighted_hr_rate_last_5 AS float) AS weighted_hr_rate_last_5,
+        TRY_CAST(h.weighted_hr_rate_last_10 AS float) AS weighted_hr_rate_last_10,
+
+        TRY_CAST(h.weighted_batting_avg_last_3 AS float) AS weighted_batting_avg_last_3,
+        TRY_CAST(h.weighted_batting_avg_last_5 AS float) AS weighted_batting_avg_last_5,
+        TRY_CAST(h.weighted_batting_avg_last_10 AS float) AS weighted_batting_avg_last_10,
+
+        TRY_CAST(h.weighted_pitches_per_pa_last_3 AS float) AS weighted_pitches_per_pa_last_3,
+        TRY_CAST(h.weighted_pitches_per_pa_last_5 AS float) AS weighted_pitches_per_pa_last_5,
+        TRY_CAST(h.weighted_pitches_per_pa_last_10 AS float) AS weighted_pitches_per_pa_last_10,
+
+        TRY_CAST(h.weighted_obp_last_3 AS float) AS weighted_obp_last_3,
+        TRY_CAST(h.weighted_obp_last_5 AS float) AS weighted_obp_last_5,
+        TRY_CAST(h.weighted_obp_last_10 AS float) AS weighted_obp_last_10,
+
+        TRY_CAST(h.weighted_slg_last_3 AS float) AS weighted_slg_last_3,
+        TRY_CAST(h.weighted_slg_last_5 AS float) AS weighted_slg_last_5,
+        TRY_CAST(h.weighted_slg_last_10 AS float) AS weighted_slg_last_10,
+
+        TRY_CAST(h.weighted_ops_last_3 AS float) AS weighted_ops_last_3,
+        TRY_CAST(h.weighted_ops_last_5 AS float) AS weighted_ops_last_5,
+        TRY_CAST(h.weighted_ops_last_10 AS float) AS weighted_ops_last_10,
+
+        TRY_CAST(h.weighted_babip_last_3 AS float) AS weighted_babip_last_3,
+        TRY_CAST(h.weighted_babip_last_5 AS float) AS weighted_babip_last_5,
+        TRY_CAST(h.weighted_babip_last_10 AS float) AS weighted_babip_last_10,
+
         /* -------------------- STATCAST / SWING-MISS -------------------- */
         TRY_CAST(h.avg_sc_pitches_seen_last_3 AS float) AS avg_sc_pitches_seen_last_3,
         TRY_CAST(h.avg_sc_pitches_seen_last_5 AS float) AS avg_sc_pitches_seen_last_5,
@@ -205,7 +246,52 @@ joined AS (
 
         TRY_CAST(h.avg_whiff_rate_vs_lhp_last_3 AS float) AS avg_whiff_rate_vs_lhp_last_3,
         TRY_CAST(h.avg_whiff_rate_vs_lhp_last_5 AS float) AS avg_whiff_rate_vs_lhp_last_5,
-        TRY_CAST(h.avg_whiff_rate_vs_lhp_last_10 AS float) AS avg_whiff_rate_vs_lhp_last_10
+        TRY_CAST(h.avg_whiff_rate_vs_lhp_last_10 AS float) AS avg_whiff_rate_vs_lhp_last_10,
+
+        /* -------------------- NEW VOLUME-WEIGHTED STATCAST -------------------- */
+        TRY_CAST(h.weighted_whiff_rate_last_3 AS float) AS weighted_whiff_rate_last_3,
+        TRY_CAST(h.weighted_whiff_rate_last_5 AS float) AS weighted_whiff_rate_last_5,
+        TRY_CAST(h.weighted_whiff_rate_last_10 AS float) AS weighted_whiff_rate_last_10,
+
+        TRY_CAST(h.weighted_contact_rate_last_3 AS float) AS weighted_contact_rate_last_3,
+        TRY_CAST(h.weighted_contact_rate_last_5 AS float) AS weighted_contact_rate_last_5,
+        TRY_CAST(h.weighted_contact_rate_last_10 AS float) AS weighted_contact_rate_last_10,
+
+        TRY_CAST(h.weighted_swing_rate_last_3 AS float) AS weighted_swing_rate_last_3,
+        TRY_CAST(h.weighted_swing_rate_last_5 AS float) AS weighted_swing_rate_last_5,
+        TRY_CAST(h.weighted_swing_rate_last_10 AS float) AS weighted_swing_rate_last_10,
+
+        TRY_CAST(h.weighted_chase_rate_last_3 AS float) AS weighted_chase_rate_last_3,
+        TRY_CAST(h.weighted_chase_rate_last_5 AS float) AS weighted_chase_rate_last_5,
+        TRY_CAST(h.weighted_chase_rate_last_10 AS float) AS weighted_chase_rate_last_10,
+
+        TRY_CAST(h.weighted_zone_swing_rate_last_3 AS float) AS weighted_zone_swing_rate_last_3,
+        TRY_CAST(h.weighted_zone_swing_rate_last_5 AS float) AS weighted_zone_swing_rate_last_5,
+        TRY_CAST(h.weighted_zone_swing_rate_last_10 AS float) AS weighted_zone_swing_rate_last_10,
+
+        TRY_CAST(h.weighted_zone_rate_last_3 AS float) AS weighted_zone_rate_last_3,
+        TRY_CAST(h.weighted_zone_rate_last_5 AS float) AS weighted_zone_rate_last_5,
+        TRY_CAST(h.weighted_zone_rate_last_10 AS float) AS weighted_zone_rate_last_10,
+
+        TRY_CAST(h.weighted_called_strike_rate_last_3 AS float) AS weighted_called_strike_rate_last_3,
+        TRY_CAST(h.weighted_called_strike_rate_last_5 AS float) AS weighted_called_strike_rate_last_5,
+        TRY_CAST(h.weighted_called_strike_rate_last_10 AS float) AS weighted_called_strike_rate_last_10,
+
+        TRY_CAST(h.weighted_csw_against_rate_last_3 AS float) AS weighted_csw_against_rate_last_3,
+        TRY_CAST(h.weighted_csw_against_rate_last_5 AS float) AS weighted_csw_against_rate_last_5,
+        TRY_CAST(h.weighted_csw_against_rate_last_10 AS float) AS weighted_csw_against_rate_last_10,
+
+        TRY_CAST(h.weighted_two_strike_whiff_rate_last_3 AS float) AS weighted_two_strike_whiff_rate_last_3,
+        TRY_CAST(h.weighted_two_strike_whiff_rate_last_5 AS float) AS weighted_two_strike_whiff_rate_last_5,
+        TRY_CAST(h.weighted_two_strike_whiff_rate_last_10 AS float) AS weighted_two_strike_whiff_rate_last_10,
+
+        TRY_CAST(h.weighted_whiff_rate_vs_rhp_last_3 AS float) AS weighted_whiff_rate_vs_rhp_last_3,
+        TRY_CAST(h.weighted_whiff_rate_vs_rhp_last_5 AS float) AS weighted_whiff_rate_vs_rhp_last_5,
+        TRY_CAST(h.weighted_whiff_rate_vs_rhp_last_10 AS float) AS weighted_whiff_rate_vs_rhp_last_10,
+
+        TRY_CAST(h.weighted_whiff_rate_vs_lhp_last_3 AS float) AS weighted_whiff_rate_vs_lhp_last_3,
+        TRY_CAST(h.weighted_whiff_rate_vs_lhp_last_5 AS float) AS weighted_whiff_rate_vs_lhp_last_5,
+        TRY_CAST(h.weighted_whiff_rate_vs_lhp_last_10 AS float) AS weighted_whiff_rate_vs_lhp_last_10
 
     FROM lineup_base lb
     LEFT JOIN mlb.dbo.fact_hitter_model_features h
@@ -368,7 +454,7 @@ agg AS (
         AVG(avg_whiff_rate_vs_lhp_last_5) AS lineup_avg_whiff_rate_vs_lhp_last_5,
         AVG(avg_whiff_rate_vs_lhp_last_10) AS lineup_avg_whiff_rate_vs_lhp_last_10,
 
-        /* -------------------- WEIGHTED AVERAGES -------------------- */
+        /* -------------------- LINEUP-ORDER WEIGHTED SIMPLE FEATURES -------------------- */
         SUM(avg_k_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN avg_k_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_wavg_k_last_3,
         SUM(avg_k_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN avg_k_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_wavg_k_last_5,
         SUM(avg_k_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN avg_k_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_wavg_k_last_10,
@@ -392,6 +478,55 @@ agg AS (
         SUM(avg_xwoba_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN avg_xwoba_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_wavg_xwoba_last_3,
         SUM(avg_xwoba_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN avg_xwoba_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_wavg_xwoba_last_5,
         SUM(avg_xwoba_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN avg_xwoba_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_wavg_xwoba_last_10,
+
+        /* -------------------- LINEUP-ORDER WEIGHTED NEW VOLUME FEATURES -------------------- */
+        SUM(weighted_k_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_k_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_k_rate_last_3,
+        SUM(weighted_k_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_k_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_k_rate_last_5,
+        SUM(weighted_k_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_k_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_k_rate_last_10,
+
+        SUM(weighted_walk_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_walk_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_walk_rate_last_3,
+        SUM(weighted_walk_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_walk_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_walk_rate_last_5,
+        SUM(weighted_walk_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_walk_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_walk_rate_last_10,
+
+        SUM(weighted_hit_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_hit_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_hit_rate_last_3,
+        SUM(weighted_hit_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_hit_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_hit_rate_last_5,
+        SUM(weighted_hit_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_hit_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_hit_rate_last_10,
+
+        SUM(weighted_tb_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_tb_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_tb_rate_last_3,
+        SUM(weighted_tb_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_tb_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_tb_rate_last_5,
+        SUM(weighted_tb_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_tb_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_tb_rate_last_10,
+
+        SUM(weighted_hr_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_hr_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_hr_rate_last_3,
+        SUM(weighted_hr_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_hr_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_hr_rate_last_5,
+        SUM(weighted_hr_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_hr_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_hr_rate_last_10,
+
+        SUM(weighted_obp_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_obp_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_obp_last_3,
+        SUM(weighted_obp_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_obp_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_obp_last_5,
+        SUM(weighted_obp_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_obp_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_obp_last_10,
+
+        SUM(weighted_slg_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_slg_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_slg_last_3,
+        SUM(weighted_slg_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_slg_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_slg_last_5,
+        SUM(weighted_slg_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_slg_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_slg_last_10,
+
+        SUM(weighted_ops_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_ops_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_ops_last_3,
+        SUM(weighted_ops_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_ops_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_ops_last_5,
+        SUM(weighted_ops_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_ops_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_ops_last_10,
+
+        SUM(weighted_whiff_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_last_3,
+        SUM(weighted_whiff_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_last_5,
+        SUM(weighted_whiff_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_last_10,
+
+        SUM(weighted_csw_against_rate_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_csw_against_rate_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_csw_against_rate_last_3,
+        SUM(weighted_csw_against_rate_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_csw_against_rate_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_csw_against_rate_last_5,
+        SUM(weighted_csw_against_rate_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_csw_against_rate_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_csw_against_rate_last_10,
+
+        SUM(weighted_whiff_rate_vs_rhp_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_vs_rhp_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_vs_rhp_last_3,
+        SUM(weighted_whiff_rate_vs_rhp_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_vs_rhp_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_vs_rhp_last_5,
+        SUM(weighted_whiff_rate_vs_rhp_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_vs_rhp_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_vs_rhp_last_10,
+
+        SUM(weighted_whiff_rate_vs_lhp_last_3 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_vs_lhp_last_3 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_vs_lhp_last_3,
+        SUM(weighted_whiff_rate_vs_lhp_last_5 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_vs_lhp_last_5 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_vs_lhp_last_5,
+        SUM(weighted_whiff_rate_vs_lhp_last_10 * lineup_weight) / NULLIF(SUM(CASE WHEN weighted_whiff_rate_vs_lhp_last_10 IS NOT NULL THEN lineup_weight END), 0) AS lineup_weighted_whiff_rate_vs_lhp_last_10,
 
         /* -------------------- COUNTS -------------------- */
         SUM(CASE WHEN avg_k_last_5 >= 1.0 THEN 1 ELSE 0 END) AS lineup_num_high_k_hitters,

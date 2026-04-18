@@ -121,42 +121,50 @@ WITH pitcher_base AS (
         TRY_CAST(p.pct_7plus_k_last_5 AS float) AS pct_7plus_k_last_5,
         TRY_CAST(p.pct_7plus_k_last_10 AS float) AS pct_7plus_k_last_10,
 
-        /* -------------------- WEIGHTED CORE -------------------- */
-        TRY_CAST(p.weighted_k_last_3 AS float) AS weighted_k_last_3,
-        TRY_CAST(p.weighted_k_last_5 AS float) AS weighted_k_last_5,
-        TRY_CAST(p.weighted_k_last_10 AS float) AS weighted_k_last_10,
+        /* -------------------- NEW WEIGHTED CORE -------------------- */
+        TRY_CAST(p.weighted_k_per_bf_last_3 AS float) AS weighted_k_per_bf_last_3,
+        TRY_CAST(p.weighted_k_per_bf_last_5 AS float) AS weighted_k_per_bf_last_5,
+        TRY_CAST(p.weighted_k_per_bf_last_10 AS float) AS weighted_k_per_bf_last_10,
 
-        TRY_CAST(p.weighted_ip_last_3 AS float) AS weighted_ip_last_3,
-        TRY_CAST(p.weighted_ip_last_5 AS float) AS weighted_ip_last_5,
-        TRY_CAST(p.weighted_ip_last_10 AS float) AS weighted_ip_last_10,
+        TRY_CAST(p.weighted_bb_per_bf_last_3 AS float) AS weighted_bb_per_bf_last_3,
+        TRY_CAST(p.weighted_bb_per_bf_last_5 AS float) AS weighted_bb_per_bf_last_5,
+        TRY_CAST(p.weighted_bb_per_bf_last_10 AS float) AS weighted_bb_per_bf_last_10,
 
-        TRY_CAST(p.weighted_bf_last_3 AS float) AS weighted_bf_last_3,
-        TRY_CAST(p.weighted_bf_last_5 AS float) AS weighted_bf_last_5,
-        TRY_CAST(p.weighted_bf_last_10 AS float) AS weighted_bf_last_10,
+        TRY_CAST(p.weighted_baa_last_3 AS float) AS weighted_baa_last_3,
+        TRY_CAST(p.weighted_baa_last_5 AS float) AS weighted_baa_last_5,
+        TRY_CAST(p.weighted_baa_last_10 AS float) AS weighted_baa_last_10,
 
-        TRY_CAST(p.weighted_pitches_last_3 AS float) AS weighted_pitches_last_3,
-        TRY_CAST(p.weighted_pitches_last_5 AS float) AS weighted_pitches_last_5,
-        TRY_CAST(p.weighted_pitches_last_10 AS float) AS weighted_pitches_last_10,
+        TRY_CAST(p.weighted_hr_per_bf_last_3 AS float) AS weighted_hr_per_bf_last_3,
+        TRY_CAST(p.weighted_hr_per_bf_last_5 AS float) AS weighted_hr_per_bf_last_5,
+        TRY_CAST(p.weighted_hr_per_bf_last_10 AS float) AS weighted_hr_per_bf_last_10,
 
         TRY_CAST(p.weighted_strike_pct_last_3 AS float) AS weighted_strike_pct_last_3,
         TRY_CAST(p.weighted_strike_pct_last_5 AS float) AS weighted_strike_pct_last_5,
         TRY_CAST(p.weighted_strike_pct_last_10 AS float) AS weighted_strike_pct_last_10,
 
+        TRY_CAST(p.weighted_pitches_per_inning_last_3 AS float) AS weighted_pitches_per_inning_last_3,
+        TRY_CAST(p.weighted_pitches_per_inning_last_5 AS float) AS weighted_pitches_per_inning_last_5,
+        TRY_CAST(p.weighted_pitches_per_inning_last_10 AS float) AS weighted_pitches_per_inning_last_10,
+
         TRY_CAST(p.weighted_k9_last_3 AS float) AS weighted_k9_last_3,
         TRY_CAST(p.weighted_k9_last_5 AS float) AS weighted_k9_last_5,
         TRY_CAST(p.weighted_k9_last_10 AS float) AS weighted_k9_last_10,
 
-        TRY_CAST(p.weighted_bb_last_3 AS float) AS weighted_bb_last_3,
-        TRY_CAST(p.weighted_bb_last_5 AS float) AS weighted_bb_last_5,
-        TRY_CAST(p.weighted_bb_last_10 AS float) AS weighted_bb_last_10,
+        TRY_CAST(p.weighted_bb9_last_3 AS float) AS weighted_bb9_last_3,
+        TRY_CAST(p.weighted_bb9_last_5 AS float) AS weighted_bb9_last_5,
+        TRY_CAST(p.weighted_bb9_last_10 AS float) AS weighted_bb9_last_10,
 
         TRY_CAST(p.weighted_whip_last_3 AS float) AS weighted_whip_last_3,
         TRY_CAST(p.weighted_whip_last_5 AS float) AS weighted_whip_last_5,
         TRY_CAST(p.weighted_whip_last_10 AS float) AS weighted_whip_last_10,
 
-        TRY_CAST(p.weighted_outs_last_3 AS float) AS weighted_outs_last_3,
-        TRY_CAST(p.weighted_outs_last_5 AS float) AS weighted_outs_last_5,
-        TRY_CAST(p.weighted_outs_last_10 AS float) AS weighted_outs_last_10,
+        TRY_CAST(p.weighted_kbb_last_3 AS float) AS weighted_kbb_last_3,
+        TRY_CAST(p.weighted_kbb_last_5 AS float) AS weighted_kbb_last_5,
+        TRY_CAST(p.weighted_kbb_last_10 AS float) AS weighted_kbb_last_10,
+
+        TRY_CAST(p.weighted_inherited_runner_score_pct_last_3 AS float) AS weighted_inherited_runner_score_pct_last_3,
+        TRY_CAST(p.weighted_inherited_runner_score_pct_last_5 AS float) AS weighted_inherited_runner_score_pct_last_5,
+        TRY_CAST(p.weighted_inherited_runner_score_pct_last_10 AS float) AS weighted_inherited_runner_score_pct_last_10,
 
         /* -------------------- STATCAST -------------------- */
         TRY_CAST(p.avg_sc_pitches_last_3 AS float) AS avg_sc_pitches_last_3,
@@ -227,10 +235,6 @@ WITH pitcher_base AS (
         TRY_CAST(p.avg_whiff_vs_lhb_last_5 AS float) AS avg_whiff_vs_lhb_last_5,
         TRY_CAST(p.avg_whiff_vs_lhb_last_10 AS float) AS avg_whiff_vs_lhb_last_10,
 
-        TRY_CAST(p.weighted_sc_pitches_last_3 AS float) AS weighted_sc_pitches_last_3,
-        TRY_CAST(p.weighted_sc_pitches_last_5 AS float) AS weighted_sc_pitches_last_5,
-        TRY_CAST(p.weighted_sc_pitches_last_10 AS float) AS weighted_sc_pitches_last_10,
-
         TRY_CAST(p.weighted_whiff_rate_last_3 AS float) AS weighted_whiff_rate_last_3,
         TRY_CAST(p.weighted_whiff_rate_last_5 AS float) AS weighted_whiff_rate_last_5,
         TRY_CAST(p.weighted_whiff_rate_last_10 AS float) AS weighted_whiff_rate_last_10,
@@ -242,14 +246,6 @@ WITH pitcher_base AS (
         TRY_CAST(p.weighted_sc_strike_rate_last_3 AS float) AS weighted_sc_strike_rate_last_3,
         TRY_CAST(p.weighted_sc_strike_rate_last_5 AS float) AS weighted_sc_strike_rate_last_5,
         TRY_CAST(p.weighted_sc_strike_rate_last_10 AS float) AS weighted_sc_strike_rate_last_10,
-
-        TRY_CAST(p.weighted_velocity_last_3 AS float) AS weighted_velocity_last_3,
-        TRY_CAST(p.weighted_velocity_last_5 AS float) AS weighted_velocity_last_5,
-        TRY_CAST(p.weighted_velocity_last_10 AS float) AS weighted_velocity_last_10,
-
-        TRY_CAST(p.weighted_spin_rate_last_3 AS float) AS weighted_spin_rate_last_3,
-        TRY_CAST(p.weighted_spin_rate_last_5 AS float) AS weighted_spin_rate_last_5,
-        TRY_CAST(p.weighted_spin_rate_last_10 AS float) AS weighted_spin_rate_last_10,
 
         TRY_CAST(p.weighted_chase_rate_last_3 AS float) AS weighted_chase_rate_last_3,
         TRY_CAST(p.weighted_chase_rate_last_5 AS float) AS weighted_chase_rate_last_5,
@@ -269,9 +265,6 @@ WITH pitcher_base AS (
         TRY_CAST(p.prev_strike_pct AS float) AS prev_strike_pct,
         TRY_CAST(p.prev_bb AS float) AS prev_bb,
         TRY_CAST(p.prev_whip AS float) AS prev_whip,
-        TRY_CAST(p.prev_hits AS float) AS prev_hits,
-        TRY_CAST(p.prev_hr AS float) AS prev_hr,
-        TRY_CAST(p.prev_games_started AS float) AS prev_games_started,
         TRY_CAST(p.prev_whiff_rate AS float) AS prev_whiff_rate,
         TRY_CAST(p.prev_csw_rate AS float) AS prev_csw_rate,
         TRY_CAST(p.prev_velocity AS float) AS prev_velocity,
@@ -363,6 +356,55 @@ joined AS (
         TRY_CAST(l.lineup_wavg_xwoba_last_5 AS float) AS opp_lineup_wavg_xwoba_last_5,
         TRY_CAST(l.lineup_wavg_xwoba_last_10 AS float) AS opp_lineup_wavg_xwoba_last_10,
 
+        /* -------------------- NEW LINEUP WEIGHTED VOLUME FEATURES -------------------- */
+        TRY_CAST(l.lineup_weighted_k_rate_last_3 AS float) AS opp_lineup_weighted_k_rate_last_3,
+        TRY_CAST(l.lineup_weighted_k_rate_last_5 AS float) AS opp_lineup_weighted_k_rate_last_5,
+        TRY_CAST(l.lineup_weighted_k_rate_last_10 AS float) AS opp_lineup_weighted_k_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_walk_rate_last_3 AS float) AS opp_lineup_weighted_walk_rate_last_3,
+        TRY_CAST(l.lineup_weighted_walk_rate_last_5 AS float) AS opp_lineup_weighted_walk_rate_last_5,
+        TRY_CAST(l.lineup_weighted_walk_rate_last_10 AS float) AS opp_lineup_weighted_walk_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_hit_rate_last_3 AS float) AS opp_lineup_weighted_hit_rate_last_3,
+        TRY_CAST(l.lineup_weighted_hit_rate_last_5 AS float) AS opp_lineup_weighted_hit_rate_last_5,
+        TRY_CAST(l.lineup_weighted_hit_rate_last_10 AS float) AS opp_lineup_weighted_hit_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_tb_rate_last_3 AS float) AS opp_lineup_weighted_tb_rate_last_3,
+        TRY_CAST(l.lineup_weighted_tb_rate_last_5 AS float) AS opp_lineup_weighted_tb_rate_last_5,
+        TRY_CAST(l.lineup_weighted_tb_rate_last_10 AS float) AS opp_lineup_weighted_tb_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_hr_rate_last_3 AS float) AS opp_lineup_weighted_hr_rate_last_3,
+        TRY_CAST(l.lineup_weighted_hr_rate_last_5 AS float) AS opp_lineup_weighted_hr_rate_last_5,
+        TRY_CAST(l.lineup_weighted_hr_rate_last_10 AS float) AS opp_lineup_weighted_hr_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_obp_last_3 AS float) AS opp_lineup_weighted_obp_last_3,
+        TRY_CAST(l.lineup_weighted_obp_last_5 AS float) AS opp_lineup_weighted_obp_last_5,
+        TRY_CAST(l.lineup_weighted_obp_last_10 AS float) AS opp_lineup_weighted_obp_last_10,
+
+        TRY_CAST(l.lineup_weighted_slg_last_3 AS float) AS opp_lineup_weighted_slg_last_3,
+        TRY_CAST(l.lineup_weighted_slg_last_5 AS float) AS opp_lineup_weighted_slg_last_5,
+        TRY_CAST(l.lineup_weighted_slg_last_10 AS float) AS opp_lineup_weighted_slg_last_10,
+
+        TRY_CAST(l.lineup_weighted_ops_last_3 AS float) AS opp_lineup_weighted_ops_last_3,
+        TRY_CAST(l.lineup_weighted_ops_last_5 AS float) AS opp_lineup_weighted_ops_last_5,
+        TRY_CAST(l.lineup_weighted_ops_last_10 AS float) AS opp_lineup_weighted_ops_last_10,
+
+        TRY_CAST(l.lineup_weighted_whiff_rate_last_3 AS float) AS opp_lineup_weighted_whiff_rate_last_3,
+        TRY_CAST(l.lineup_weighted_whiff_rate_last_5 AS float) AS opp_lineup_weighted_whiff_rate_last_5,
+        TRY_CAST(l.lineup_weighted_whiff_rate_last_10 AS float) AS opp_lineup_weighted_whiff_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_csw_against_rate_last_3 AS float) AS opp_lineup_weighted_csw_against_rate_last_3,
+        TRY_CAST(l.lineup_weighted_csw_against_rate_last_5 AS float) AS opp_lineup_weighted_csw_against_rate_last_5,
+        TRY_CAST(l.lineup_weighted_csw_against_rate_last_10 AS float) AS opp_lineup_weighted_csw_against_rate_last_10,
+
+        TRY_CAST(l.lineup_weighted_whiff_rate_vs_rhp_last_3 AS float) AS opp_lineup_weighted_whiff_rate_vs_rhp_last_3,
+        TRY_CAST(l.lineup_weighted_whiff_rate_vs_rhp_last_5 AS float) AS opp_lineup_weighted_whiff_rate_vs_rhp_last_5,
+        TRY_CAST(l.lineup_weighted_whiff_rate_vs_rhp_last_10 AS float) AS opp_lineup_weighted_whiff_rate_vs_rhp_last_10,
+
+        TRY_CAST(l.lineup_weighted_whiff_rate_vs_lhp_last_3 AS float) AS opp_lineup_weighted_whiff_rate_vs_lhp_last_3,
+        TRY_CAST(l.lineup_weighted_whiff_rate_vs_lhp_last_5 AS float) AS opp_lineup_weighted_whiff_rate_vs_lhp_last_5,
+        TRY_CAST(l.lineup_weighted_whiff_rate_vs_lhp_last_10 AS float) AS opp_lineup_weighted_whiff_rate_vs_lhp_last_10,
+
         TRY_CAST(l.lineup_num_high_k_hitters AS float) AS opp_lineup_num_high_k_hitters,
         TRY_CAST(l.lineup_num_power_hitters AS float) AS opp_lineup_num_power_hitters,
         TRY_CAST(l.lineup_num_high_whiff_hitters AS float) AS opp_lineup_num_high_whiff_hitters,
@@ -383,29 +425,20 @@ SELECT
     CAST(j.avg_pitches_last_5  / NULLIF(j.avg_bf_last_5,  0) AS DECIMAL(10,4)) AS avg_pitches_per_batter_last_5,
     CAST(j.avg_pitches_last_10 / NULLIF(j.avg_bf_last_10, 0) AS DECIMAL(10,4)) AS avg_pitches_per_batter_last_10,
 
-    CAST(j.weighted_pitches_last_3  / NULLIF(j.weighted_bf_last_3,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_batter_last_3,
-    CAST(j.weighted_pitches_last_5  / NULLIF(j.weighted_bf_last_5,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_batter_last_5,
-    CAST(j.weighted_pitches_last_10 / NULLIF(j.weighted_bf_last_10, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_batter_last_10,
+    /* -------------------- NEW VOLUME EFFICIENCY METRICS -------------------- */
+    CAST(j.weighted_pitches_per_inning_last_3 / 3.0 AS DECIMAL(10,4)) AS weighted_pitches_per_out_last_3,
+    CAST(j.weighted_pitches_per_inning_last_5 / 3.0 AS DECIMAL(10,4)) AS weighted_pitches_per_out_last_5,
+    CAST(j.weighted_pitches_per_inning_last_10 / 3.0 AS DECIMAL(10,4)) AS weighted_pitches_per_out_last_10,
 
-    /* -------------------- PITCH EFFICIENCY: EXACT PER INNING (USING OUTS) -------------------- */
-    CAST((j.avg_pitches_last_3  * 3.0) / NULLIF(j.avg_outs_last_3,  0) AS DECIMAL(10,4)) AS exact_pitches_per_inning_last_3,
-    CAST((j.avg_pitches_last_5  * 3.0) / NULLIF(j.avg_outs_last_5,  0) AS DECIMAL(10,4)) AS exact_pitches_per_inning_last_5,
-    CAST((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0) AS DECIMAL(10,4)) AS exact_pitches_per_inning_last_10,
+    CAST(1.0 / NULLIF(j.weighted_k_per_bf_last_3, 0) AS DECIMAL(10,4)) AS weighted_bf_per_strikeout_last_3,
+    CAST(1.0 / NULLIF(j.weighted_k_per_bf_last_5, 0) AS DECIMAL(10,4)) AS weighted_bf_per_strikeout_last_5,
+    CAST(1.0 / NULLIF(j.weighted_k_per_bf_last_10, 0) AS DECIMAL(10,4)) AS weighted_bf_per_strikeout_last_10,
 
-    CAST((j.weighted_pitches_last_3  * 3.0) / NULLIF(j.weighted_outs_last_3,  0) AS DECIMAL(10,4)) AS weighted_exact_pitches_per_inning_last_3,
-    CAST((j.weighted_pitches_last_5  * 3.0) / NULLIF(j.weighted_outs_last_5,  0) AS DECIMAL(10,4)) AS weighted_exact_pitches_per_inning_last_5,
-    CAST((j.weighted_pitches_last_10 * 3.0) / NULLIF(j.weighted_outs_last_10, 0) AS DECIMAL(10,4)) AS weighted_exact_pitches_per_inning_last_10,
+    CAST(j.weighted_pitches_per_inning_last_3 / NULLIF(j.weighted_k9_last_3 / 9.0, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_3,
+    CAST(j.weighted_pitches_per_inning_last_5 / NULLIF(j.weighted_k9_last_5 / 9.0, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_5,
+    CAST(j.weighted_pitches_per_inning_last_10 / NULLIF(j.weighted_k9_last_10 / 9.0, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_10,
 
-    /* -------------------- PITCH EFFICIENCY: PER STRIKEOUT -------------------- */
-    CAST(j.avg_pitches_last_3  / NULLIF(j.avg_k_last_3,  0) AS DECIMAL(10,4)) AS avg_pitches_per_strikeout_last_3,
-    CAST(j.avg_pitches_last_5  / NULLIF(j.avg_k_last_5,  0) AS DECIMAL(10,4)) AS avg_pitches_per_strikeout_last_5,
-    CAST(j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0) AS DECIMAL(10,4)) AS avg_pitches_per_strikeout_last_10,
-
-    CAST(j.weighted_pitches_last_3  / NULLIF(j.weighted_k_last_3,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_3,
-    CAST(j.weighted_pitches_last_5  / NULLIF(j.weighted_k_last_5,  0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_5,
-    CAST(j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0) AS DECIMAL(10,4)) AS weighted_pitches_per_strikeout_last_10,
-
-    /* -------------------- EFFICIENCY LABELS: PER BATTER -------------------- */
+    /* -------------------- EFFICIENCY LABELS -------------------- */
     CASE
         WHEN j.avg_bf_last_3 IS NULL OR j.avg_bf_last_3 = 0 OR j.avg_pitches_last_3 IS NULL THEN NULL
         WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_bf_last_3, 0)) <= 3.60 THEN 'elite'
@@ -430,79 +463,29 @@ SELECT
         ELSE 'inefficient'
     END AS pitches_per_batter_efficiency_last_10,
 
-    /* -------------------- EFFICIENCY LABELS: PER INNING -------------------- */
     CASE
-        WHEN j.avg_outs_last_3 IS NULL OR j.avg_outs_last_3 = 0 OR j.avg_pitches_last_3 IS NULL THEN NULL
-        WHEN ((j.avg_pitches_last_3 * 3.0) / NULLIF(j.avg_outs_last_3, 0)) <= 13.50 THEN 'elite'
-        WHEN ((j.avg_pitches_last_3 * 3.0) / NULLIF(j.avg_outs_last_3, 0)) <= 15.00 THEN 'good'
-        WHEN ((j.avg_pitches_last_3 * 3.0) / NULLIF(j.avg_outs_last_3, 0)) <= 17.00 THEN 'average'
+        WHEN j.weighted_k_per_bf_last_3 IS NULL OR j.weighted_k_per_bf_last_3 = 0 THEN NULL
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_3, 0)) <= 3.80 THEN 'elite'
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_3, 0)) <= 4.60 THEN 'good'
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_3, 0)) <= 5.50 THEN 'average'
         ELSE 'inefficient'
-    END AS pitches_per_inning_efficiency_last_3,
+    END AS weighted_bf_per_strikeout_efficiency_last_3,
 
     CASE
-        WHEN j.avg_outs_last_5 IS NULL OR j.avg_outs_last_5 = 0 OR j.avg_pitches_last_5 IS NULL THEN NULL
-        WHEN ((j.avg_pitches_last_5 * 3.0) / NULLIF(j.avg_outs_last_5, 0)) <= 13.50 THEN 'elite'
-        WHEN ((j.avg_pitches_last_5 * 3.0) / NULLIF(j.avg_outs_last_5, 0)) <= 15.00 THEN 'good'
-        WHEN ((j.avg_pitches_last_5 * 3.0) / NULLIF(j.avg_outs_last_5, 0)) <= 17.00 THEN 'average'
+        WHEN j.weighted_k_per_bf_last_5 IS NULL OR j.weighted_k_per_bf_last_5 = 0 THEN NULL
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_5, 0)) <= 3.80 THEN 'elite'
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_5, 0)) <= 4.60 THEN 'good'
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_5, 0)) <= 5.50 THEN 'average'
         ELSE 'inefficient'
-    END AS pitches_per_inning_efficiency_last_5,
+    END AS weighted_bf_per_strikeout_efficiency_last_5,
 
     CASE
-        WHEN j.avg_outs_last_10 IS NULL OR j.avg_outs_last_10 = 0 OR j.avg_pitches_last_10 IS NULL THEN NULL
-        WHEN ((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0)) <= 13.50 THEN 'elite'
-        WHEN ((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0)) <= 15.00 THEN 'good'
-        WHEN ((j.avg_pitches_last_10 * 3.0) / NULLIF(j.avg_outs_last_10, 0)) <= 17.00 THEN 'average'
+        WHEN j.weighted_k_per_bf_last_10 IS NULL OR j.weighted_k_per_bf_last_10 = 0 THEN NULL
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_10, 0)) <= 3.80 THEN 'elite'
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_10, 0)) <= 4.60 THEN 'good'
+        WHEN (1.0 / NULLIF(j.weighted_k_per_bf_last_10, 0)) <= 5.50 THEN 'average'
         ELSE 'inefficient'
-    END AS pitches_per_inning_efficiency_last_10,
-
-    /* -------------------- EFFICIENCY LABELS: PER STRIKEOUT -------------------- */
-    CASE
-        WHEN j.avg_k_last_3 IS NULL OR j.avg_k_last_3 = 0 OR j.avg_pitches_last_3 IS NULL THEN NULL
-        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_k_last_3, 0)) <= 12.00 THEN 'elite'
-        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_k_last_3, 0)) <= 15.00 THEN 'good'
-        WHEN (j.avg_pitches_last_3 / NULLIF(j.avg_k_last_3, 0)) <= 18.00 THEN 'average'
-        ELSE 'inefficient'
-    END AS pitches_per_strikeout_efficiency_last_3,
-
-    CASE
-        WHEN j.weighted_k_last_3 IS NULL OR j.weighted_k_last_3 = 0 OR j.weighted_pitches_last_3 IS NULL THEN NULL
-        WHEN (j.weighted_pitches_last_3 / NULLIF(j.weighted_k_last_3, 0)) <= 12.00 THEN 'elite'
-        WHEN (j.weighted_pitches_last_3 / NULLIF(j.weighted_k_last_3, 0)) <= 15.00 THEN 'good'
-        WHEN (j.weighted_pitches_last_3 / NULLIF(j.weighted_k_last_3, 0)) <= 18.00 THEN 'average'
-        ELSE 'inefficient'
-    END AS weighted_pitches_per_strikeout_efficiency_last_3,
-
-    CASE
-        WHEN j.avg_k_last_5 IS NULL OR j.avg_k_last_5 = 0 OR j.avg_pitches_last_5 IS NULL THEN NULL
-        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 12.00 THEN 'elite'
-        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 15.00 THEN 'good'
-        WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 18.00 THEN 'average'
-        ELSE 'inefficient'
-    END AS pitches_per_strikeout_efficiency_last_5,
-
-    CASE
-        WHEN j.weighted_k_last_5 IS NULL OR j.weighted_k_last_5 = 0 OR j.weighted_pitches_last_5 IS NULL THEN NULL
-        WHEN (j.weighted_pitches_last_5 / NULLIF(j.weighted_k_last_5, 0)) <= 12.00 THEN 'elite'
-        WHEN (j.weighted_pitches_last_5 / NULLIF(j.weighted_k_last_5, 0)) <= 15.00 THEN 'good'
-        WHEN (j.weighted_pitches_last_5 / NULLIF(j.weighted_k_last_5, 0)) <= 18.00 THEN 'average'
-        ELSE 'inefficient'
-    END AS weighted_pitches_per_strikeout_efficiency_last_5,
-
-    CASE
-        WHEN j.avg_k_last_10 IS NULL OR j.avg_k_last_10 = 0 OR j.avg_pitches_last_10 IS NULL THEN NULL
-        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 12.00 THEN 'elite'
-        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 15.00 THEN 'good'
-        WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 18.00 THEN 'average'
-        ELSE 'inefficient'
-    END AS pitches_per_strikeout_efficiency_last_10,
-
-    CASE
-        WHEN j.weighted_k_last_10 IS NULL OR j.weighted_k_last_10 = 0 OR j.weighted_pitches_last_10 IS NULL THEN NULL
-        WHEN (j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0)) <= 12.00 THEN 'elite'
-        WHEN (j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0)) <= 15.00 THEN 'good'
-        WHEN (j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0)) <= 18.00 THEN 'average'
-        ELSE 'inefficient'
-    END AS weighted_pitches_per_strikeout_efficiency_last_10
+    END AS weighted_bf_per_strikeout_efficiency_last_10
 
 INTO mlb.dbo.fact_pitcher_vs_lineup_features
 FROM joined j;
