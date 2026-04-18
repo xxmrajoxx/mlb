@@ -358,40 +358,59 @@ def build_pitcher_statcast_rolling_features() -> None:
     logger.info("Building mlb.dbo.fact_pitcher_statcast_rolling_features")
 
     sql = """
+/* =========================================================
+   0. CLEAN UP
+========================================================= */
+IF OBJECT_ID('mlb.dbo.fact_pitcher_statcast_rolling_core', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.fact_pitcher_statcast_rolling_core;
+
+IF OBJECT_ID('mlb.dbo.fact_pitcher_statcast_rolling_shape', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.fact_pitcher_statcast_rolling_shape;
+
+IF OBJECT_ID('mlb.dbo.fact_pitcher_statcast_rolling_pitchmix', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.fact_pitcher_statcast_rolling_pitchmix;
+
+IF OBJECT_ID('mlb.dbo.fact_pitcher_statcast_rolling_pitchtype_whiff', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.fact_pitcher_statcast_rolling_pitchtype_whiff;
+
 IF OBJECT_ID('mlb.dbo.fact_pitcher_statcast_rolling_features', 'U') IS NOT NULL
     DROP TABLE mlb.dbo.fact_pitcher_statcast_rolling_features;
 
+
+/* =========================================================
+   1. BASE
+========================================================= */
 WITH base AS (
     SELECT
         game_pk,
         CAST(game_date AS date) AS game_date,
         YEAR(CAST(game_date AS date)) AS season,
-        player_id,
+        TRY_CAST(player_id AS int) AS player_id,
         player_name,
-        team_id,
+        TRY_CAST(team_id AS int) AS team_id,
 
         TRY_CAST(total_pitches AS float) AS total_pitches,
+
         TRY_CAST(whiff_rate AS float) AS whiff_rate,
         TRY_CAST(called_strike_rate AS float) AS called_strike_rate,
         TRY_CAST(csw_rate AS float) AS csw_rate,
         TRY_CAST(strike_rate AS float) AS strike_rate,
         TRY_CAST(approx_first_pitch_strike_rate AS float) AS approx_first_pitch_strike_rate,
         TRY_CAST(putaway_rate AS float) AS putaway_rate,
-
         TRY_CAST(swing_rate AS float) AS swing_rate,
         TRY_CAST(chase_rate AS float) AS chase_rate,
         TRY_CAST(zone_rate AS float) AS zone_rate,
-
         TRY_CAST(whiff_rate_0_2 AS float) AS whiff_rate_0_2,
         TRY_CAST(whiff_rate_1_2 AS float) AS whiff_rate_1_2,
         TRY_CAST(whiff_rate_2_2 AS float) AS whiff_rate_2_2,
+        TRY_CAST(whiff_rate_vs_rhb AS float) AS whiff_rate_vs_rhb,
+        TRY_CAST(whiff_rate_vs_lhb AS float) AS whiff_rate_vs_lhb,
 
         TRY_CAST(avg_velocity AS float) AS avg_velocity,
         TRY_CAST(max_velocity AS float) AS max_velocity,
         TRY_CAST(avg_spin_rate AS float) AS avg_spin_rate,
         TRY_CAST(avg_extension AS float) AS avg_extension,
         TRY_CAST(avg_exit_velocity_allowed AS float) AS avg_exit_velocity_allowed,
-
         TRY_CAST(avg_horz_movement AS float) AS avg_horz_movement,
         TRY_CAST(avg_vert_movement AS float) AS avg_vert_movement,
         TRY_CAST(avg_plate_x AS float) AS avg_plate_x,
@@ -411,1209 +430,669 @@ WITH base AS (
         TRY_CAST(sl_whiff_rate AS float) AS sl_whiff_rate,
         TRY_CAST(cu_whiff_rate AS float) AS cu_whiff_rate,
         TRY_CAST(ch_whiff_rate AS float) AS ch_whiff_rate,
-        TRY_CAST(fs_whiff_rate AS float) AS fs_whiff_rate,
-
-        TRY_CAST(whiff_rate_vs_rhb AS float) AS whiff_rate_vs_rhb,
-        TRY_CAST(whiff_rate_vs_lhb AS float) AS whiff_rate_vs_lhb
-
+        TRY_CAST(fs_whiff_rate AS float) AS fs_whiff_rate
     FROM mlb.dbo.fact_pitcher_statcast_game_agg
     WHERE player_id IS NOT NULL
       AND game_pk IS NOT NULL
-),
-
-rolling AS (
-    SELECT
-        game_pk,
-        game_date,
-        season,
-        player_id,
-        player_name,
-        team_id,
-
-        -- =========================
-        -- SIMPLE AVG LAST 3
-        -- =========================
-        AVG(total_pitches) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_pitches_last_3,
-
-        AVG(whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_last_3,
-
-        AVG(called_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_called_strike_rate_last_3,
-
-        AVG(csw_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_csw_rate_last_3,
-
-        AVG(strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_strike_rate_last_3,
-
-        AVG(approx_first_pitch_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_fps_rate_last_3,
-
-        AVG(putaway_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_putaway_rate_last_3,
-
-        AVG(swing_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_swing_rate_last_3,
-
-        AVG(chase_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_chase_rate_last_3,
-
-        AVG(zone_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_zone_rate_last_3,
-
-        AVG(whiff_rate_0_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_0_2_last_3,
-
-        AVG(whiff_rate_1_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_1_2_last_3,
-
-        AVG(whiff_rate_2_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_2_2_last_3,
-
-        AVG(avg_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_velocity_last_3,
-
-        AVG(max_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_max_velocity_last_3,
-
-        AVG(avg_spin_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_spin_rate_last_3,
-
-        AVG(avg_extension) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_extension_last_3,
-
-        AVG(avg_exit_velocity_allowed) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ev_allowed_last_3,
-
-        AVG(avg_horz_movement) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_horz_movement_last_3,
-
-        AVG(avg_vert_movement) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_vert_movement_last_3,
-
-        AVG(avg_plate_x) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_plate_x_last_3,
-
-        AVG(avg_plate_z) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_plate_z_last_3,
-
-        AVG(ff_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_pct_last_3,
-
-        AVG(si_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_si_pct_last_3,
-
-        AVG(fc_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_fc_pct_last_3,
-
-        AVG(sl_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_pct_last_3,
-
-        AVG(cu_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_pct_last_3,
-
-        AVG(ch_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_pct_last_3,
-
-        AVG(fs_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_fs_pct_last_3,
-
-        AVG(ff_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_whiff_rate_last_3,
-
-        AVG(si_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_si_whiff_rate_last_3,
-
-        AVG(fc_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_fc_whiff_rate_last_3,
-
-        AVG(sl_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_whiff_rate_last_3,
-
-        AVG(cu_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_whiff_rate_last_3,
-
-        AVG(ch_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_whiff_rate_last_3,
-
-        AVG(fs_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_fs_whiff_rate_last_3,
-
-        AVG(whiff_rate_vs_rhb) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_vs_rhb_last_3,
-
-        AVG(whiff_rate_vs_lhb) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_vs_lhb_last_3,
-
-        -- =========================
-        -- SIMPLE AVG LAST 5
-        -- =========================
-        AVG(total_pitches) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_pitches_last_5,
-
-        AVG(whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_last_5,
-
-        AVG(called_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_called_strike_rate_last_5,
-
-        AVG(csw_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_csw_rate_last_5,
-
-        AVG(strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_strike_rate_last_5,
-
-        AVG(approx_first_pitch_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_fps_rate_last_5,
-
-        AVG(putaway_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_putaway_rate_last_5,
-
-        AVG(swing_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_swing_rate_last_5,
-
-        AVG(chase_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_chase_rate_last_5,
-
-        AVG(zone_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_zone_rate_last_5,
-
-        AVG(whiff_rate_0_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_0_2_last_5,
-
-        AVG(whiff_rate_1_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_1_2_last_5,
-
-        AVG(whiff_rate_2_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_2_2_last_5,
-
-        AVG(avg_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_velocity_last_5,
-
-        AVG(max_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_max_velocity_last_5,
-
-        AVG(avg_spin_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_spin_rate_last_5,
-
-        AVG(avg_extension) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_extension_last_5,
-
-        AVG(avg_exit_velocity_allowed) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ev_allowed_last_5,
-
-        AVG(avg_horz_movement) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_horz_movement_last_5,
-
-        AVG(avg_vert_movement) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_vert_movement_last_5,
-
-        AVG(avg_plate_x) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_plate_x_last_5,
-
-        AVG(avg_plate_z) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_plate_z_last_5,
-
-        AVG(ff_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_pct_last_5,
-
-        AVG(si_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_si_pct_last_5,
-
-        AVG(fc_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_fc_pct_last_5,
-
-        AVG(sl_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_pct_last_5,
-
-        AVG(cu_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_pct_last_5,
-
-        AVG(ch_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_pct_last_5,
-
-        AVG(fs_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_fs_pct_last_5,
-
-        AVG(ff_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_whiff_rate_last_5,
-
-        AVG(si_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_si_whiff_rate_last_5,
-
-        AVG(fc_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_fc_whiff_rate_last_5,
-
-        AVG(sl_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_whiff_rate_last_5,
-
-        AVG(cu_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_whiff_rate_last_5,
-
-        AVG(ch_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_whiff_rate_last_5,
-
-        AVG(fs_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_fs_whiff_rate_last_5,
-
-        AVG(whiff_rate_vs_rhb) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_vs_rhb_last_5,
-
-        AVG(whiff_rate_vs_lhb) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_vs_lhb_last_5,
-
-        -- =========================
-        -- SIMPLE AVG LAST 10
-        -- =========================
-        AVG(total_pitches) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_pitches_last_10,
-
-        AVG(whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_last_10,
-
-        AVG(called_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_called_strike_rate_last_10,
-
-        AVG(csw_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_csw_rate_last_10,
-
-        AVG(strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_sc_strike_rate_last_10,
-
-        AVG(approx_first_pitch_strike_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_fps_rate_last_10,
-
-        AVG(putaway_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_putaway_rate_last_10,
-
-        AVG(swing_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_swing_rate_last_10,
-
-        AVG(chase_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_chase_rate_last_10,
-
-        AVG(zone_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_zone_rate_last_10,
-
-        AVG(whiff_rate_0_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_0_2_last_10,
-
-        AVG(whiff_rate_1_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_1_2_last_10,
-
-        AVG(whiff_rate_2_2) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_rate_2_2_last_10,
-
-        AVG(avg_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_velocity_last_10,
-
-        AVG(max_velocity) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_max_velocity_last_10,
-
-        AVG(avg_spin_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_spin_rate_last_10,
-
-        AVG(avg_extension) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_extension_last_10,
-
-        AVG(avg_exit_velocity_allowed) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_ev_allowed_last_10,
-
-        AVG(avg_horz_movement) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_horz_movement_last_10,
-
-        AVG(avg_vert_movement) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_vert_movement_last_10,
-
-        AVG(avg_plate_x) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_plate_x_last_10,
-
-        AVG(avg_plate_z) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_plate_z_last_10,
-
-        AVG(ff_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_pct_last_10,
-
-        AVG(si_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_si_pct_last_10,
-
-        AVG(fc_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_fc_pct_last_10,
-
-        AVG(sl_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_pct_last_10,
-
-        AVG(cu_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_pct_last_10,
-
-        AVG(ch_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_pct_last_10,
-
-        AVG(fs_pct) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_fs_pct_last_10,
-
-        AVG(ff_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_ff_whiff_rate_last_10,
-
-        AVG(si_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_si_whiff_rate_last_10,
-
-        AVG(fc_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_fc_whiff_rate_last_10,
-
-        AVG(sl_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_sl_whiff_rate_last_10,
-
-        AVG(cu_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_cu_whiff_rate_last_10,
-
-        AVG(ch_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_ch_whiff_rate_last_10,
-
-        AVG(fs_whiff_rate) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_fs_whiff_rate_last_10,
-
-        AVG(whiff_rate_vs_rhb) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_vs_rhb_last_10,
-
-        AVG(whiff_rate_vs_lhb) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
-        ) AS avg_whiff_vs_lhb_last_10,
-
-        -- =========================
-        -- WEIGHTED LAST 3
-        -- weights: 0.50, 0.30, 0.20
-        -- =========================
-        (
-            0.50 * LAG(total_pitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(total_pitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(total_pitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(total_pitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_sc_pitches_last_3,
-
-        (
-            0.50 * LAG(whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(whiff_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(whiff_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_whiff_rate_last_3,
-
-        (
-            0.50 * LAG(csw_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(csw_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(csw_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(csw_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_csw_rate_last_3,
-
-        (
-            0.50 * LAG(strike_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(strike_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(strike_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strike_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_sc_strike_rate_last_3,
-
-        (
-            0.50 * LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(avg_velocity, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(avg_velocity, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_velocity_last_3,
-
-        (
-            0.50 * LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(avg_spin_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(avg_spin_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_spin_rate_last_3,
-
-        (
-            0.50 * LAG(chase_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(chase_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(chase_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(chase_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_chase_rate_last_3,
-
-        (
-            0.50 * LAG(putaway_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.30 * LAG(putaway_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            0.20 * LAG(putaway_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(putaway_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_putaway_rate_last_3,
-
-        -- =========================
-        -- WEIGHTED LAST 5
-        -- weights: 5,4,3,2,1
-        -- =========================
-        (
-            5.0 * LAG(total_pitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(total_pitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(total_pitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(total_pitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(total_pitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(total_pitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_sc_pitches_last_5,
-
-        (
-            5.0 * LAG(whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(whiff_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(whiff_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(whiff_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(whiff_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_whiff_rate_last_5,
-
-        (
-            5.0 * LAG(csw_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(csw_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(csw_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(csw_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(csw_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(csw_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_csw_rate_last_5,
-
-        (
-            5.0 * LAG(strike_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(strike_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(strike_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(strike_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(strike_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strike_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_sc_strike_rate_last_5,
-
-        (
-            5.0 * LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(avg_velocity, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(avg_velocity, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(avg_velocity, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(avg_velocity, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_velocity_last_5,
-
-        (
-            5.0 * LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(avg_spin_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(avg_spin_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(avg_spin_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(avg_spin_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_spin_rate_last_5,
-
-        (
-            5.0 * LAG(chase_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(chase_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(chase_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(chase_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(chase_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(chase_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_chase_rate_last_5,
-
-        (
-            5.0 * LAG(putaway_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            4.0 * LAG(putaway_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            3.0 * LAG(putaway_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            2.0 * LAG(putaway_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-            1.0 * LAG(putaway_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(putaway_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_putaway_rate_last_5,
-
-        -- =========================
-        -- WEIGHTED LAST 10
-        -- weights: 10,9,8,7,6,5,4,3,2,1
-        -- =========================
-        (
-            10.0 * LAG(total_pitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(total_pitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(total_pitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(total_pitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(total_pitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(total_pitches, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(total_pitches, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(total_pitches, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(total_pitches, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(total_pitches,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(total_pitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(total_pitches,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_sc_pitches_last_10,
-
-        (
-            10.0 * LAG(whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(whiff_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(whiff_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(whiff_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(whiff_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(whiff_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(whiff_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(whiff_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(whiff_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(whiff_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(whiff_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_whiff_rate_last_10,
-
-        (
-            10.0 * LAG(csw_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(csw_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(csw_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(csw_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(csw_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(csw_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(csw_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(csw_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(csw_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(csw_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(csw_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(csw_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_csw_rate_last_10,
-
-        (
-            10.0 * LAG(strike_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(strike_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(strike_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(strike_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(strike_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(strike_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(strike_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(strike_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(strike_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(strike_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strike_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strike_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_sc_strike_rate_last_10,
-
-        (
-            10.0 * LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(avg_velocity, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(avg_velocity, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(avg_velocity, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(avg_velocity, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(avg_velocity, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(avg_velocity, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(avg_velocity, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(avg_velocity, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(avg_velocity,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_velocity,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_velocity_last_10,
-
-        (
-            10.0 * LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(avg_spin_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(avg_spin_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(avg_spin_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(avg_spin_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(avg_spin_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(avg_spin_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(avg_spin_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(avg_spin_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(avg_spin_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(avg_spin_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_spin_rate_last_10,
-
-        (
-            10.0 * LAG(chase_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(chase_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(chase_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(chase_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(chase_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(chase_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(chase_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(chase_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(chase_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(chase_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(chase_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(chase_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_chase_rate_last_10,
-
-        (
-            10.0 * LAG(putaway_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             9.0 * LAG(putaway_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             8.0 * LAG(putaway_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             7.0 * LAG(putaway_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             6.0 * LAG(putaway_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             5.0 * LAG(putaway_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             4.0 * LAG(putaway_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             3.0 * LAG(putaway_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             2.0 * LAG(putaway_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) +
-             1.0 * LAG(putaway_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(putaway_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(putaway_rate,10) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_putaway_rate_last_10,
-
-        -- previous game (same season)
-        LAG(whiff_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_whiff_rate,
-
-        LAG(csw_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_csw_rate,
-
-        LAG(avg_velocity, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_velocity,
-
-        LAG(avg_spin_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_spin_rate,
-
-        LAG(chase_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_chase_rate,
-
-        LAG(zone_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_zone_rate,
-
-        LAG(sl_whiff_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_sl_whiff_rate,
-
-        LAG(ff_whiff_rate, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, game_pk
-        ) AS prev_ff_whiff_rate
-
-    FROM base
 )
 
-SELECT *
+/* =========================================================
+   2. CORE TABLE
+========================================================= */
+SELECT
+    game_pk,
+    game_date,
+    season,
+    player_id,
+    player_name,
+    team_id,
+
+    AVG(total_pitches) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_sc_pitches_last_3,
+    AVG(whiff_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_last_3,
+    AVG(called_strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_called_strike_rate_last_3,
+    AVG(csw_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_csw_rate_last_3,
+    AVG(strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_sc_strike_rate_last_3,
+    AVG(approx_first_pitch_strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_fps_rate_last_3,
+    AVG(putaway_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_putaway_rate_last_3,
+    AVG(swing_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_swing_rate_last_3,
+    AVG(chase_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_chase_rate_last_3,
+    AVG(zone_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_zone_rate_last_3,
+    AVG(whiff_rate_0_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_0_2_last_3,
+    AVG(whiff_rate_1_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_1_2_last_3,
+    AVG(whiff_rate_2_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_2_2_last_3,
+    AVG(whiff_rate_vs_rhb) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_vs_rhb_last_3,
+    AVG(whiff_rate_vs_lhb) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_vs_lhb_last_3,
+
+    AVG(total_pitches) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_sc_pitches_last_5,
+    AVG(whiff_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_last_5,
+    AVG(called_strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_called_strike_rate_last_5,
+    AVG(csw_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_csw_rate_last_5,
+    AVG(strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_sc_strike_rate_last_5,
+    AVG(approx_first_pitch_strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_fps_rate_last_5,
+    AVG(putaway_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_putaway_rate_last_5,
+    AVG(swing_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_swing_rate_last_5,
+    AVG(chase_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_chase_rate_last_5,
+    AVG(zone_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_zone_rate_last_5,
+    AVG(whiff_rate_0_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_0_2_last_5,
+    AVG(whiff_rate_1_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_1_2_last_5,
+    AVG(whiff_rate_2_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_2_2_last_5,
+    AVG(whiff_rate_vs_rhb) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_vs_rhb_last_5,
+    AVG(whiff_rate_vs_lhb) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_vs_lhb_last_5,
+
+    AVG(total_pitches) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_sc_pitches_last_10,
+    AVG(whiff_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_last_10,
+    AVG(called_strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_called_strike_rate_last_10,
+    AVG(csw_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_csw_rate_last_10,
+    AVG(strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_sc_strike_rate_last_10,
+    AVG(approx_first_pitch_strike_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_fps_rate_last_10,
+    AVG(putaway_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_putaway_rate_last_10,
+    AVG(swing_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_swing_rate_last_10,
+    AVG(chase_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_chase_rate_last_10,
+    AVG(zone_rate) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_zone_rate_last_10,
+    AVG(whiff_rate_0_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_0_2_last_10,
+    AVG(whiff_rate_1_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_1_2_last_10,
+    AVG(whiff_rate_2_2) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_rate_2_2_last_10,
+    AVG(whiff_rate_vs_rhb) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_vs_rhb_last_10,
+    AVG(whiff_rate_vs_lhb) OVER (
+        PARTITION BY player_id, season
+        ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) AS avg_whiff_vs_lhb_last_10,
+
+    SUM(whiff_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_whiff_rate_last_3,
+    SUM(csw_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_csw_rate_last_3,
+    SUM(strike_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_sc_strike_rate_last_3,
+    SUM(chase_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_chase_rate_last_3,
+    SUM(putaway_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_putaway_rate_last_3,
+
+    SUM(whiff_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_whiff_rate_last_5,
+    SUM(csw_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_csw_rate_last_5,
+    SUM(strike_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_sc_strike_rate_last_5,
+    SUM(chase_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_chase_rate_last_5,
+    SUM(putaway_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_putaway_rate_last_5,
+
+    SUM(whiff_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_whiff_rate_last_10,
+    SUM(csw_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_csw_rate_last_10,
+    SUM(strike_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_sc_strike_rate_last_10,
+    SUM(chase_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_chase_rate_last_10,
+    SUM(putaway_rate * total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ) / NULLIF(SUM(total_pitches) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+        ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+    ), 0) AS weighted_putaway_rate_last_10,
+
+    LAG(whiff_rate, 1) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+    ) AS prev_whiff_rate,
+    LAG(csw_rate, 1) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+    ) AS prev_csw_rate,
+    LAG(chase_rate, 1) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+    ) AS prev_chase_rate,
+    LAG(zone_rate, 1) OVER (
+        PARTITION BY player_id, season ORDER BY game_date, game_pk
+    ) AS prev_zone_rate
+
+INTO mlb.dbo.fact_pitcher_statcast_rolling_core
+FROM base;
+
+
+/* =========================================================
+   3. SHAPE TABLE
+========================================================= */
+WITH base AS (
+    SELECT
+        game_pk,
+        CAST(game_date AS date) AS game_date,
+        YEAR(CAST(game_date AS date)) AS season,
+        TRY_CAST(player_id AS int) AS player_id,
+        player_name,
+        TRY_CAST(team_id AS int) AS team_id,
+        TRY_CAST(avg_velocity AS float) AS avg_velocity,
+        TRY_CAST(max_velocity AS float) AS max_velocity,
+        TRY_CAST(avg_spin_rate AS float) AS avg_spin_rate,
+        TRY_CAST(avg_extension AS float) AS avg_extension,
+        TRY_CAST(avg_exit_velocity_allowed AS float) AS avg_exit_velocity_allowed,
+        TRY_CAST(avg_horz_movement AS float) AS avg_horz_movement,
+        TRY_CAST(avg_vert_movement AS float) AS avg_vert_movement,
+        TRY_CAST(avg_plate_x AS float) AS avg_plate_x,
+        TRY_CAST(avg_plate_z AS float) AS avg_plate_z,
+        TRY_CAST(sl_whiff_rate AS float) AS sl_whiff_rate,
+        TRY_CAST(ff_whiff_rate AS float) AS ff_whiff_rate
+    FROM mlb.dbo.fact_pitcher_statcast_game_agg
+    WHERE player_id IS NOT NULL
+      AND game_pk IS NOT NULL
+)
+SELECT
+    game_pk,
+    game_date,
+    season,
+    player_id,
+    player_name,
+    team_id,
+
+    AVG(avg_velocity) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_velocity_last_3,
+    AVG(max_velocity) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_max_velocity_last_3,
+    AVG(avg_spin_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_spin_rate_last_3,
+    AVG(avg_extension) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_extension_last_3,
+    AVG(avg_exit_velocity_allowed) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_ev_allowed_last_3,
+    AVG(avg_horz_movement) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_horz_movement_last_3,
+    AVG(avg_vert_movement) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_vert_movement_last_3,
+    AVG(avg_plate_x) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_plate_x_last_3,
+    AVG(avg_plate_z) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_plate_z_last_3,
+
+    AVG(avg_velocity) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_velocity_last_5,
+    AVG(max_velocity) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_max_velocity_last_5,
+    AVG(avg_spin_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_spin_rate_last_5,
+    AVG(avg_extension) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_extension_last_5,
+    AVG(avg_exit_velocity_allowed) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_ev_allowed_last_5,
+    AVG(avg_horz_movement) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_horz_movement_last_5,
+    AVG(avg_vert_movement) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_vert_movement_last_5,
+    AVG(avg_plate_x) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_plate_x_last_5,
+    AVG(avg_plate_z) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_plate_z_last_5,
+
+    AVG(avg_velocity) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_velocity_last_10,
+    AVG(max_velocity) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_max_velocity_last_10,
+    AVG(avg_spin_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_spin_rate_last_10,
+    AVG(avg_extension) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_extension_last_10,
+    AVG(avg_exit_velocity_allowed) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_ev_allowed_last_10,
+    AVG(avg_horz_movement) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_horz_movement_last_10,
+    AVG(avg_vert_movement) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_vert_movement_last_10,
+    AVG(avg_plate_x) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_plate_x_last_10,
+    AVG(avg_plate_z) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_plate_z_last_10,
+
+    LAG(avg_velocity, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) AS prev_velocity,
+    LAG(avg_spin_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) AS prev_spin_rate,
+    LAG(sl_whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) AS prev_sl_whiff_rate,
+    LAG(ff_whiff_rate, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk) AS prev_ff_whiff_rate
+
+INTO mlb.dbo.fact_pitcher_statcast_rolling_shape
+FROM base;
+
+
+/* =========================================================
+   4. PITCH MIX TABLE
+========================================================= */
+WITH base AS (
+    SELECT
+        game_pk,
+        CAST(game_date AS date) AS game_date,
+        YEAR(CAST(game_date AS date)) AS season,
+        TRY_CAST(player_id AS int) AS player_id,
+        player_name,
+        TRY_CAST(team_id AS int) AS team_id,
+        TRY_CAST(total_pitches AS float) AS total_pitches,
+        TRY_CAST(ff_pct AS float) AS ff_pct,
+        TRY_CAST(si_pct AS float) AS si_pct,
+        TRY_CAST(fc_pct AS float) AS fc_pct,
+        TRY_CAST(sl_pct AS float) AS sl_pct,
+        TRY_CAST(cu_pct AS float) AS cu_pct,
+        TRY_CAST(ch_pct AS float) AS ch_pct,
+        TRY_CAST(fs_pct AS float) AS fs_pct
+    FROM mlb.dbo.fact_pitcher_statcast_game_agg
+    WHERE player_id IS NOT NULL
+      AND game_pk IS NOT NULL
+)
+SELECT
+    game_pk,
+    game_date,
+    season,
+    player_id,
+    player_name,
+    team_id,
+
+    AVG(ff_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_ff_pct_last_3,
+    AVG(si_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_si_pct_last_3,
+    AVG(fc_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_fc_pct_last_3,
+    AVG(sl_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_sl_pct_last_3,
+    AVG(cu_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_cu_pct_last_3,
+    AVG(ch_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_ch_pct_last_3,
+    AVG(fs_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_fs_pct_last_3,
+
+    AVG(ff_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_ff_pct_last_5,
+    AVG(si_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_si_pct_last_5,
+    AVG(fc_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_fc_pct_last_5,
+    AVG(sl_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_sl_pct_last_5,
+    AVG(cu_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_cu_pct_last_5,
+    AVG(ch_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_ch_pct_last_5,
+    AVG(fs_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_fs_pct_last_5,
+
+    AVG(ff_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_ff_pct_last_10,
+    AVG(si_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_si_pct_last_10,
+    AVG(fc_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_fc_pct_last_10,
+    AVG(sl_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_sl_pct_last_10,
+    AVG(cu_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_cu_pct_last_10,
+    AVG(ch_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_ch_pct_last_10,
+    AVG(fs_pct) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_fs_pct_last_10
+
+INTO mlb.dbo.fact_pitcher_statcast_rolling_pitchmix
+FROM base;
+
+
+/* =========================================================
+   5. PITCH TYPE WHIFF TABLE
+========================================================= */
+WITH base AS (
+    SELECT
+        game_pk,
+        CAST(game_date AS date) AS game_date,
+        YEAR(CAST(game_date AS date)) AS season,
+        TRY_CAST(player_id AS int) AS player_id,
+        player_name,
+        TRY_CAST(team_id AS int) AS team_id,
+        TRY_CAST(ff_whiff_rate AS float) AS ff_whiff_rate,
+        TRY_CAST(si_whiff_rate AS float) AS si_whiff_rate,
+        TRY_CAST(fc_whiff_rate AS float) AS fc_whiff_rate,
+        TRY_CAST(sl_whiff_rate AS float) AS sl_whiff_rate,
+        TRY_CAST(cu_whiff_rate AS float) AS cu_whiff_rate,
+        TRY_CAST(ch_whiff_rate AS float) AS ch_whiff_rate,
+        TRY_CAST(fs_whiff_rate AS float) AS fs_whiff_rate
+    FROM mlb.dbo.fact_pitcher_statcast_game_agg
+    WHERE player_id IS NOT NULL
+      AND game_pk IS NOT NULL
+)
+SELECT
+    game_pk,
+    game_date,
+    season,
+    player_id,
+    player_name,
+    team_id,
+
+    AVG(ff_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_ff_whiff_rate_last_3,
+    AVG(si_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_si_whiff_rate_last_3,
+    AVG(fc_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_fc_whiff_rate_last_3,
+    AVG(sl_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_sl_whiff_rate_last_3,
+    AVG(cu_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_cu_whiff_rate_last_3,
+    AVG(ch_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_ch_whiff_rate_last_3,
+    AVG(fs_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS avg_fs_whiff_rate_last_3,
+
+    AVG(ff_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_ff_whiff_rate_last_5,
+    AVG(si_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_si_whiff_rate_last_5,
+    AVG(fc_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_fc_whiff_rate_last_5,
+    AVG(sl_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_sl_whiff_rate_last_5,
+    AVG(cu_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_cu_whiff_rate_last_5,
+    AVG(ch_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_ch_whiff_rate_last_5,
+    AVG(fs_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING) AS avg_fs_whiff_rate_last_5,
+
+    AVG(ff_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_ff_whiff_rate_last_10,
+    AVG(si_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_si_whiff_rate_last_10,
+    AVG(fc_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_fc_whiff_rate_last_10,
+    AVG(sl_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_sl_whiff_rate_last_10,
+    AVG(cu_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_cu_whiff_rate_last_10,
+    AVG(ch_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_ch_whiff_rate_last_10,
+    AVG(fs_whiff_rate) OVER (PARTITION BY player_id, season ORDER BY game_date, game_pk ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) AS avg_fs_whiff_rate_last_10
+
+INTO mlb.dbo.fact_pitcher_statcast_rolling_pitchtype_whiff
+FROM base;
+
+
+/* =========================================================
+   6. FINAL COMBINED TABLE
+========================================================= */
+SELECT
+    c.*,
+
+    sh.avg_velocity_last_3,
+    sh.avg_max_velocity_last_3,
+    sh.avg_spin_rate_last_3,
+    sh.avg_extension_last_3,
+    sh.avg_ev_allowed_last_3,
+    sh.avg_horz_movement_last_3,
+    sh.avg_vert_movement_last_3,
+    sh.avg_plate_x_last_3,
+    sh.avg_plate_z_last_3,
+
+    sh.avg_velocity_last_5,
+    sh.avg_max_velocity_last_5,
+    sh.avg_spin_rate_last_5,
+    sh.avg_extension_last_5,
+    sh.avg_ev_allowed_last_5,
+    sh.avg_horz_movement_last_5,
+    sh.avg_vert_movement_last_5,
+    sh.avg_plate_x_last_5,
+    sh.avg_plate_z_last_5,
+
+    sh.avg_velocity_last_10,
+    sh.avg_max_velocity_last_10,
+    sh.avg_spin_rate_last_10,
+    sh.avg_extension_last_10,
+    sh.avg_ev_allowed_last_10,
+    sh.avg_horz_movement_last_10,
+    sh.avg_vert_movement_last_10,
+    sh.avg_plate_x_last_10,
+    sh.avg_plate_z_last_10,
+
+    sh.prev_velocity,
+    sh.prev_spin_rate,
+    sh.prev_sl_whiff_rate,
+    sh.prev_ff_whiff_rate,
+
+    pm.avg_ff_pct_last_3,
+    pm.avg_si_pct_last_3,
+    pm.avg_fc_pct_last_3,
+    pm.avg_sl_pct_last_3,
+    pm.avg_cu_pct_last_3,
+    pm.avg_ch_pct_last_3,
+    pm.avg_fs_pct_last_3,
+
+    pm.avg_ff_pct_last_5,
+    pm.avg_si_pct_last_5,
+    pm.avg_fc_pct_last_5,
+    pm.avg_sl_pct_last_5,
+    pm.avg_cu_pct_last_5,
+    pm.avg_ch_pct_last_5,
+    pm.avg_fs_pct_last_5,
+
+    pm.avg_ff_pct_last_10,
+    pm.avg_si_pct_last_10,
+    pm.avg_fc_pct_last_10,
+    pm.avg_sl_pct_last_10,
+    pm.avg_cu_pct_last_10,
+    pm.avg_ch_pct_last_10,
+    pm.avg_fs_pct_last_10,
+
+    pw.avg_ff_whiff_rate_last_3,
+    pw.avg_si_whiff_rate_last_3,
+    pw.avg_fc_whiff_rate_last_3,
+    pw.avg_sl_whiff_rate_last_3,
+    pw.avg_cu_whiff_rate_last_3,
+    pw.avg_ch_whiff_rate_last_3,
+    pw.avg_fs_whiff_rate_last_3,
+
+    pw.avg_ff_whiff_rate_last_5,
+    pw.avg_si_whiff_rate_last_5,
+    pw.avg_fc_whiff_rate_last_5,
+    pw.avg_sl_whiff_rate_last_5,
+    pw.avg_cu_whiff_rate_last_5,
+    pw.avg_ch_whiff_rate_last_5,
+    pw.avg_fs_whiff_rate_last_5,
+
+    pw.avg_ff_whiff_rate_last_10,
+    pw.avg_si_whiff_rate_last_10,
+    pw.avg_fc_whiff_rate_last_10,
+    pw.avg_sl_whiff_rate_last_10,
+    pw.avg_cu_whiff_rate_last_10,
+    pw.avg_ch_whiff_rate_last_10,
+    pw.avg_fs_whiff_rate_last_10
+
 INTO mlb.dbo.fact_pitcher_statcast_rolling_features
-FROM rolling;
+FROM mlb.dbo.fact_pitcher_statcast_rolling_core c
+LEFT JOIN mlb.dbo.fact_pitcher_statcast_rolling_shape sh
+    ON c.player_id = sh.player_id
+   AND c.season   = sh.season
+   AND c.game_pk  = sh.game_pk
+LEFT JOIN mlb.dbo.fact_pitcher_statcast_rolling_pitchmix pm
+    ON c.player_id = pm.player_id
+   AND c.season   = pm.season
+   AND c.game_pk  = pm.game_pk
+LEFT JOIN mlb.dbo.fact_pitcher_statcast_rolling_pitchtype_whiff pw
+    ON c.player_id = pw.player_id
+   AND c.season   = pw.season
+   AND c.game_pk  = pw.game_pk;
     """
 
     execute_sql(sql)
@@ -2324,504 +1803,413 @@ rolling AS (
         ) AS pct_7plus_k_last_10,
 
         -- =========================
-        -- WEIGHTED LAST 3
-        -- weights: 0.50, 0.30, 0.20
+        -- VOLUME-WEIGHTED LAST 3
+        -- BF-weighted opportunity / strikeout metrics
+        -- PITCH-weighted efficiency / strike metrics
         -- =========================
-        (
-            0.50 * LAG(strikeOuts, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(strikeOuts, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(strikeOuts, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikeOuts, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_k_last_3,
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_k_per_bf_last_3,
 
-        (
-            0.50 * LAG(inningsPitched, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(inningsPitched, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(inningsPitched, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(inningsPitched, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_ip_last_3,
+        SUM(baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_bb_per_bf_last_3,
 
-        (
-            0.50 * LAG(battersFaced, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(battersFaced, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(battersFaced, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(battersFaced, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_bf_last_3,
+        SUM(hits) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(atBats) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_baa_last_3,
 
-        (
-            0.50 * LAG(numberOfPitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(numberOfPitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(numberOfPitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(numberOfPitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_pitches_last_3,
+        SUM(homeRuns) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_hr_per_bf_last_3,
 
-        (
-            0.50 * LAG(strikePercentage, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(strikePercentage, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(strikePercentage, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikePercentage, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
+        SUM(strikes) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(numberOfPitches) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
         ) AS weighted_strike_pct_last_3,
 
-        (
-            0.50 * LAG(strikeoutsPer9Inn, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(strikeoutsPer9Inn, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(strikeoutsPer9Inn, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikeoutsPer9Inn, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_k9_last_3,
+        SUM(numberOfPitches) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 3.0 AS weighted_pitches_per_inning_last_3,
 
-        (
-            0.50 * LAG(baseOnBalls, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(baseOnBalls, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(baseOnBalls, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(baseOnBalls, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_bb_last_3,
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 27.0 AS weighted_k9_last_3,
 
-        (
-            0.50 * LAG(whip, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(whip, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(whip, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(whip, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_whip_last_3,
+        SUM(baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 27.0 AS weighted_bb9_last_3,
 
-        (
-            0.50 * LAG(outs, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.30 * LAG(outs, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            0.20 * LAG(outs, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(outs, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.50 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.30 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 0.20 ELSE 0 END),
-            0
-        ) AS weighted_outs_last_3,
+        SUM(hits + baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 3.0 AS weighted_whip_last_3,
+
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(baseOnBalls) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_kbb_last_3,
+
+        SUM(inheritedRunnersScored) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(inheritedRunners) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_inherited_runner_score_pct_last_3,
 
         -- =========================
-        -- WEIGHTED LAST 5
-        -- weights: 5,4,3,2,1
+        -- VOLUME-WEIGHTED LAST 5
         -- =========================
-        (
-            5.0 * LAG(strikeOuts, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(strikeOuts, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(strikeOuts, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(strikeOuts, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(strikeOuts, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikeOuts, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_k_last_5,
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_k_per_bf_last_5,
 
-        (
-            5.0 * LAG(inningsPitched, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(inningsPitched, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(inningsPitched, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(inningsPitched, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(inningsPitched, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(inningsPitched, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_ip_last_5,
+        SUM(baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_bb_per_bf_last_5,
 
-        (
-            5.0 * LAG(battersFaced, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(battersFaced, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(battersFaced, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(battersFaced, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(battersFaced, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(battersFaced, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_bf_last_5,
+        SUM(hits) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(atBats) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_baa_last_5,
 
-        (
-            5.0 * LAG(numberOfPitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(numberOfPitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(numberOfPitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(numberOfPitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(numberOfPitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(numberOfPitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_pitches_last_5,
+        SUM(homeRuns) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_hr_per_bf_last_5,
 
-        (
-            5.0 * LAG(strikePercentage, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(strikePercentage, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(strikePercentage, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(strikePercentage, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(strikePercentage, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikePercentage, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
+        SUM(strikes) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(numberOfPitches) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
         ) AS weighted_strike_pct_last_5,
 
-        (
-            5.0 * LAG(strikeoutsPer9Inn, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(strikeoutsPer9Inn, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(strikeoutsPer9Inn, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(strikeoutsPer9Inn, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(strikeoutsPer9Inn, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikeoutsPer9Inn, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_k9_last_5,
+        SUM(numberOfPitches) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 3.0 AS weighted_pitches_per_inning_last_5,
 
-        (
-            5.0 * LAG(baseOnBalls, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(baseOnBalls, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(baseOnBalls, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(baseOnBalls, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(baseOnBalls, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(baseOnBalls, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_bb_last_5,
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 27.0 AS weighted_k9_last_5,
 
-        (
-            5.0 * LAG(whip, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(whip, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(whip, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(whip, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(whip, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(whip, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_whip_last_5,
+        SUM(baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 27.0 AS weighted_bb9_last_5,
 
-        (
-            5.0 * LAG(outs, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            4.0 * LAG(outs, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            3.0 * LAG(outs, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            2.0 * LAG(outs, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-            1.0 * LAG(outs, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(outs, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 5.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 4.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 3.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 2.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 1.0 ELSE 0 END),
-            0
-        ) AS weighted_outs_last_5,
+        SUM(hits + baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 3.0 AS weighted_whip_last_5,
+
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(baseOnBalls) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_kbb_last_5,
+
+        SUM(inheritedRunnersScored) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(inheritedRunners) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_inherited_runner_score_pct_last_5,
 
         -- =========================
-        -- WEIGHTED LAST 10
-        -- weights: 10,9,8,7,6,5,4,3,2,1
+        -- VOLUME-WEIGHTED LAST 10
         -- =========================
-        (
-            10.0 * LAG(strikeOuts, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(strikeOuts, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(strikeOuts, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(strikeOuts, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(strikeOuts, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(strikeOuts, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(strikeOuts, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(strikeOuts, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(strikeOuts, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(strikeOuts,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikeOuts, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeOuts,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_k_last_10,
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_k_per_bf_last_10,
 
-        (
-            10.0 * LAG(inningsPitched, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(inningsPitched, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(inningsPitched, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(inningsPitched, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(inningsPitched, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(inningsPitched, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(inningsPitched, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(inningsPitched, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(inningsPitched, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(inningsPitched,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(inningsPitched, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(inningsPitched,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_ip_last_10,
+        SUM(baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_bb_per_bf_last_10,
 
-        (
-            10.0 * LAG(battersFaced, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(battersFaced, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(battersFaced, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(battersFaced, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(battersFaced, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(battersFaced, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(battersFaced, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(battersFaced, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(battersFaced, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(battersFaced,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(battersFaced, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(battersFaced,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_bf_last_10,
+        SUM(hits) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(atBats) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_baa_last_10,
 
-        (
-            10.0 * LAG(numberOfPitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(numberOfPitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(numberOfPitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(numberOfPitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(numberOfPitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(numberOfPitches, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(numberOfPitches, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(numberOfPitches, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(numberOfPitches, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(numberOfPitches,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(numberOfPitches, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(numberOfPitches,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_pitches_last_10,
+        SUM(homeRuns) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(battersFaced) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_hr_per_bf_last_10,
 
-        (
-            10.0 * LAG(strikePercentage, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(strikePercentage, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(strikePercentage, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(strikePercentage, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(strikePercentage, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(strikePercentage, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(strikePercentage, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(strikePercentage, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(strikePercentage, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(strikePercentage,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikePercentage, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikePercentage,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
+        SUM(strikes) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(numberOfPitches) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
         ) AS weighted_strike_pct_last_10,
 
-        (
-            10.0 * LAG(strikeoutsPer9Inn, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(strikeoutsPer9Inn, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(strikeoutsPer9Inn, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(strikeoutsPer9Inn, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(strikeoutsPer9Inn, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(strikeoutsPer9Inn, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(strikeoutsPer9Inn, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(strikeoutsPer9Inn, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(strikeoutsPer9Inn, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(strikeoutsPer9Inn,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(strikeoutsPer9Inn, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(strikeoutsPer9Inn,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_k9_last_10,
+        SUM(numberOfPitches) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 3.0 AS weighted_pitches_per_inning_last_10,
 
-        (
-            10.0 * LAG(baseOnBalls, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(baseOnBalls, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(baseOnBalls, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(baseOnBalls, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(baseOnBalls, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(baseOnBalls, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(baseOnBalls, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(baseOnBalls, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(baseOnBalls, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(baseOnBalls,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(baseOnBalls, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(baseOnBalls,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_bb_last_10,
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 27.0 AS weighted_k9_last_10,
 
-        (
-            10.0 * LAG(whip, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(whip, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(whip, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(whip, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(whip, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(whip, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(whip, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(whip, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(whip, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(whip,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(whip, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(whip,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_whip_last_10,
+        SUM(baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 27.0 AS weighted_bb9_last_10,
 
-        (
-            10.0 * LAG(outs, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             9.0 * LAG(outs, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             8.0 * LAG(outs, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             7.0 * LAG(outs, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             6.0 * LAG(outs, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             5.0 * LAG(outs, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             4.0 * LAG(outs, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             3.0 * LAG(outs, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             2.0 * LAG(outs, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) +
-             1.0 * LAG(outs,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk)
-        ) /
-        NULLIF(
-            (CASE WHEN LAG(outs, 1) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN 10.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 2) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  9.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 3) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  8.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 4) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  7.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 5) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  6.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 6) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  5.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 7) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  4.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 8) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  3.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs, 9) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  2.0 ELSE 0 END) +
-            (CASE WHEN LAG(outs,10) OVER (PARTITION BY player_id, season ORDER BY game_date, gamePk) IS NOT NULL THEN  1.0 ELSE 0 END),
-            0
-        ) AS weighted_outs_last_10,
+        SUM(hits + baseOnBalls) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(outs) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) * 3.0 AS weighted_whip_last_10,
 
-        -- previous outing
+        SUM(strikeOuts) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(baseOnBalls) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_kbb_last_10,
+
+        SUM(inheritedRunnersScored) OVER (
+            PARTITION BY player_id, season
+            ORDER BY game_date, gamePk
+            ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+        ) / NULLIF(
+            SUM(inheritedRunners) OVER (
+                PARTITION BY player_id, season
+                ORDER BY game_date, gamePk
+                ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING
+            ), 0
+        ) AS weighted_inherited_runner_score_pct_last_10,
+
+        -- previous appearance values
         LAG(strikeOuts, 1) OVER (
             PARTITION BY player_id, season
             ORDER BY game_date, gamePk
@@ -2842,45 +2230,30 @@ rolling AS (
             ORDER BY game_date, gamePk
         ) AS prev_pitches,
 
-        LAG(strikeoutsPer9Inn, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_k9,
-
-        LAG(outs, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_outs,
-
         LAG(strikePercentage, 1) OVER (
             PARTITION BY player_id, season
             ORDER BY game_date, gamePk
         ) AS prev_strike_pct,
-
-        LAG(baseOnBalls, 1) OVER (
-            PARTITION BY player_id, season
-            ORDER BY game_date, gamePk
-        ) AS prev_bb,
 
         LAG(whip, 1) OVER (
             PARTITION BY player_id, season
             ORDER BY game_date, gamePk
         ) AS prev_whip,
 
-        LAG(hits, 1) OVER (
+        LAG(baseOnBalls, 1) OVER (
             PARTITION BY player_id, season
             ORDER BY game_date, gamePk
-        ) AS prev_hits,
+        ) AS prev_bb,
 
-        LAG(homeRuns, 1) OVER (
+        LAG(outs, 1) OVER (
             PARTITION BY player_id, season
             ORDER BY game_date, gamePk
-        ) AS prev_hr,
+        ) AS prev_outs,
 
-        LAG(gamesStarted, 1) OVER (
+        LAG(strikeoutsPer9Inn, 1) OVER (
             PARTITION BY player_id, season
             ORDER BY game_date, gamePk
-        ) AS prev_games_started
+        ) AS prev_k9
 
     FROM base
 )
@@ -3028,52 +2401,55 @@ SELECT
     p.pct_5plus_k_last_10,
     p.pct_7plus_k_last_10,
 
-    -- weighted last 3
-    p.weighted_k_last_3,
-    p.weighted_ip_last_3,
-    p.weighted_bf_last_3,
-    p.weighted_pitches_last_3,
+    -- weighted last 3 (volume-based)
+    p.weighted_k_per_bf_last_3,
+    p.weighted_bb_per_bf_last_3,
+    p.weighted_baa_last_3,
+    p.weighted_hr_per_bf_last_3,
     p.weighted_strike_pct_last_3,
+    p.weighted_pitches_per_inning_last_3,
     p.weighted_k9_last_3,
-    p.weighted_bb_last_3,
+    p.weighted_bb9_last_3,
     p.weighted_whip_last_3,
-    p.weighted_outs_last_3,
+    p.weighted_kbb_last_3,
+    p.weighted_inherited_runner_score_pct_last_3,
 
-    -- weighted last 5
-    p.weighted_k_last_5,
-    p.weighted_ip_last_5,
-    p.weighted_bf_last_5,
-    p.weighted_pitches_last_5,
+    -- weighted last 5 (volume-based)
+    p.weighted_k_per_bf_last_5,
+    p.weighted_bb_per_bf_last_5,
+    p.weighted_baa_last_5,
+    p.weighted_hr_per_bf_last_5,
     p.weighted_strike_pct_last_5,
+    p.weighted_pitches_per_inning_last_5,
     p.weighted_k9_last_5,
-    p.weighted_bb_last_5,
+    p.weighted_bb9_last_5,
     p.weighted_whip_last_5,
-    p.weighted_outs_last_5,
+    p.weighted_kbb_last_5,
+    p.weighted_inherited_runner_score_pct_last_5,
 
-    -- weighted last 10
-    p.weighted_k_last_10,
-    p.weighted_ip_last_10,
-    p.weighted_bf_last_10,
-    p.weighted_pitches_last_10,
+    -- weighted last 10 (volume-based)
+    p.weighted_k_per_bf_last_10,
+    p.weighted_bb_per_bf_last_10,
+    p.weighted_baa_last_10,
+    p.weighted_hr_per_bf_last_10,
     p.weighted_strike_pct_last_10,
+    p.weighted_pitches_per_inning_last_10,
     p.weighted_k9_last_10,
-    p.weighted_bb_last_10,
+    p.weighted_bb9_last_10,
     p.weighted_whip_last_10,
-    p.weighted_outs_last_10,
+    p.weighted_kbb_last_10,
+    p.weighted_inherited_runner_score_pct_last_10,
 
     -- previous outing
     p.prev_k,
     p.prev_ip,
     p.prev_bf,
     p.prev_pitches,
-    p.prev_k9,
-    p.prev_outs,
     p.prev_strike_pct,
-    p.prev_bb,
     p.prev_whip,
-    p.prev_hits,
-    p.prev_hr,
-    p.prev_games_started,
+    p.prev_bb,
+    p.prev_outs,
+    p.prev_k9,
 
     -- =====================================
     -- STATCAST ROLLING FEATURES (skill)
@@ -3200,32 +2576,23 @@ SELECT
     s.avg_whiff_vs_lhb_last_10,
 
     -- weighted last 3
-    s.weighted_sc_pitches_last_3,
     s.weighted_whiff_rate_last_3,
     s.weighted_csw_rate_last_3,
     s.weighted_sc_strike_rate_last_3,
-    s.weighted_velocity_last_3,
-    s.weighted_spin_rate_last_3,
     s.weighted_chase_rate_last_3,
     s.weighted_putaway_rate_last_3,
 
     -- weighted last 5
-    s.weighted_sc_pitches_last_5,
     s.weighted_whiff_rate_last_5,
     s.weighted_csw_rate_last_5,
     s.weighted_sc_strike_rate_last_5,
-    s.weighted_velocity_last_5,
-    s.weighted_spin_rate_last_5,
     s.weighted_chase_rate_last_5,
     s.weighted_putaway_rate_last_5,
 
     -- weighted last 10
-    s.weighted_sc_pitches_last_10,
     s.weighted_whiff_rate_last_10,
     s.weighted_csw_rate_last_10,
     s.weighted_sc_strike_rate_last_10,
-    s.weighted_velocity_last_10,
-    s.weighted_spin_rate_last_10,
     s.weighted_chase_rate_last_10,
     s.weighted_putaway_rate_last_10,
 
