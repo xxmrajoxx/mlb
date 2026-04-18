@@ -1,0 +1,48 @@
+IF OBJECT_ID('mlb.dbo.dim_venue_weather', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.dim_venue_weather;
+
+CREATE TABLE mlb.dbo.dim_venue_weather (
+    venue_id        INT           NOT NULL PRIMARY KEY,
+    venue_name      VARCHAR(150)  NOT NULL,
+    latitude        DECIMAL(9,6)  NOT NULL,
+    longitude       DECIMAL(9,6)  NOT NULL,
+    elevation_m     INT           NULL,
+    roof_type       VARCHAR(20)   NULL  -- outdoor, dome, retractable
+);
+
+
+INSERT INTO mlb.dbo.dim_venue_weather
+    (venue_id, venue_name, latitude, longitude, elevation_m, roof_type)
+VALUES
+    (2395, 'Oracle Park', 37.778600, -122.389300, 3, 'outdoor'),
+    (3289, 'Citi Field', 40.757100, -73.845800, 4, 'outdoor'),
+    (14,   'Rogers Centre', 43.641400, -79.389400, 76, 'retractable'),
+    (32,   'American Family Field', 43.028000, -87.971200, 195, 'retractable'),
+    (17,   'Wrigley Field', 41.948400, -87.655300, 181, 'outdoor');
+
+
+    IF OBJECT_ID('mlb.dbo.fact_game_weather', 'U') IS NOT NULL
+    DROP TABLE mlb.dbo.fact_game_weather;
+
+CREATE TABLE mlb.dbo.fact_game_weather (
+    gamePk              INT             NOT NULL PRIMARY KEY,
+    officialDate        DATE            NOT NULL,
+    venue_id            INT             NOT NULL,
+    venue_name          VARCHAR(150)    NOT NULL,
+    roof_type           VARCHAR(20)     NULL,
+
+    game_hour_local     TINYINT         NULL,
+    temp_c              DECIMAL(6,2)    NULL,
+    dewpoint_c          DECIMAL(6,2)    NULL,
+    relative_humidity   DECIMAL(6,2)    NULL,
+    wind_speed_kph      DECIMAL(6,2)    NULL,
+    wind_direction_deg  DECIMAL(6,2)    NULL,
+    pressure_hpa        DECIMAL(7,2)    NULL,
+    precip_mm           DECIMAL(7,2)    NULL,
+
+    is_dome             BIT             NULL,
+    weather_missing     BIT             NOT NULL DEFAULT 0,
+
+    weather_source      VARCHAR(50)     NULL,
+    extract_ts          DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME()
+);

@@ -1833,3 +1833,1698 @@
 2026-04-11 20:42:07,069 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
 2026-04-11 20:42:08,636 | INFO | SQL executed successfully
 2026-04-11 20:42:08,637 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-12 11:53:41,338 | INFO | SQL Server engine created
+2026-04-12 11:53:41,338 | INFO | Starting MLB schedule extraction
+2026-04-12 11:53:41,341 | INFO | Starting MLB standings daily pipeline
+2026-04-12 11:53:41,561 | INFO | SQL executed successfully
+2026-04-12 11:53:41,561 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-12 11:53:45,161 | INFO | Starting load for table mlb_schedule
+2026-04-12 11:53:52,366 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-12 11:53:52,366 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-12 11:53:52,452 | INFO | Built standings dataframe with 4,856 rows
+2026-04-12 11:53:52,458 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-12 11:53:52,458 | INFO | Starting load for table mlb_standings_daily
+2026-04-12 11:53:52,660 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-12 11:53:52,661 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-12 11:53:52,661 | INFO | MLB standings daily pipeline completed successfully
+2026-04-12 12:22:27,189 | INFO | SQL Server engine created
+2026-04-12 12:22:27,190 | INFO | Starting MLB schedule extraction
+2026-04-12 12:22:27,191 | INFO | Starting MLB standings daily pipeline
+2026-04-12 12:22:27,337 | INFO | SQL executed successfully
+2026-04-12 12:22:27,338 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-12 12:22:34,421 | INFO | Starting load for table mlb_schedule
+2026-04-12 12:22:41,467 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-12 12:22:41,468 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-12 12:22:41,527 | INFO | Built standings dataframe with 4,856 rows
+2026-04-12 12:22:41,529 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-12 12:22:41,529 | INFO | Starting load for table mlb_standings_daily
+2026-04-12 12:22:41,716 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-12 12:22:41,717 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-12 12:22:41,717 | INFO | MLB standings daily pipeline completed successfully
+2026-04-12 16:22:59,184 | INFO | SQL Server engine created
+2026-04-12 16:22:59,185 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-12 16:41:12,601 | INFO | SQL Server engine created
+2026-04-12 16:41:12,602 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-12 16:41:15,288 | INFO | SQL executed successfully
+2026-04-12 16:41:15,288 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 20:17:35,817 | INFO | SQL Server engine created
+2026-04-13 20:17:35,818 | INFO | Starting MLB schedule extraction
+2026-04-13 20:17:35,820 | INFO | Starting MLB standings daily pipeline
+2026-04-13 20:17:35,904 | INFO | SQL executed successfully
+2026-04-13 20:17:35,904 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-13 20:17:44,740 | INFO | Starting load for table mlb_schedule
+2026-04-13 20:17:51,821 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-13 20:17:51,821 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-13 20:17:51,878 | INFO | Built standings dataframe with 4,856 rows
+2026-04-13 20:17:51,882 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-13 20:17:51,882 | INFO | Starting load for table mlb_standings_daily
+2026-04-13 20:17:52,090 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-13 20:17:52,090 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-13 20:17:52,090 | INFO | MLB standings daily pipeline completed successfully
+2026-04-13 20:59:55,816 | INFO | SQL Server engine created
+2026-04-13 20:59:55,817 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-13 20:59:55,817 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-13 20:59:56,012 | INFO | SQL executed successfully
+2026-04-13 20:59:56,012 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-13 20:59:56,013 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-13 20:59:56,300 | INFO | SQL executed successfully
+2026-04-13 20:59:56,300 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-13 20:59:56,300 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-13 21:00:20,059 | INFO | SQL Server engine created
+2026-04-13 21:00:20,059 | INFO | Starting hitter feature pipeline
+2026-04-13 21:00:20,059 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-13 21:00:21,107 | INFO | SQL executed successfully
+2026-04-13 21:00:21,107 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-13 21:00:21,107 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-13 21:00:23,479 | INFO | SQL executed successfully
+2026-04-13 21:00:23,479 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-13 21:00:23,479 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-13 21:00:26,069 | INFO | SQL executed successfully
+2026-04-13 21:00:26,069 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-13 21:00:26,070 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-13 21:00:27,544 | INFO | SQL executed successfully
+2026-04-13 21:00:27,544 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-13 21:00:27,545 | INFO | Finished hitter feature pipeline
+2026-04-13 21:00:31,222 | INFO | SQL Server engine created
+2026-04-13 21:00:31,222 | INFO | Starting pitcher feature pipeline
+2026-04-13 21:00:31,222 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-13 21:00:35,710 | INFO | SQL executed successfully
+2026-04-13 21:00:35,710 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-13 21:00:35,710 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-13 21:00:54,339 | INFO | SQL executed successfully
+2026-04-13 21:00:54,339 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-13 21:00:54,340 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-13 21:01:09,526 | INFO | SQL executed successfully
+2026-04-13 21:01:09,527 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-13 21:01:09,527 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-13 21:01:10,851 | INFO | SQL executed successfully
+2026-04-13 21:01:10,851 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-13 21:01:10,852 | INFO | Finished pitcher feature pipeline
+2026-04-13 21:01:14,399 | INFO | SQL Server engine created
+2026-04-13 21:01:14,400 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:01:23,559 | INFO | SQL executed successfully
+2026-04-13 21:01:23,559 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:02:02,087 | INFO | SQL Server engine created
+2026-04-13 21:02:02,088 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:02:20,241 | INFO | SQL executed successfully
+2026-04-13 21:02:20,241 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:20:17,788 | INFO | SQL Server engine created
+2026-04-13 21:20:17,788 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:20:19,605 | INFO | SQL executed successfully
+2026-04-13 21:20:19,606 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:57:08,414 | INFO | SQL Server engine created
+2026-04-13 21:57:08,414 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 21:57:10,902 | INFO | SQL executed successfully
+2026-04-13 21:57:10,902 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:00:29,615 | INFO | SQL Server engine created
+2026-04-13 22:00:29,615 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:00:31,816 | INFO | SQL executed successfully
+2026-04-13 22:00:31,816 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:01:33,558 | INFO | SQL Server engine created
+2026-04-13 22:01:33,558 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:01:35,797 | INFO | SQL executed successfully
+2026-04-13 22:01:35,797 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:08:55,160 | INFO | SQL Server engine created
+2026-04-13 22:08:55,161 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:08:57,519 | INFO | SQL executed successfully
+2026-04-13 22:08:57,520 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:09:18,067 | INFO | SQL Server engine created
+2026-04-13 22:09:18,067 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:09:20,209 | INFO | SQL executed successfully
+2026-04-13 22:09:20,209 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:15:04,349 | INFO | SQL Server engine created
+2026-04-13 22:15:04,350 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:15:13,054 | INFO | SQL executed successfully
+2026-04-13 22:15:13,055 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:28:11,665 | INFO | SQL Server engine created
+2026-04-13 22:28:11,665 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-13 22:28:13,812 | INFO | SQL executed successfully
+2026-04-13 22:28:13,813 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 06:49:45,911 | INFO | SQL Server engine created
+2026-04-14 06:49:45,912 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 06:49:48,389 | INFO | SQL executed successfully
+2026-04-14 06:49:48,389 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 06:52:44,721 | INFO | SQL Server engine created
+2026-04-14 06:52:44,721 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-14 06:52:44,722 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-14 06:52:45,119 | INFO | SQL executed successfully
+2026-04-14 06:52:45,119 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-14 06:52:45,119 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-14 06:52:46,280 | INFO | SQL executed successfully
+2026-04-14 06:52:46,281 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-14 06:52:46,281 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-14 06:52:53,260 | INFO | SQL Server engine created
+2026-04-14 06:52:53,260 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 06:52:55,869 | INFO | SQL executed successfully
+2026-04-14 06:52:55,870 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 21:23:19,055 | INFO | SQL Server engine created
+2026-04-14 21:23:19,063 | INFO | Starting MLB schedule extraction
+2026-04-14 21:23:19,065 | INFO | Starting MLB standings daily pipeline
+2026-04-14 21:23:19,107 | INFO | SQL executed successfully
+2026-04-14 21:23:19,107 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-14 21:23:21,677 | INFO | Starting load for table mlb_schedule
+2026-04-14 21:23:28,191 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-14 21:23:28,192 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-14 21:23:28,242 | INFO | Built standings dataframe with 4,856 rows
+2026-04-14 21:23:28,245 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-14 21:23:28,245 | INFO | Starting load for table mlb_standings_daily
+2026-04-14 21:23:28,428 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-14 21:23:28,428 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-14 21:23:28,429 | INFO | MLB standings daily pipeline completed successfully
+2026-04-14 21:32:31,987 | INFO | SQL Server engine created
+2026-04-14 21:32:31,987 | INFO | Starting lineup aggregate feature pipeline
+2026-04-14 21:32:31,987 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:49:48,225 | INFO | SQL Server engine created
+2026-04-14 21:49:48,225 | INFO | Starting lineup aggregate feature pipeline
+2026-04-14 21:49:48,225 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:49:54,024 | INFO | SQL Server engine created
+2026-04-14 21:49:54,025 | INFO | Starting lineup aggregate feature pipeline
+2026-04-14 21:49:54,025 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:49:54,812 | INFO | SQL executed successfully
+2026-04-14 21:49:54,812 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:49:54,813 | INFO | Finished lineup aggregate feature pipeline
+2026-04-14 21:51:19,349 | INFO | SQL Server engine created
+2026-04-14 21:51:19,350 | INFO | Starting lineup aggregate feature pipeline
+2026-04-14 21:51:19,350 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:51:19,697 | INFO | SQL executed successfully
+2026-04-14 21:51:19,697 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:51:19,698 | INFO | Finished lineup aggregate feature pipeline
+2026-04-14 21:52:33,694 | INFO | SQL Server engine created
+2026-04-14 21:52:33,695 | INFO | Starting hitter feature pipeline
+2026-04-14 21:52:33,695 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-14 21:52:34,890 | INFO | SQL executed successfully
+2026-04-14 21:52:34,891 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-14 21:52:34,891 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-14 21:52:37,163 | INFO | SQL executed successfully
+2026-04-14 21:52:37,163 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-14 21:52:37,163 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-14 21:52:39,853 | INFO | SQL executed successfully
+2026-04-14 21:52:39,853 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-14 21:52:39,853 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-14 21:52:40,728 | INFO | SQL executed successfully
+2026-04-14 21:52:40,728 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-14 21:52:40,728 | INFO | Finished hitter feature pipeline
+2026-04-14 21:52:47,257 | INFO | SQL Server engine created
+2026-04-14 21:52:47,257 | INFO | Starting pitcher feature pipeline
+2026-04-14 21:52:47,257 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-14 21:52:48,415 | INFO | SQL executed successfully
+2026-04-14 21:52:48,415 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-14 21:52:48,415 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-14 21:53:07,976 | INFO | SQL executed successfully
+2026-04-14 21:53:07,977 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-14 21:53:07,977 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-14 21:53:24,175 | INFO | SQL executed successfully
+2026-04-14 21:53:24,176 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-14 21:53:24,176 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-14 21:53:24,568 | INFO | SQL executed successfully
+2026-04-14 21:53:24,569 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-14 21:53:24,569 | INFO | Finished pitcher feature pipeline
+2026-04-14 21:53:29,989 | INFO | SQL Server engine created
+2026-04-14 21:53:29,989 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-14 21:53:29,990 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-14 21:53:30,318 | INFO | SQL executed successfully
+2026-04-14 21:53:30,318 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-14 21:53:30,319 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-14 21:53:31,805 | INFO | SQL executed successfully
+2026-04-14 21:53:31,805 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-14 21:53:31,805 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-14 21:53:37,456 | INFO | SQL Server engine created
+2026-04-14 21:53:37,457 | INFO | Starting lineup aggregate feature pipeline
+2026-04-14 21:53:37,457 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:53:37,963 | INFO | SQL executed successfully
+2026-04-14 21:53:37,963 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-14 21:53:37,963 | INFO | Finished lineup aggregate feature pipeline
+2026-04-14 21:53:42,988 | INFO | SQL Server engine created
+2026-04-14 21:53:42,988 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 21:53:54,130 | INFO | SQL executed successfully
+2026-04-14 21:53:54,130 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-14 21:58:14,138 | INFO | SQL Server engine created
+2026-04-14 21:58:14,139 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-14 21:58:14,139 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-14 22:02:55,397 | INFO | SQL Server engine created
+2026-04-14 22:02:55,397 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-14 22:02:55,398 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-14 22:02:55,786 | INFO | SQL executed successfully
+2026-04-14 22:02:55,786 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-14 22:02:55,786 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-15 20:19:48,655 | INFO | SQL Server engine created
+2026-04-15 20:19:48,656 | INFO | Starting MLB schedule extraction
+2026-04-15 20:19:48,659 | INFO | Starting MLB standings daily pipeline
+2026-04-15 20:19:48,719 | INFO | SQL executed successfully
+2026-04-15 20:19:48,719 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-15 20:19:52,712 | INFO | Starting load for table mlb_schedule
+2026-04-15 20:20:03,681 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-15 20:20:03,681 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-15 20:20:03,765 | INFO | Built standings dataframe with 4,856 rows
+2026-04-15 20:20:03,768 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-15 20:20:03,768 | INFO | Starting load for table mlb_standings_daily
+2026-04-15 20:20:04,001 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-15 20:20:04,002 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-15 20:20:04,002 | INFO | MLB standings daily pipeline completed successfully
+2026-04-15 21:10:08,897 | INFO | SQL Server engine created
+2026-04-15 21:10:08,898 | INFO | Starting hitter feature pipeline
+2026-04-15 21:10:08,898 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-15 21:10:10,743 | INFO | SQL executed successfully
+2026-04-15 21:10:10,743 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-15 21:10:10,743 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-15 21:10:13,558 | INFO | SQL executed successfully
+2026-04-15 21:10:13,559 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-15 21:10:13,559 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-15 21:10:16,875 | INFO | SQL executed successfully
+2026-04-15 21:10:16,875 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-15 21:10:16,875 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-15 21:10:18,019 | INFO | SQL executed successfully
+2026-04-15 21:10:18,019 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-15 21:10:18,019 | INFO | Finished hitter feature pipeline
+2026-04-15 21:10:21,473 | INFO | SQL Server engine created
+2026-04-15 21:10:21,473 | INFO | Starting pitcher feature pipeline
+2026-04-15 21:10:21,473 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-15 21:10:22,906 | INFO | SQL executed successfully
+2026-04-15 21:10:22,907 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-15 21:10:22,907 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-15 21:10:47,683 | INFO | SQL executed successfully
+2026-04-15 21:10:47,683 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-15 21:10:47,684 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-15 21:11:05,710 | INFO | SQL executed successfully
+2026-04-15 21:11:05,710 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-15 21:11:05,710 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-15 21:11:06,227 | INFO | SQL executed successfully
+2026-04-15 21:11:06,227 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-15 21:11:06,228 | INFO | Finished pitcher feature pipeline
+2026-04-15 21:11:11,338 | INFO | SQL Server engine created
+2026-04-15 21:11:11,338 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-15 21:11:11,338 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-15 21:11:11,827 | INFO | SQL executed successfully
+2026-04-15 21:11:11,828 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-15 21:11:11,828 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-15 21:11:14,090 | INFO | SQL executed successfully
+2026-04-15 21:11:14,090 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-15 21:11:14,091 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-15 21:11:17,660 | INFO | SQL Server engine created
+2026-04-15 21:11:17,660 | INFO | Starting lineup aggregate feature pipeline
+2026-04-15 21:11:17,660 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-15 21:11:18,392 | INFO | SQL executed successfully
+2026-04-15 21:11:18,392 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-15 21:11:18,392 | INFO | Finished lineup aggregate feature pipeline
+2026-04-15 21:11:22,331 | INFO | SQL Server engine created
+2026-04-15 21:11:22,332 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-15 21:11:22,332 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-15 21:11:22,887 | INFO | SQL executed successfully
+2026-04-15 21:11:22,887 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-15 21:11:22,887 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-15 21:11:28,137 | INFO | SQL Server engine created
+2026-04-15 21:11:28,137 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-15 21:11:31,888 | INFO | SQL executed successfully
+2026-04-15 21:11:31,888 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-15 22:09:28,463 | INFO | SQL Server engine created
+2026-04-15 22:09:28,465 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-15 22:09:28,465 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-15 22:09:29,324 | INFO | SQL executed successfully
+2026-04-15 22:09:29,324 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-15 22:09:29,324 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-15 22:35:15,550 | INFO | SQL Server engine created
+2026-04-15 22:35:15,661 | INFO | SQL executed successfully
+2026-04-15 22:35:15,661 | INFO | Fetching schedule data for weather join
+2026-04-15 22:35:15,771 | INFO | Fetching venue lookup table
+2026-04-15 22:35:15,823 | INFO | Joined schedule + venue lookup: 408 rows
+2026-04-15 22:35:15,825 | INFO | Fetching weather for gamePk=832078 | 2026-03-23 | American Family Field
+2026-04-15 22:35:16,708 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:16,720 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:16,720 | INFO | Fetching weather for gamePk=831786 | 2026-03-23 | Oracle Park
+2026-04-15 22:35:17,017 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,020 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,020 | INFO | Fetching weather for gamePk=832077 | 2026-03-24 | American Family Field
+2026-04-15 22:35:17,289 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,293 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,293 | INFO | Fetching weather for gamePk=831782 | 2026-03-24 | Oracle Park
+2026-04-15 22:35:17,357 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,361 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,361 | INFO | Fetching weather for gamePk=823244 | 2026-03-25 | Oracle Park
+2026-04-15 22:35:17,431 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,434 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,435 | INFO | Fetching weather for gamePk=823649 | 2026-03-26 | Citi Field
+2026-04-15 22:35:17,504 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,507 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,507 | INFO | Fetching weather for gamePk=823812 | 2026-03-26 | American Family Field
+2026-04-15 22:35:17,568 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,571 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,572 | INFO | Fetching weather for gamePk=824704 | 2026-03-26 | Wrigley Field
+2026-04-15 22:35:17,642 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,647 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,647 | INFO | Fetching weather for gamePk=823243 | 2026-03-27 | Oracle Park
+2026-04-15 22:35:17,727 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,731 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,732 | INFO | Fetching weather for gamePk=822839 | 2026-03-27 | Rogers Centre
+2026-04-15 22:35:17,851 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:17,854 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:17,854 | INFO | Fetching weather for gamePk=824701 | 2026-03-28 | Wrigley Field
+2026-04-15 22:35:18,808 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:18,811 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:18,811 | INFO | Fetching weather for gamePk=822838 | 2026-03-28 | Rogers Centre
+2026-04-15 22:35:20,048 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,051 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,052 | INFO | Fetching weather for gamePk=823651 | 2026-03-28 | Citi Field
+2026-04-15 22:35:20,114 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,118 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,118 | INFO | Fetching weather for gamePk=823811 | 2026-03-28 | American Family Field
+2026-04-15 22:35:20,187 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,190 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,190 | INFO | Fetching weather for gamePk=823241 | 2026-03-28 | Oracle Park
+2026-04-15 22:35:20,464 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,468 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,468 | INFO | Fetching weather for gamePk=822837 | 2026-03-29 | Rogers Centre
+2026-04-15 22:35:20,529 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,533 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,533 | INFO | Fetching weather for gamePk=823647 | 2026-03-29 | Citi Field
+2026-04-15 22:35:20,605 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,609 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,609 | INFO | Fetching weather for gamePk=823810 | 2026-03-29 | American Family Field
+2026-04-15 22:35:20,891 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,894 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,894 | INFO | Fetching weather for gamePk=824700 | 2026-03-29 | Wrigley Field
+2026-04-15 22:35:20,967 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:20,970 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:20,971 | INFO | Fetching weather for gamePk=822834 | 2026-03-30 | Rogers Centre
+2026-04-15 22:35:21,726 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:21,730 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:21,730 | INFO | Fetching weather for gamePk=824702 | 2026-03-30 | Wrigley Field
+2026-04-15 22:35:21,800 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:21,803 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:21,803 | INFO | Fetching weather for gamePk=823809 | 2026-03-30 | American Family Field
+2026-04-15 22:35:22,989 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:22,992 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:22,993 | INFO | Fetching weather for gamePk=822836 | 2026-03-31 | Rogers Centre
+2026-04-15 22:35:23,257 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:23,260 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:23,261 | INFO | Fetching weather for gamePk=824699 | 2026-03-31 | Wrigley Field
+2026-04-15 22:35:23,332 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:23,336 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:23,336 | INFO | Fetching weather for gamePk=823807 | 2026-03-31 | American Family Field
+2026-04-15 22:35:23,678 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:23,682 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:23,682 | INFO | Fetching weather for gamePk=822835 | 2026-04-01 | Rogers Centre
+2026-04-15 22:35:24,017 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:24,021 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:24,021 | INFO | Fetching weather for gamePk=823806 | 2026-04-01 | American Family Field
+2026-04-15 22:35:24,295 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:24,299 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:24,299 | INFO | Fetching weather for gamePk=824698 | 2026-04-01 | Wrigley Field
+2026-04-15 22:35:24,367 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:24,370 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:24,370 | INFO | Fetching weather for gamePk=823242 | 2026-04-02 | Oracle Park
+2026-04-15 22:35:24,629 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:24,633 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:24,633 | INFO | Fetching weather for gamePk=823240 | 2026-04-03 | Oracle Park
+2026-04-15 22:35:24,702 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:24,705 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:24,705 | INFO | Fetching weather for gamePk=823239 | 2026-04-04 | Oracle Park
+2026-04-15 22:35:26,141 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:26,145 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:26,145 | INFO | Fetching weather for gamePk=823238 | 2026-04-05 | Oracle Park
+2026-04-15 22:35:26,435 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:26,439 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:26,439 | INFO | Fetching weather for gamePk=822832 | 2026-04-06 | Rogers Centre
+2026-04-15 22:35:26,497 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:26,500 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:26,501 | INFO | Fetching weather for gamePk=823237 | 2026-04-06 | Oracle Park
+2026-04-15 22:35:26,568 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:26,571 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:26,572 | INFO | Fetching weather for gamePk=823648 | 2026-04-07 | Citi Field
+2026-04-15 22:35:26,626 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:26,629 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:26,630 | INFO | Fetching weather for gamePk=822831 | 2026-04-07 | Rogers Centre
+2026-04-15 22:35:26,909 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:26,913 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:26,913 | INFO | Fetching weather for gamePk=823235 | 2026-04-07 | Oracle Park
+2026-04-15 22:35:27,767 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:27,771 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:27,771 | INFO | Fetching weather for gamePk=822833 | 2026-04-08 | Rogers Centre
+2026-04-15 22:35:29,713 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:29,717 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:29,717 | INFO | Fetching weather for gamePk=823234 | 2026-04-08 | Oracle Park
+2026-04-15 22:35:29,980 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:29,983 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:29,983 | INFO | Fetching weather for gamePk=823646 | 2026-04-08 | Citi Field
+2026-04-15 22:35:30,322 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:30,325 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:30,325 | INFO | Fetching weather for gamePk=823645 | 2026-04-09 | Citi Field
+2026-04-15 22:35:30,736 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:30,739 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:30,740 | INFO | Fetching weather for gamePk=824695 | 2026-04-10 | Wrigley Field
+2026-04-15 22:35:31,801 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:31,805 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:31,805 | INFO | Fetching weather for gamePk=822829 | 2026-04-10 | Rogers Centre
+2026-04-15 22:35:32,641 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:32,644 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:32,644 | INFO | Fetching weather for gamePk=823643 | 2026-04-10 | Citi Field
+2026-04-15 22:35:32,710 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:32,715 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:32,715 | INFO | Fetching weather for gamePk=823808 | 2026-04-10 | American Family Field
+2026-04-15 22:35:33,195 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:33,199 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:33,199 | INFO | Fetching weather for gamePk=824697 | 2026-04-11 | Wrigley Field
+2026-04-15 22:35:33,269 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:33,272 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:33,272 | INFO | Fetching weather for gamePk=822830 | 2026-04-11 | Rogers Centre
+2026-04-15 22:35:33,564 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:33,568 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:33,568 | INFO | Fetching weather for gamePk=823644 | 2026-04-11 | Citi Field
+2026-04-15 22:35:33,640 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:33,643 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:33,643 | INFO | Fetching weather for gamePk=823805 | 2026-04-11 | American Family Field
+2026-04-15 22:35:34,118 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:34,121 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:34,122 | INFO | Fetching weather for gamePk=822828 | 2026-04-12 | Rogers Centre
+2026-04-15 22:35:34,193 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:34,196 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:34,197 | INFO | Fetching weather for gamePk=823642 | 2026-04-12 | Citi Field
+2026-04-15 22:35:36,779 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:36,782 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:36,783 | INFO | Fetching weather for gamePk=823804 | 2026-04-12 | American Family Field
+2026-04-15 22:35:37,378 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:37,381 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:37,381 | INFO | Fetching weather for gamePk=824696 | 2026-04-12 | Wrigley Field
+2026-04-15 22:35:37,443 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:37,447 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:37,447 | INFO | Fetching weather for gamePk=823802 | 2026-04-14 | American Family Field
+2026-04-15 22:35:38,508 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:38,512 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:38,512 | INFO | Fetching weather for gamePk=823803 | 2026-04-15 | American Family Field
+2026-04-15 22:35:38,731 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:38,735 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:38,735 | INFO | Fetching weather for gamePk=823801 | 2026-04-16 | American Family Field
+2026-04-15 22:35:39,860 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:39,863 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:39,864 | INFO | Fetching weather for gamePk=824693 | 2026-04-17 | Wrigley Field
+2026-04-15 22:35:39,942 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:39,945 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:39,945 | INFO | Fetching weather for gamePk=824694 | 2026-04-18 | Wrigley Field
+2026-04-15 22:35:40,010 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:40,013 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:40,014 | INFO | Fetching weather for gamePk=824691 | 2026-04-19 | Wrigley Field
+2026-04-15 22:35:40,078 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:40,082 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:40,082 | INFO | Fetching weather for gamePk=824692 | 2026-04-20 | Wrigley Field
+2026-04-15 22:35:41,153 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:41,156 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:41,156 | INFO | Fetching weather for gamePk=823640 | 2026-04-21 | Citi Field
+2026-04-15 22:35:41,436 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:41,439 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:41,439 | INFO | Fetching weather for gamePk=824690 | 2026-04-21 | Wrigley Field
+2026-04-15 22:35:41,501 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:41,504 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:41,505 | INFO | Fetching weather for gamePk=823236 | 2026-04-21 | Oracle Park
+2026-04-15 22:35:41,785 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:41,789 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:41,789 | INFO | Fetching weather for gamePk=823641 | 2026-04-22 | Citi Field
+2026-04-15 22:35:42,267 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:42,271 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:42,271 | INFO | Fetching weather for gamePk=824688 | 2026-04-22 | Wrigley Field
+2026-04-15 22:35:42,717 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:42,720 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:42,720 | INFO | Fetching weather for gamePk=823231 | 2026-04-22 | Oracle Park
+2026-04-15 22:35:42,991 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:42,994 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:42,994 | INFO | Fetching weather for gamePk=824689 | 2026-04-23 | Wrigley Field
+2026-04-15 22:35:43,061 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:43,064 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:43,065 | INFO | Fetching weather for gamePk=823233 | 2026-04-23 | Oracle Park
+2026-04-15 22:35:43,126 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:43,130 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:43,130 | INFO | Fetching weather for gamePk=823639 | 2026-04-23 | Citi Field
+2026-04-15 22:35:43,402 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:43,405 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:43,406 | INFO | Fetching weather for gamePk=822827 | 2026-04-24 | Rogers Centre
+2026-04-15 22:35:43,682 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:43,685 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:43,686 | INFO | Fetching weather for gamePk=823638 | 2026-04-24 | Citi Field
+2026-04-15 22:35:43,775 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:43,779 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:43,780 | INFO | Fetching weather for gamePk=823800 | 2026-04-24 | American Family Field
+2026-04-15 22:35:43,959 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:43,962 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:43,963 | INFO | Fetching weather for gamePk=823232 | 2026-04-24 | Oracle Park
+2026-04-15 22:35:44,598 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:44,601 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:44,602 | INFO | Fetching weather for gamePk=822826 | 2026-04-25 | Rogers Centre
+2026-04-15 22:35:44,668 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:44,671 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:44,671 | INFO | Fetching weather for gamePk=823229 | 2026-04-25 | Oracle Park
+2026-04-15 22:35:44,808 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:44,812 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:44,812 | INFO | Fetching weather for gamePk=823637 | 2026-04-25 | Citi Field
+2026-04-15 22:35:44,886 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:44,890 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:44,890 | INFO | Fetching weather for gamePk=823799 | 2026-04-25 | American Family Field
+2026-04-15 22:35:46,123 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:46,126 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:46,126 | INFO | Fetching weather for gamePk=822824 | 2026-04-26 | Rogers Centre
+2026-04-15 22:35:46,427 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:46,431 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:46,431 | INFO | Fetching weather for gamePk=823635 | 2026-04-26 | Citi Field
+2026-04-15 22:35:47,760 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:47,764 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:47,764 | INFO | Fetching weather for gamePk=823797 | 2026-04-26 | American Family Field
+2026-04-15 22:35:47,832 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:47,835 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:47,836 | INFO | Fetching weather for gamePk=823230 | 2026-04-26 | Oracle Park
+2026-04-15 22:35:47,904 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:47,907 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:47,908 | INFO | Fetching weather for gamePk=822825 | 2026-04-27 | Rogers Centre
+2026-04-15 22:35:48,811 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:48,814 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:48,814 | INFO | Fetching weather for gamePk=822823 | 2026-04-28 | Rogers Centre
+2026-04-15 22:35:48,885 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:48,888 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:48,888 | INFO | Fetching weather for gamePk=823636 | 2026-04-28 | Citi Field
+2026-04-15 22:35:49,177 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:49,181 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:49,181 | INFO | Fetching weather for gamePk=823798 | 2026-04-28 | American Family Field
+2026-04-15 22:35:49,455 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:49,459 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:49,460 | INFO | Fetching weather for gamePk=822821 | 2026-04-29 | Rogers Centre
+2026-04-15 22:35:50,773 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:50,777 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:50,778 | INFO | Fetching weather for gamePk=823633 | 2026-04-29 | Citi Field
+2026-04-15 22:35:51,603 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:51,607 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:51,607 | INFO | Fetching weather for gamePk=823796 | 2026-04-29 | American Family Field
+2026-04-15 22:35:51,671 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:51,676 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:51,676 | INFO | Fetching weather for gamePk=823634 | 2026-04-30 | Citi Field
+2026-04-15 22:35:52,855 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:52,858 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:52,858 | INFO | Fetching weather for gamePk=823795 | 2026-04-30 | American Family Field
+2026-04-15 22:35:53,123 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:53,126 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:53,126 | INFO | Fetching weather for gamePk=824686 | 2026-05-01 | Wrigley Field
+2026-04-15 22:35:53,416 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:53,419 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:53,420 | INFO | Fetching weather for gamePk=824685 | 2026-05-02 | Wrigley Field
+2026-04-15 22:35:53,473 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:53,476 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:53,476 | INFO | Fetching weather for gamePk=824687 | 2026-05-03 | Wrigley Field
+2026-04-15 22:35:54,456 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:54,459 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:54,460 | INFO | Fetching weather for gamePk=824684 | 2026-05-04 | Wrigley Field
+2026-04-15 22:35:54,660 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:54,664 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:54,664 | INFO | Fetching weather for gamePk=823228 | 2026-05-04 | Oracle Park
+2026-04-15 22:35:55,054 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:55,058 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:55,059 | INFO | Fetching weather for gamePk=824682 | 2026-05-05 | Wrigley Field
+2026-04-15 22:35:55,125 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:55,128 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:55,129 | INFO | Fetching weather for gamePk=823227 | 2026-05-05 | Oracle Park
+2026-04-15 22:35:56,409 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:56,413 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:56,413 | INFO | Fetching weather for gamePk=823226 | 2026-05-06 | Oracle Park
+2026-04-15 22:35:57,013 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:57,016 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:57,017 | INFO | Fetching weather for gamePk=824683 | 2026-05-06 | Wrigley Field
+2026-04-15 22:35:57,085 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:57,088 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:57,088 | INFO | Fetching weather for gamePk=824681 | 2026-05-07 | Wrigley Field
+2026-04-15 22:35:57,154 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:57,156 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:57,157 | INFO | Fetching weather for gamePk=822822 | 2026-05-08 | Rogers Centre
+2026-04-15 22:35:57,428 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:57,431 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:57,431 | INFO | Fetching weather for gamePk=823794 | 2026-05-08 | American Family Field
+2026-04-15 22:35:58,506 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:58,510 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:58,510 | INFO | Fetching weather for gamePk=823225 | 2026-05-08 | Oracle Park
+2026-04-15 22:35:59,718 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:59,721 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:59,722 | INFO | Fetching weather for gamePk=822820 | 2026-05-09 | Rogers Centre
+2026-04-15 22:35:59,788 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:59,791 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:59,791 | INFO | Fetching weather for gamePk=823792 | 2026-05-09 | American Family Field
+2026-04-15 22:35:59,861 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:35:59,870 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:35:59,870 | INFO | Fetching weather for gamePk=823224 | 2026-05-09 | Oracle Park
+2026-04-15 22:36:00,131 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:00,134 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:00,134 | INFO | Fetching weather for gamePk=822819 | 2026-05-10 | Rogers Centre
+2026-04-15 22:36:00,209 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:00,212 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:00,212 | INFO | Fetching weather for gamePk=823793 | 2026-05-10 | American Family Field
+2026-04-15 22:36:00,280 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:00,283 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:00,284 | INFO | Fetching weather for gamePk=823221 | 2026-05-10 | Oracle Park
+2026-04-15 22:36:00,899 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:00,903 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:00,903 | INFO | Fetching weather for gamePk=822818 | 2026-05-11 | Rogers Centre
+2026-04-15 22:36:01,156 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:01,160 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:01,160 | INFO | Fetching weather for gamePk=822817 | 2026-05-12 | Rogers Centre
+2026-04-15 22:36:01,524 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:01,528 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:01,528 | INFO | Fetching weather for gamePk=823632 | 2026-05-12 | Citi Field
+2026-04-15 22:36:01,804 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:01,807 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:01,807 | INFO | Fetching weather for gamePk=823790 | 2026-05-12 | American Family Field
+2026-04-15 22:36:01,866 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:01,870 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:01,870 | INFO | Fetching weather for gamePk=822815 | 2026-05-13 | Rogers Centre
+2026-04-15 22:36:02,940 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:02,943 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:02,944 | INFO | Fetching weather for gamePk=823631 | 2026-05-13 | Citi Field
+2026-04-15 22:36:03,015 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:03,018 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:03,018 | INFO | Fetching weather for gamePk=823791 | 2026-05-13 | American Family Field
+2026-04-15 22:36:03,289 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:03,292 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:03,293 | INFO | Fetching weather for gamePk=823630 | 2026-05-14 | Citi Field
+2026-04-15 22:36:03,367 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:03,370 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:03,370 | INFO | Fetching weather for gamePk=823789 | 2026-05-14 | American Family Field
+2026-04-15 22:36:03,814 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:03,818 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:03,818 | INFO | Fetching weather for gamePk=823629 | 2026-05-15 | Citi Field
+2026-04-15 22:36:04,103 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:04,106 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:04,106 | INFO | Fetching weather for gamePk=823627 | 2026-05-16 | Citi Field
+2026-04-15 22:36:04,383 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:04,387 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:04,387 | INFO | Fetching weather for gamePk=823628 | 2026-05-17 | Citi Field
+2026-04-15 22:36:05,248 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:05,251 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:05,252 | INFO | Fetching weather for gamePk=824680 | 2026-05-18 | Wrigley Field
+2026-04-15 22:36:05,531 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:05,535 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:05,535 | INFO | Fetching weather for gamePk=824677 | 2026-05-19 | Wrigley Field
+2026-04-15 22:36:05,817 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:05,820 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:05,820 | INFO | Fetching weather for gamePk=824678 | 2026-05-20 | Wrigley Field
+2026-04-15 22:36:05,889 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:05,892 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:05,892 | INFO | Fetching weather for gamePk=824679 | 2026-05-22 | Wrigley Field
+2026-04-15 22:36:06,781 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:06,784 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:06,784 | INFO | Fetching weather for gamePk=822816 | 2026-05-22 | Rogers Centre
+2026-04-15 22:36:08,058 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:08,061 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:08,061 | INFO | Fetching weather for gamePk=823788 | 2026-05-22 | American Family Field
+2026-04-15 22:36:08,124 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:08,127 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:08,127 | INFO | Fetching weather for gamePk=823223 | 2026-05-22 | Oracle Park
+2026-04-15 22:36:08,400 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:08,404 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:08,404 | INFO | Fetching weather for gamePk=824674 | 2026-05-23 | Wrigley Field
+2026-04-15 22:36:08,829 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:08,833 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:08,833 | INFO | Fetching weather for gamePk=822814 | 2026-05-23 | Rogers Centre
+2026-04-15 22:36:09,878 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:09,883 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:09,884 | INFO | Fetching weather for gamePk=823222 | 2026-05-23 | Oracle Park
+2026-04-15 22:36:09,959 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:09,962 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:09,963 | INFO | Fetching weather for gamePk=823787 | 2026-05-23 | American Family Field
+2026-04-15 22:36:10,330 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:10,333 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:10,334 | INFO | Fetching weather for gamePk=822813 | 2026-05-24 | Rogers Centre
+2026-04-15 22:36:10,615 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:10,618 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:10,618 | INFO | Fetching weather for gamePk=823786 | 2026-05-24 | American Family Field
+2026-04-15 22:36:10,674 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:10,677 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:10,677 | INFO | Fetching weather for gamePk=824676 | 2026-05-24 | Wrigley Field
+2026-04-15 22:36:11,246 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:11,250 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:11,251 | INFO | Fetching weather for gamePk=823220 | 2026-05-24 | Oracle Park
+2026-04-15 22:36:11,467 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:11,470 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:11,471 | INFO | Fetching weather for gamePk=823784 | 2026-05-25 | American Family Field
+2026-04-15 22:36:12,416 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:12,419 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:12,420 | INFO | Fetching weather for gamePk=823625 | 2026-05-25 | Citi Field
+2026-04-15 22:36:12,823 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:12,830 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:12,830 | INFO | Fetching weather for gamePk=823219 | 2026-05-25 | Oracle Park
+2026-04-15 22:36:13,105 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:13,108 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:13,108 | INFO | Fetching weather for gamePk=822812 | 2026-05-25 | Rogers Centre
+2026-04-15 22:36:13,189 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:13,193 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:13,193 | INFO | Fetching weather for gamePk=822811 | 2026-05-26 | Rogers Centre
+2026-04-15 22:36:13,469 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:13,474 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:13,474 | INFO | Fetching weather for gamePk=823624 | 2026-05-26 | Citi Field
+2026-04-15 22:36:13,545 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:13,549 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:13,549 | INFO | Fetching weather for gamePk=823785 | 2026-05-26 | American Family Field
+2026-04-15 22:36:13,665 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:13,671 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:13,671 | INFO | Fetching weather for gamePk=823216 | 2026-05-26 | Oracle Park
+2026-04-15 22:36:13,921 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:13,926 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:13,926 | INFO | Fetching weather for gamePk=822809 | 2026-05-27 | Rogers Centre
+2026-04-15 22:36:14,029 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:14,034 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:14,034 | INFO | Fetching weather for gamePk=823783 | 2026-05-27 | American Family Field
+2026-04-15 22:36:14,227 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:14,231 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:14,232 | INFO | Fetching weather for gamePk=823217 | 2026-05-27 | Oracle Park
+2026-04-15 22:36:14,297 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:14,302 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:14,303 | INFO | Fetching weather for gamePk=823626 | 2026-05-27 | Citi Field
+2026-04-15 22:36:14,843 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:14,848 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:14,849 | INFO | Fetching weather for gamePk=823623 | 2026-05-29 | Citi Field
+2026-04-15 22:36:15,100 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:15,103 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:15,104 | INFO | Fetching weather for gamePk=823622 | 2026-05-30 | Citi Field
+2026-04-15 22:36:16,163 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:16,168 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:16,168 | INFO | Fetching weather for gamePk=823621 | 2026-05-31 | Citi Field
+2026-04-15 22:36:16,450 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:16,453 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:16,453 | INFO | Fetching weather for gamePk=823781 | 2026-06-01 | American Family Field
+2026-04-15 22:36:17,717 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:17,720 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:17,721 | INFO | Fetching weather for gamePk=823782 | 2026-06-02 | American Family Field
+2026-04-15 22:36:17,942 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:17,945 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:17,946 | INFO | Fetching weather for gamePk=824675 | 2026-06-02 | Wrigley Field
+2026-04-15 22:36:18,217 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:18,222 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:18,222 | INFO | Fetching weather for gamePk=823780 | 2026-06-03 | American Family Field
+2026-04-15 22:36:18,510 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:18,514 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:18,514 | INFO | Fetching weather for gamePk=824671 | 2026-06-03 | Wrigley Field
+2026-04-15 22:36:18,585 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:18,589 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:18,590 | INFO | Fetching weather for gamePk=823779 | 2026-06-04 | American Family Field
+2026-04-15 22:36:18,873 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:18,878 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:18,879 | INFO | Fetching weather for gamePk=824672 | 2026-06-04 | Wrigley Field
+2026-04-15 22:36:18,946 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:18,949 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:18,950 | INFO | Fetching weather for gamePk=824673 | 2026-06-05 | Wrigley Field
+2026-04-15 22:36:19,008 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:19,013 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:19,013 | INFO | Fetching weather for gamePk=822810 | 2026-06-05 | Rogers Centre
+2026-04-15 22:36:20,088 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,093 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,093 | INFO | Fetching weather for gamePk=824669 | 2026-06-06 | Wrigley Field
+2026-04-15 22:36:20,377 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,381 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,381 | INFO | Fetching weather for gamePk=822808 | 2026-06-06 | Rogers Centre
+2026-04-15 22:36:20,444 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,448 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,449 | INFO | Fetching weather for gamePk=822807 | 2026-06-07 | Rogers Centre
+2026-04-15 22:36:20,508 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,512 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,512 | INFO | Fetching weather for gamePk=824670 | 2026-06-07 | Wrigley Field
+2026-04-15 22:36:20,579 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,583 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,583 | INFO | Fetching weather for gamePk=822806 | 2026-06-08 | Rogers Centre
+2026-04-15 22:36:20,651 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,656 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,656 | INFO | Fetching weather for gamePk=823218 | 2026-06-08 | Oracle Park
+2026-04-15 22:36:20,948 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:20,952 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:20,953 | INFO | Fetching weather for gamePk=822805 | 2026-06-09 | Rogers Centre
+2026-04-15 22:36:21,010 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:21,013 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:21,014 | INFO | Fetching weather for gamePk=823620 | 2026-06-09 | Citi Field
+2026-04-15 22:36:21,076 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:21,080 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:21,080 | INFO | Fetching weather for gamePk=823214 | 2026-06-09 | Oracle Park
+2026-04-15 22:36:22,790 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:22,794 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:22,794 | INFO | Fetching weather for gamePk=823215 | 2026-06-10 | Oracle Park
+2026-04-15 22:36:23,837 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:23,840 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:23,841 | INFO | Fetching weather for gamePk=822804 | 2026-06-10 | Rogers Centre
+2026-04-15 22:36:24,039 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:24,043 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:24,043 | INFO | Fetching weather for gamePk=823618 | 2026-06-10 | Citi Field
+2026-04-15 22:36:24,318 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:24,321 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:24,322 | INFO | Fetching weather for gamePk=823619 | 2026-06-11 | Citi Field
+2026-04-15 22:36:24,393 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:24,397 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:24,398 | INFO | Fetching weather for gamePk=823617 | 2026-06-12 | Citi Field
+2026-04-15 22:36:24,958 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:24,961 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:24,962 | INFO | Fetching weather for gamePk=822803 | 2026-06-12 | Rogers Centre
+2026-04-15 22:36:25,735 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:25,738 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:25,738 | INFO | Fetching weather for gamePk=823778 | 2026-06-12 | American Family Field
+2026-04-15 22:36:26,852 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:26,855 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:26,856 | INFO | Fetching weather for gamePk=823211 | 2026-06-12 | Oracle Park
+2026-04-15 22:36:26,915 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:26,918 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:26,919 | INFO | Fetching weather for gamePk=822802 | 2026-06-13 | Rogers Centre
+2026-04-15 22:36:26,996 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,001 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,001 | INFO | Fetching weather for gamePk=823616 | 2026-06-13 | Citi Field
+2026-04-15 22:36:27,066 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,069 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,070 | INFO | Fetching weather for gamePk=823776 | 2026-06-13 | American Family Field
+2026-04-15 22:36:27,137 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,141 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,141 | INFO | Fetching weather for gamePk=823213 | 2026-06-13 | Oracle Park
+2026-04-15 22:36:27,415 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,420 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,420 | INFO | Fetching weather for gamePk=822801 | 2026-06-14 | Rogers Centre
+2026-04-15 22:36:27,508 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,512 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,512 | INFO | Fetching weather for gamePk=823615 | 2026-06-14 | Citi Field
+2026-04-15 22:36:27,582 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,585 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,586 | INFO | Fetching weather for gamePk=823777 | 2026-06-14 | American Family Field
+2026-04-15 22:36:27,851 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:27,854 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:27,855 | INFO | Fetching weather for gamePk=823212 | 2026-06-14 | Oracle Park
+2026-04-15 22:36:28,062 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,066 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,066 | INFO | Fetching weather for gamePk=824666 | 2026-06-15 | Wrigley Field
+2026-04-15 22:36:28,142 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,146 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,146 | INFO | Fetching weather for gamePk=823775 | 2026-06-16 | American Family Field
+2026-04-15 22:36:28,208 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,212 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,213 | INFO | Fetching weather for gamePk=824667 | 2026-06-16 | Wrigley Field
+2026-04-15 22:36:28,280 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,284 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,285 | INFO | Fetching weather for gamePk=823774 | 2026-06-17 | American Family Field
+2026-04-15 22:36:28,353 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,356 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,356 | INFO | Fetching weather for gamePk=824668 | 2026-06-17 | Wrigley Field
+2026-04-15 22:36:28,437 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,441 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,441 | INFO | Fetching weather for gamePk=823772 | 2026-06-18 | American Family Field
+2026-04-15 22:36:28,500 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,503 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,503 | INFO | Fetching weather for gamePk=824663 | 2026-06-19 | Wrigley Field
+2026-04-15 22:36:28,567 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,571 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,571 | INFO | Fetching weather for gamePk=824665 | 2026-06-20 | Wrigley Field
+2026-04-15 22:36:28,636 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,639 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,640 | INFO | Fetching weather for gamePk=824664 | 2026-06-21 | Wrigley Field
+2026-04-15 22:36:28,692 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,696 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,696 | INFO | Fetching weather for gamePk=822800 | 2026-06-22 | Rogers Centre
+2026-04-15 22:36:28,758 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,762 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,762 | INFO | Fetching weather for gamePk=823613 | 2026-06-22 | Citi Field
+2026-04-15 22:36:28,828 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,831 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,832 | INFO | Fetching weather for gamePk=822799 | 2026-06-23 | Rogers Centre
+2026-04-15 22:36:28,900 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,904 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,904 | INFO | Fetching weather for gamePk=823614 | 2026-06-23 | Citi Field
+2026-04-15 22:36:28,988 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:28,991 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:28,992 | INFO | Fetching weather for gamePk=823210 | 2026-06-23 | Oracle Park
+2026-04-15 22:36:29,275 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,279 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,279 | INFO | Fetching weather for gamePk=822798 | 2026-06-24 | Rogers Centre
+2026-04-15 22:36:29,346 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,349 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,350 | INFO | Fetching weather for gamePk=823611 | 2026-06-24 | Citi Field
+2026-04-15 22:36:29,422 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,426 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,426 | INFO | Fetching weather for gamePk=823208 | 2026-06-24 | Oracle Park
+2026-04-15 22:36:29,490 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,493 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,494 | INFO | Fetching weather for gamePk=823209 | 2026-06-25 | Oracle Park
+2026-04-15 22:36:29,581 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,584 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,585 | INFO | Fetching weather for gamePk=822797 | 2026-06-25 | Rogers Centre
+2026-04-15 22:36:29,880 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,883 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,883 | INFO | Fetching weather for gamePk=823612 | 2026-06-25 | Citi Field
+2026-04-15 22:36:29,954 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:29,957 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:29,958 | INFO | Fetching weather for gamePk=822796 | 2026-06-26 | Rogers Centre
+2026-04-15 22:36:30,027 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,030 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,031 | INFO | Fetching weather for gamePk=823610 | 2026-06-26 | Citi Field
+2026-04-15 22:36:30,107 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,112 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,113 | INFO | Fetching weather for gamePk=823773 | 2026-06-26 | American Family Field
+2026-04-15 22:36:30,202 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,205 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,206 | INFO | Fetching weather for gamePk=823206 | 2026-06-26 | Oracle Park
+2026-04-15 22:36:30,272 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,276 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,276 | INFO | Fetching weather for gamePk=822794 | 2026-06-27 | Rogers Centre
+2026-04-15 22:36:30,355 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,359 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,359 | INFO | Fetching weather for gamePk=823609 | 2026-06-27 | Citi Field
+2026-04-15 22:36:30,548 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,552 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,552 | INFO | Fetching weather for gamePk=823770 | 2026-06-27 | American Family Field
+2026-04-15 22:36:30,628 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,632 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,632 | INFO | Fetching weather for gamePk=823207 | 2026-06-27 | Oracle Park
+2026-04-15 22:36:30,706 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,710 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,710 | INFO | Fetching weather for gamePk=822795 | 2026-06-28 | Rogers Centre
+2026-04-15 22:36:30,770 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,773 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,774 | INFO | Fetching weather for gamePk=823608 | 2026-06-28 | Citi Field
+2026-04-15 22:36:30,863 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,866 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,866 | INFO | Fetching weather for gamePk=823769 | 2026-06-28 | American Family Field
+2026-04-15 22:36:30,946 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:30,950 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:30,951 | INFO | Fetching weather for gamePk=823204 | 2026-06-28 | Oracle Park
+2026-04-15 22:36:31,010 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,014 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,015 | INFO | Fetching weather for gamePk=822792 | 2026-06-29 | Rogers Centre
+2026-04-15 22:36:31,111 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,115 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,115 | INFO | Fetching weather for gamePk=823771 | 2026-06-29 | American Family Field
+2026-04-15 22:36:31,188 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,191 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,192 | INFO | Fetching weather for gamePk=824662 | 2026-06-29 | Wrigley Field
+2026-04-15 22:36:31,248 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,252 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,252 | INFO | Fetching weather for gamePk=822793 | 2026-06-30 | Rogers Centre
+2026-04-15 22:36:31,319 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,322 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,323 | INFO | Fetching weather for gamePk=823768 | 2026-06-30 | American Family Field
+2026-04-15 22:36:31,389 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,392 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,393 | INFO | Fetching weather for gamePk=824661 | 2026-06-30 | Wrigley Field
+2026-04-15 22:36:31,448 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,452 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,452 | INFO | Fetching weather for gamePk=824660 | 2026-07-01 | Wrigley Field
+2026-04-15 22:36:31,529 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,533 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,533 | INFO | Fetching weather for gamePk=822791 | 2026-07-01 | Rogers Centre
+2026-04-15 22:36:31,616 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,621 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,621 | INFO | Fetching weather for gamePk=823767 | 2026-07-01 | American Family Field
+2026-04-15 22:36:31,691 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,695 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,695 | INFO | Fetching weather for gamePk=823765 | 2026-07-02 | American Family Field
+2026-04-15 22:36:31,773 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,777 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,777 | INFO | Fetching weather for gamePk=824659 | 2026-07-03 | Wrigley Field
+2026-04-15 22:36:31,853 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,857 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,858 | INFO | Fetching weather for gamePk=824658 | 2026-07-04 | Wrigley Field
+2026-04-15 22:36:31,919 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,923 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,923 | INFO | Fetching weather for gamePk=824656 | 2026-07-05 | Wrigley Field
+2026-04-15 22:36:31,990 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:31,994 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:31,994 | INFO | Fetching weather for gamePk=823205 | 2026-07-06 | Oracle Park
+2026-04-15 22:36:32,057 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,060 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,061 | INFO | Fetching weather for gamePk=823607 | 2026-07-07 | Citi Field
+2026-04-15 22:36:32,123 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,127 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,127 | INFO | Fetching weather for gamePk=823203 | 2026-07-07 | Oracle Park
+2026-04-15 22:36:32,207 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,210 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,211 | INFO | Fetching weather for gamePk=823202 | 2026-07-08 | Oracle Park
+2026-04-15 22:36:32,279 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,283 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,283 | INFO | Fetching weather for gamePk=823605 | 2026-07-08 | Citi Field
+2026-04-15 22:36:32,347 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,350 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,350 | INFO | Fetching weather for gamePk=823606 | 2026-07-09 | Citi Field
+2026-04-15 22:36:32,470 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,474 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,474 | INFO | Fetching weather for gamePk=823201 | 2026-07-09 | Oracle Park
+2026-04-15 22:36:32,542 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,547 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,548 | INFO | Fetching weather for gamePk=823604 | 2026-07-10 | Citi Field
+2026-04-15 22:36:32,620 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,624 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,625 | INFO | Fetching weather for gamePk=823200 | 2026-07-10 | Oracle Park
+2026-04-15 22:36:32,692 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,697 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,698 | INFO | Fetching weather for gamePk=823198 | 2026-07-11 | Oracle Park
+2026-04-15 22:36:32,760 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,765 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,765 | INFO | Fetching weather for gamePk=823603 | 2026-07-11 | Citi Field
+2026-04-15 22:36:32,861 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,868 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,868 | INFO | Fetching weather for gamePk=823602 | 2026-07-12 | Citi Field
+2026-04-15 22:36:32,936 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:32,941 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:32,941 | INFO | Fetching weather for gamePk=823199 | 2026-07-12 | Oracle Park
+2026-04-15 22:36:33,004 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,007 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,008 | INFO | Fetching weather for gamePk=822789 | 2026-07-17 | Rogers Centre
+2026-04-15 22:36:33,082 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,087 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,087 | INFO | Fetching weather for gamePk=823766 | 2026-07-17 | American Family Field
+2026-04-15 22:36:33,156 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,159 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,160 | INFO | Fetching weather for gamePk=824655 | 2026-07-17 | Wrigley Field
+2026-04-15 22:36:33,224 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,227 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,227 | INFO | Fetching weather for gamePk=824657 | 2026-07-18 | Wrigley Field
+2026-04-15 22:36:33,286 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,289 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,290 | INFO | Fetching weather for gamePk=822790 | 2026-07-18 | Rogers Centre
+2026-04-15 22:36:33,364 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,367 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,367 | INFO | Fetching weather for gamePk=823763 | 2026-07-18 | American Family Field
+2026-04-15 22:36:33,444 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,447 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,448 | INFO | Fetching weather for gamePk=822786 | 2026-07-19 | Rogers Centre
+2026-04-15 22:36:33,514 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,517 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,517 | INFO | Fetching weather for gamePk=823764 | 2026-07-19 | American Family Field
+2026-04-15 22:36:33,587 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,590 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,590 | INFO | Fetching weather for gamePk=824653 | 2026-07-19 | Wrigley Field
+2026-04-15 22:36:33,659 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,662 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,663 | INFO | Fetching weather for gamePk=822788 | 2026-07-20 | Rogers Centre
+2026-04-15 22:36:33,729 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,733 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,733 | INFO | Fetching weather for gamePk=823762 | 2026-07-20 | American Family Field
+2026-04-15 22:36:33,798 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,802 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,802 | INFO | Fetching weather for gamePk=824654 | 2026-07-20 | Wrigley Field
+2026-04-15 22:36:33,867 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,870 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,870 | INFO | Fetching weather for gamePk=822787 | 2026-07-21 | Rogers Centre
+2026-04-15 22:36:33,922 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,925 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,926 | INFO | Fetching weather for gamePk=823760 | 2026-07-21 | American Family Field
+2026-04-15 22:36:33,990 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:33,993 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:33,994 | INFO | Fetching weather for gamePk=824652 | 2026-07-21 | Wrigley Field
+2026-04-15 22:36:34,060 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,064 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,065 | INFO | Fetching weather for gamePk=823761 | 2026-07-22 | American Family Field
+2026-04-15 22:36:34,175 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,180 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,180 | INFO | Fetching weather for gamePk=822784 | 2026-07-22 | Rogers Centre
+2026-04-15 22:36:34,245 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,250 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,251 | INFO | Fetching weather for gamePk=824650 | 2026-07-22 | Wrigley Field
+2026-04-15 22:36:34,335 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,339 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,339 | INFO | Fetching weather for gamePk=822785 | 2026-07-23 | Rogers Centre
+2026-04-15 22:36:34,395 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,399 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,399 | INFO | Fetching weather for gamePk=823759 | 2026-07-24 | American Family Field
+2026-04-15 22:36:34,469 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,473 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,473 | INFO | Fetching weather for gamePk=823601 | 2026-07-24 | Citi Field
+2026-04-15 22:36:34,540 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,543 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,543 | INFO | Fetching weather for gamePk=823196 | 2026-07-24 | Oracle Park
+2026-04-15 22:36:34,607 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,611 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,611 | INFO | Fetching weather for gamePk=823197 | 2026-07-25 | Oracle Park
+2026-04-15 22:36:34,692 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,696 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,696 | INFO | Fetching weather for gamePk=823758 | 2026-07-25 | American Family Field
+2026-04-15 22:36:34,758 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,762 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,762 | INFO | Fetching weather for gamePk=823600 | 2026-07-25 | Citi Field
+2026-04-15 22:36:34,866 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:34,869 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:34,869 | INFO | Fetching weather for gamePk=823599 | 2026-07-26 | Citi Field
+2026-04-15 22:36:35,002 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,005 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,005 | INFO | Fetching weather for gamePk=823755 | 2026-07-26 | American Family Field
+2026-04-15 22:36:35,080 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,084 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,084 | INFO | Fetching weather for gamePk=823194 | 2026-07-26 | Oracle Park
+2026-04-15 22:36:35,147 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,150 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,151 | INFO | Fetching weather for gamePk=823597 | 2026-07-27 | Citi Field
+2026-04-15 22:36:35,221 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,224 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,225 | INFO | Fetching weather for gamePk=823195 | 2026-07-27 | Oracle Park
+2026-04-15 22:36:35,294 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,298 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,298 | INFO | Fetching weather for gamePk=823598 | 2026-07-28 | Citi Field
+2026-04-15 22:36:35,357 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,360 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,360 | INFO | Fetching weather for gamePk=823193 | 2026-07-28 | Oracle Park
+2026-04-15 22:36:35,440 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,443 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,443 | INFO | Fetching weather for gamePk=823596 | 2026-07-29 | Citi Field
+2026-04-15 22:36:35,507 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,510 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,511 | INFO | Fetching weather for gamePk=823192 | 2026-07-29 | Oracle Park
+2026-04-15 22:36:35,570 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,573 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,574 | INFO | Fetching weather for gamePk=823595 | 2026-07-30 | Citi Field
+2026-04-15 22:36:35,643 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,646 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,646 | INFO | Fetching weather for gamePk=824651 | 2026-07-31 | Wrigley Field
+2026-04-15 22:36:35,702 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,706 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,706 | INFO | Fetching weather for gamePk=822782 | 2026-07-31 | Rogers Centre
+2026-04-15 22:36:35,772 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,776 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,776 | INFO | Fetching weather for gamePk=823593 | 2026-07-31 | Citi Field
+2026-04-15 22:36:35,834 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,838 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,838 | INFO | Fetching weather for gamePk=822781 | 2026-08-01 | Rogers Centre
+2026-04-15 22:36:35,891 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,894 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,895 | INFO | Fetching weather for gamePk=823594 | 2026-08-01 | Citi Field
+2026-04-15 22:36:35,960 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:35,964 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:35,964 | INFO | Fetching weather for gamePk=824649 | 2026-08-01 | Wrigley Field
+2026-04-15 22:36:36,027 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:36,031 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:36,031 | INFO | Fetching weather for gamePk=822783 | 2026-08-02 | Rogers Centre
+2026-04-15 22:36:36,107 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:36,111 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:36,111 | INFO | Fetching weather for gamePk=823592 | 2026-08-02 | Citi Field
+2026-04-15 22:36:36,185 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:36,189 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:36,189 | INFO | Fetching weather for gamePk=824648 | 2026-08-02 | Wrigley Field
+2026-04-15 22:36:37,254 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,257 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,258 | INFO | Fetching weather for gamePk=823757 | 2026-08-03 | American Family Field
+2026-04-15 22:36:37,322 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,326 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,326 | INFO | Fetching weather for gamePk=824647 | 2026-08-03 | Wrigley Field
+2026-04-15 22:36:37,393 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,397 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,397 | INFO | Fetching weather for gamePk=823756 | 2026-08-04 | American Family Field
+2026-04-15 22:36:37,482 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,485 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,486 | INFO | Fetching weather for gamePk=824645 | 2026-08-04 | Wrigley Field
+2026-04-15 22:36:37,544 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,550 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,550 | INFO | Fetching weather for gamePk=824646 | 2026-08-05 | Wrigley Field
+2026-04-15 22:36:37,617 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,624 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,625 | INFO | Fetching weather for gamePk=823753 | 2026-08-05 | American Family Field
+2026-04-15 22:36:37,694 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,699 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,700 | INFO | Fetching weather for gamePk=823754 | 2026-08-06 | American Family Field
+2026-04-15 22:36:37,760 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,765 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,765 | INFO | Fetching weather for gamePk=823750 | 2026-08-07 | American Family Field
+2026-04-15 22:36:37,858 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,861 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,861 | INFO | Fetching weather for gamePk=823191 | 2026-08-07 | Oracle Park
+2026-04-15 22:36:37,951 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:37,954 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:37,955 | INFO | Fetching weather for gamePk=823752 | 2026-08-08 | American Family Field
+2026-04-15 22:36:38,027 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:38,031 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:38,031 | INFO | Fetching weather for gamePk=823188 | 2026-08-08 | Oracle Park
+2026-04-15 22:36:38,315 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:38,320 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:38,321 | INFO | Fetching weather for gamePk=823751 | 2026-08-09 | American Family Field
+2026-04-15 22:36:38,613 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:38,617 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:38,618 | INFO | Fetching weather for gamePk=823190 | 2026-08-09 | Oracle Park
+2026-04-15 22:36:38,827 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:38,831 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:38,831 | INFO | Fetching weather for gamePk=822780 | 2026-08-10 | Rogers Centre
+2026-04-15 22:36:38,907 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:38,911 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:38,911 | INFO | Fetching weather for gamePk=823189 | 2026-08-10 | Oracle Park
+2026-04-15 22:36:38,992 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:38,997 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:38,998 | INFO | Fetching weather for gamePk=822778 | 2026-08-11 | Rogers Centre
+2026-04-15 22:36:39,073 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:39,077 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:39,077 | INFO | Fetching weather for gamePk=823186 | 2026-08-11 | Oracle Park
+2026-04-15 22:36:40,091 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:40,095 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:40,095 | INFO | Fetching weather for gamePk=823187 | 2026-08-12 | Oracle Park
+2026-04-15 22:36:40,193 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:40,197 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:40,197 | INFO | Fetching weather for gamePk=822779 | 2026-08-12 | Rogers Centre
+2026-04-15 22:36:40,473 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:40,477 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:40,477 | INFO | Fetching weather for gamePk=822776 | 2026-08-13 | Rogers Centre
+2026-04-15 22:36:41,935 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:41,938 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:41,939 | INFO | Fetching weather for gamePk=824643 | 2026-08-14 | Wrigley Field
+2026-04-15 22:36:42,239 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,242 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,243 | INFO | Fetching weather for gamePk=822777 | 2026-08-14 | Rogers Centre
+2026-04-15 22:36:42,301 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,305 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,305 | INFO | Fetching weather for gamePk=823591 | 2026-08-14 | Citi Field
+2026-04-15 22:36:42,373 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,377 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,377 | INFO | Fetching weather for gamePk=823185 | 2026-08-14 | Oracle Park
+2026-04-15 22:36:42,439 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,442 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,443 | INFO | Fetching weather for gamePk=824644 | 2026-08-15 | Wrigley Field
+2026-04-15 22:36:42,505 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,508 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,509 | INFO | Fetching weather for gamePk=822775 | 2026-08-15 | Rogers Centre
+2026-04-15 22:36:42,606 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,609 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,610 | INFO | Fetching weather for gamePk=823184 | 2026-08-15 | Oracle Park
+2026-04-15 22:36:42,865 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,869 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,870 | INFO | Fetching weather for gamePk=823588 | 2026-08-15 | Citi Field
+2026-04-15 22:36:42,963 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:42,967 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:42,967 | INFO | Fetching weather for gamePk=822774 | 2026-08-16 | Rogers Centre
+2026-04-15 22:36:43,919 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:43,922 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:43,922 | INFO | Fetching weather for gamePk=823590 | 2026-08-16 | Citi Field
+2026-04-15 22:36:44,140 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:44,144 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:44,144 | INFO | Fetching weather for gamePk=824642 | 2026-08-16 | Wrigley Field
+2026-04-15 22:36:44,225 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:44,229 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:44,230 | INFO | Fetching weather for gamePk=823182 | 2026-08-16 | Oracle Park
+2026-04-15 22:36:44,625 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:44,629 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:44,630 | INFO | Fetching weather for gamePk=823589 | 2026-08-17 | Citi Field
+2026-04-15 22:36:44,790 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:44,793 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:44,793 | INFO | Fetching weather for gamePk=824641 | 2026-08-17 | Wrigley Field
+2026-04-15 22:36:44,856 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:44,860 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:44,860 | INFO | Fetching weather for gamePk=823586 | 2026-08-18 | Citi Field
+2026-04-15 22:36:45,924 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:45,927 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:45,928 | INFO | Fetching weather for gamePk=823749 | 2026-08-18 | American Family Field
+2026-04-15 22:36:45,997 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:46,000 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:46,000 | INFO | Fetching weather for gamePk=824639 | 2026-08-18 | Wrigley Field
+2026-04-15 22:36:46,059 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:46,063 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:46,063 | INFO | Fetching weather for gamePk=823587 | 2026-08-19 | Citi Field
+2026-04-15 22:36:46,481 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:46,484 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:46,485 | INFO | Fetching weather for gamePk=824640 | 2026-08-19 | Wrigley Field
+2026-04-15 22:36:47,000 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:47,003 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:47,003 | INFO | Fetching weather for gamePk=823748 | 2026-08-19 | American Family Field
+2026-04-15 22:36:47,275 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:47,279 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:47,279 | INFO | Fetching weather for gamePk=823747 | 2026-08-20 | American Family Field
+2026-04-15 22:36:47,343 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:47,347 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:47,348 | INFO | Fetching weather for gamePk=823746 | 2026-08-21 | American Family Field
+2026-04-15 22:36:48,617 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:48,621 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:48,621 | INFO | Fetching weather for gamePk=823743 | 2026-08-22 | American Family Field
+2026-04-15 22:36:48,678 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:48,682 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:48,683 | INFO | Fetching weather for gamePk=823183 | 2026-08-24 | Oracle Park
+2026-04-15 22:36:48,746 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:48,750 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:48,751 | INFO | Fetching weather for gamePk=822773 | 2026-08-25 | Rogers Centre
+2026-04-15 22:36:48,840 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:48,843 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:48,844 | INFO | Fetching weather for gamePk=823585 | 2026-08-25 | Citi Field
+2026-04-15 22:36:48,906 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:48,909 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:48,910 | INFO | Fetching weather for gamePk=823181 | 2026-08-25 | Oracle Park
+2026-04-15 22:36:48,973 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:48,976 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:48,977 | INFO | Fetching weather for gamePk=823180 | 2026-08-26 | Oracle Park
+2026-04-15 22:36:49,040 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,044 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,044 | INFO | Fetching weather for gamePk=822772 | 2026-08-26 | Rogers Centre
+2026-04-15 22:36:49,106 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,109 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,109 | INFO | Fetching weather for gamePk=823584 | 2026-08-26 | Citi Field
+2026-04-15 22:36:49,180 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,183 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,183 | INFO | Fetching weather for gamePk=822771 | 2026-08-27 | Rogers Centre
+2026-04-15 22:36:49,466 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,469 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,469 | INFO | Fetching weather for gamePk=823581 | 2026-08-27 | Citi Field
+2026-04-15 22:36:49,544 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,548 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,548 | INFO | Fetching weather for gamePk=823179 | 2026-08-27 | Oracle Park
+2026-04-15 22:36:49,618 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,621 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,621 | INFO | Fetching weather for gamePk=824638 | 2026-08-28 | Wrigley Field
+2026-04-15 22:36:49,904 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:49,908 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:49,908 | INFO | Fetching weather for gamePk=822769 | 2026-08-28 | Rogers Centre
+2026-04-15 22:36:50,193 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:50,197 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:50,198 | INFO | Fetching weather for gamePk=823583 | 2026-08-28 | Citi Field
+2026-04-15 22:36:50,455 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:50,458 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:50,458 | INFO | Fetching weather for gamePk=823744 | 2026-08-28 | American Family Field
+2026-04-15 22:36:50,719 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:50,723 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:50,723 | INFO | Fetching weather for gamePk=823178 | 2026-08-28 | Oracle Park
+2026-04-15 22:36:50,916 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:50,919 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:50,919 | INFO | Fetching weather for gamePk=824637 | 2026-08-29 | Wrigley Field
+2026-04-15 22:36:50,990 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:50,993 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:50,994 | INFO | Fetching weather for gamePk=822770 | 2026-08-29 | Rogers Centre
+2026-04-15 22:36:51,983 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:51,987 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:51,987 | INFO | Fetching weather for gamePk=823582 | 2026-08-29 | Citi Field
+2026-04-15 22:36:53,850 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:53,853 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:53,854 | INFO | Fetching weather for gamePk=823741 | 2026-08-29 | American Family Field
+2026-04-15 22:36:53,916 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:53,920 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:53,921 | INFO | Fetching weather for gamePk=823176 | 2026-08-29 | Oracle Park
+2026-04-15 22:36:53,984 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:53,987 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:53,987 | INFO | Fetching weather for gamePk=822766 | 2026-08-30 | Rogers Centre
+2026-04-15 22:36:54,260 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:54,264 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:54,264 | INFO | Fetching weather for gamePk=823740 | 2026-08-30 | American Family Field
+2026-04-15 22:36:54,353 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:54,357 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:54,357 | INFO | Fetching weather for gamePk=824636 | 2026-08-30 | Wrigley Field
+2026-04-15 22:36:54,418 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:54,422 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:54,422 | INFO | Fetching weather for gamePk=823177 | 2026-08-30 | Oracle Park
+2026-04-15 22:36:57,076 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:57,080 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:57,080 | INFO | Fetching weather for gamePk=823580 | 2026-08-30 | Citi Field
+2026-04-15 22:36:58,881 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:36:58,885 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:36:58,885 | INFO | Fetching weather for gamePk=824635 | 2026-08-31 | Wrigley Field
+2026-04-15 22:37:00,903 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:00,908 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:00,908 | INFO | Fetching weather for gamePk=824633 | 2026-09-01 | Wrigley Field
+2026-04-15 22:37:01,029 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:01,032 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:01,032 | INFO | Fetching weather for gamePk=824634 | 2026-09-02 | Wrigley Field
+2026-04-15 22:37:01,512 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:01,515 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:01,515 | INFO | Fetching weather for gamePk=824632 | 2026-09-03 | Wrigley Field
+2026-04-15 22:37:04,505 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:04,509 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:04,509 | INFO | Fetching weather for gamePk=823579 | 2026-09-04 | Citi Field
+2026-04-15 22:37:04,602 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:04,605 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:04,606 | INFO | Fetching weather for gamePk=823577 | 2026-09-05 | Citi Field
+2026-04-15 22:37:05,916 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:05,919 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:05,919 | INFO | Fetching weather for gamePk=823578 | 2026-09-06 | Citi Field
+2026-04-15 22:37:06,208 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:06,210 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:06,211 | INFO | Fetching weather for gamePk=823742 | 2026-09-07 | American Family Field
+2026-04-15 22:37:07,070 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:07,073 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:07,073 | INFO | Fetching weather for gamePk=823175 | 2026-09-07 | Oracle Park
+2026-04-15 22:37:08,935 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:08,938 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:08,939 | INFO | Fetching weather for gamePk=823738 | 2026-09-08 | American Family Field
+2026-04-15 22:37:09,000 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:09,004 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:09,004 | INFO | Fetching weather for gamePk=823174 | 2026-09-08 | Oracle Park
+2026-04-15 22:37:09,524 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:09,527 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:09,527 | INFO | Fetching weather for gamePk=823172 | 2026-09-09 | Oracle Park
+2026-04-15 22:37:09,598 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:09,602 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:09,602 | INFO | Fetching weather for gamePk=823739 | 2026-09-09 | American Family Field
+2026-04-15 22:37:09,665 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:09,669 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:09,669 | INFO | Fetching weather for gamePk=824631 | 2026-09-11 | Wrigley Field
+2026-04-15 22:37:10,586 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:10,590 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:10,591 | INFO | Fetching weather for gamePk=822767 | 2026-09-11 | Rogers Centre
+2026-04-15 22:37:10,655 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:10,659 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:10,659 | INFO | Fetching weather for gamePk=823736 | 2026-09-11 | American Family Field
+2026-04-15 22:37:10,933 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:10,937 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:10,937 | INFO | Fetching weather for gamePk=823173 | 2026-09-11 | Oracle Park
+2026-04-15 22:37:11,014 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:11,017 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:11,018 | INFO | Fetching weather for gamePk=824630 | 2026-09-12 | Wrigley Field
+2026-04-15 22:37:11,322 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:11,325 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:11,325 | INFO | Fetching weather for gamePk=822768 | 2026-09-12 | Rogers Centre
+2026-04-15 22:37:11,390 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:11,393 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:11,393 | INFO | Fetching weather for gamePk=823170 | 2026-09-12 | Oracle Park
+2026-04-15 22:37:11,456 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:11,460 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:11,460 | INFO | Fetching weather for gamePk=823737 | 2026-09-12 | American Family Field
+2026-04-15 22:37:11,530 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:11,533 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:11,533 | INFO | Fetching weather for gamePk=822764 | 2026-09-13 | Rogers Centre
+2026-04-15 22:37:11,948 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:11,951 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:11,951 | INFO | Fetching weather for gamePk=823734 | 2026-09-13 | American Family Field
+2026-04-15 22:37:12,035 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:12,038 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:12,039 | INFO | Fetching weather for gamePk=824628 | 2026-09-13 | Wrigley Field
+2026-04-15 22:37:12,525 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:12,529 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:12,529 | INFO | Fetching weather for gamePk=823171 | 2026-09-13 | Oracle Park
+2026-04-15 22:37:12,729 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:12,732 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:12,733 | INFO | Fetching weather for gamePk=822765 | 2026-09-14 | Rogers Centre
+2026-04-15 22:37:12,796 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:12,799 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:12,800 | INFO | Fetching weather for gamePk=823575 | 2026-09-14 | Citi Field
+2026-04-15 22:37:12,862 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:12,866 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:12,866 | INFO | Fetching weather for gamePk=824629 | 2026-09-14 | Wrigley Field
+2026-04-15 22:37:12,927 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:12,930 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:12,931 | INFO | Fetching weather for gamePk=822762 | 2026-09-15 | Rogers Centre
+2026-04-15 22:37:13,798 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:13,801 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:13,801 | INFO | Fetching weather for gamePk=823574 | 2026-09-15 | Citi Field
+2026-04-15 22:37:15,088 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:15,091 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:15,092 | INFO | Fetching weather for gamePk=824627 | 2026-09-15 | Wrigley Field
+2026-04-15 22:37:15,347 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:15,350 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:15,350 | INFO | Fetching weather for gamePk=822763 | 2026-09-16 | Rogers Centre
+2026-04-15 22:37:15,610 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:15,615 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:15,615 | INFO | Fetching weather for gamePk=823576 | 2026-09-16 | Citi Field
+2026-04-15 22:37:15,876 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:15,880 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:15,880 | INFO | Fetching weather for gamePk=824626 | 2026-09-16 | Wrigley Field
+2026-04-15 22:37:16,152 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:16,157 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:16,157 | INFO | Fetching weather for gamePk=823573 | 2026-09-17 | Citi Field
+2026-04-15 22:37:16,222 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:16,226 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:16,226 | INFO | Fetching weather for gamePk=823572 | 2026-09-18 | Citi Field
+2026-04-15 22:37:16,514 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:16,517 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:16,517 | INFO | Fetching weather for gamePk=823571 | 2026-09-19 | Citi Field
+2026-04-15 22:37:16,615 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:16,619 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:16,619 | INFO | Fetching weather for gamePk=823570 | 2026-09-20 | Citi Field
+2026-04-15 22:37:16,688 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:16,691 | ERROR | Weather fetch failed for lat=40.7571, lon=-73.8458: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:16,691 | INFO | Fetching weather for gamePk=823169 | 2026-09-21 | Oracle Park
+2026-04-15 22:37:17,504 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:17,507 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:17,508 | INFO | Fetching weather for gamePk=824624 | 2026-09-22 | Wrigley Field
+2026-04-15 22:37:18,847 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:18,850 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:18,850 | INFO | Fetching weather for gamePk=823166 | 2026-09-22 | Oracle Park
+2026-04-15 22:37:18,972 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:18,975 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:18,976 | INFO | Fetching weather for gamePk=823168 | 2026-09-23 | Oracle Park
+2026-04-15 22:37:19,036 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:19,040 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:19,040 | INFO | Fetching weather for gamePk=824625 | 2026-09-23 | Wrigley Field
+2026-04-15 22:37:19,309 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:19,313 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:19,313 | INFO | Fetching weather for gamePk=824623 | 2026-09-24 | Wrigley Field
+2026-04-15 22:37:19,377 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:19,380 | ERROR | Weather fetch failed for lat=41.9484, lon=-87.6553: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:19,380 | INFO | Fetching weather for gamePk=822760 | 2026-09-25 | Rogers Centre
+2026-04-15 22:37:19,656 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:19,659 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:19,659 | INFO | Fetching weather for gamePk=823735 | 2026-09-25 | American Family Field
+2026-04-15 22:37:19,723 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:19,727 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:19,727 | INFO | Fetching weather for gamePk=823167 | 2026-09-25 | Oracle Park
+2026-04-15 22:37:19,795 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:19,799 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:19,799 | INFO | Fetching weather for gamePk=822759 | 2026-09-26 | Rogers Centre
+2026-04-15 22:37:20,021 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:20,024 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:20,025 | INFO | Fetching weather for gamePk=823165 | 2026-09-26 | Oracle Park
+2026-04-15 22:37:20,312 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:20,316 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:20,316 | INFO | Fetching weather for gamePk=823733 | 2026-09-26 | American Family Field
+2026-04-15 22:37:20,591 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:20,595 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:20,595 | INFO | Fetching weather for gamePk=823164 | 2026-09-27 | Oracle Park
+2026-04-15 22:37:20,875 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:20,879 | ERROR | Weather fetch failed for lat=37.7786, lon=-122.3893: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:20,879 | INFO | Fetching weather for gamePk=822761 | 2026-09-27 | Rogers Centre
+2026-04-15 22:37:21,958 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:21,962 | ERROR | Weather fetch failed for lat=43.6414, lon=-79.3894: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:21,962 | INFO | Fetching weather for gamePk=823731 | 2026-09-27 | American Family Field
+2026-04-15 22:37:22,088 | INFO | Data file for station "$0001" and year "2026" was not found
+2026-04-15 22:37:22,093 | ERROR | Weather fetch failed for lat=43.028, lon=-87.9712: 'NoneType' object has no attribute 'empty'
+2026-04-15 22:37:22,106 | INFO | Built fact_game_weather dataframe with 408 rows
+2026-04-15 22:37:22,136 | INFO | Starting load for table fact_game_weather_stg
+2026-04-15 22:37:22,515 | INFO | Loaded 408 rows into fact_game_weather_stg
+2026-04-16 19:24:14,660 | INFO | SQL Server engine created
+2026-04-16 19:24:14,661 | INFO | Starting MLB schedule extraction
+2026-04-16 19:24:14,667 | INFO | Starting MLB standings daily pipeline
+2026-04-16 19:24:15,037 | INFO | SQL executed successfully
+2026-04-16 19:24:15,038 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-16 19:24:19,239 | INFO | Starting load for table mlb_schedule
+2026-04-16 19:24:39,490 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-16 19:24:39,491 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-16 19:24:39,590 | INFO | Built standings dataframe with 4,856 rows
+2026-04-16 19:24:39,598 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-16 19:24:39,598 | INFO | Starting load for table mlb_standings_daily
+2026-04-16 19:24:40,011 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-16 19:24:40,011 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-16 19:24:40,012 | INFO | MLB standings daily pipeline completed successfully
+2026-04-16 21:03:53,660 | INFO | SQL Server engine created
+2026-04-16 21:03:53,661 | INFO | Starting hitter feature pipeline
+2026-04-16 21:03:53,661 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-16 21:03:55,374 | INFO | SQL executed successfully
+2026-04-16 21:03:55,374 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-16 21:03:55,374 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-16 21:03:57,893 | INFO | SQL executed successfully
+2026-04-16 21:03:57,893 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-16 21:03:57,893 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-16 21:04:00,980 | INFO | SQL executed successfully
+2026-04-16 21:04:00,980 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-16 21:04:00,980 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-16 21:04:02,336 | INFO | SQL executed successfully
+2026-04-16 21:04:02,337 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-16 21:04:02,337 | INFO | Finished hitter feature pipeline
+2026-04-16 21:04:05,655 | INFO | SQL Server engine created
+2026-04-16 21:04:05,656 | INFO | Starting pitcher feature pipeline
+2026-04-16 21:04:05,656 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-16 21:04:07,647 | INFO | SQL executed successfully
+2026-04-16 21:04:07,648 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-16 21:04:07,648 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-16 21:04:27,205 | INFO | SQL executed successfully
+2026-04-16 21:04:27,206 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-16 21:04:27,206 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-16 21:04:43,067 | INFO | SQL executed successfully
+2026-04-16 21:04:43,067 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-16 21:04:43,068 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-16 21:04:43,647 | INFO | SQL executed successfully
+2026-04-16 21:04:43,647 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-16 21:04:43,647 | INFO | Finished pitcher feature pipeline
+2026-04-16 21:04:48,725 | INFO | SQL Server engine created
+2026-04-16 21:04:48,726 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-16 21:04:48,726 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-16 21:04:49,101 | INFO | SQL executed successfully
+2026-04-16 21:04:49,102 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-16 21:04:49,102 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-16 21:04:50,950 | INFO | SQL executed successfully
+2026-04-16 21:04:50,950 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-16 21:04:50,950 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-16 21:04:54,190 | INFO | SQL Server engine created
+2026-04-16 21:04:54,191 | INFO | Starting lineup aggregate feature pipeline
+2026-04-16 21:04:54,191 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-16 21:04:55,023 | INFO | SQL executed successfully
+2026-04-16 21:04:55,023 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-16 21:04:55,023 | INFO | Finished lineup aggregate feature pipeline
+2026-04-16 21:04:59,134 | INFO | SQL Server engine created
+2026-04-16 21:04:59,135 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-16 21:04:59,135 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-16 21:04:59,843 | INFO | SQL executed successfully
+2026-04-16 21:04:59,844 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-16 21:04:59,844 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-16 21:05:03,910 | INFO | SQL Server engine created
+2026-04-16 21:05:03,911 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-16 21:05:07,945 | INFO | SQL executed successfully
+2026-04-16 21:05:07,945 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 10:43:03,630 | INFO | SQL Server engine created
+2026-04-18 10:43:03,632 | INFO | Starting MLB schedule extraction
+2026-04-18 10:43:03,634 | INFO | Starting MLB standings daily pipeline
+2026-04-18 10:43:03,793 | INFO | SQL executed successfully
+2026-04-18 10:43:03,793 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-18 10:43:10,593 | INFO | Starting load for table mlb_schedule
+2026-04-18 10:43:20,484 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-18 10:43:20,484 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-18 10:43:20,574 | INFO | Built standings dataframe with 4,856 rows
+2026-04-18 10:43:20,581 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-18 10:43:20,581 | INFO | Starting load for table mlb_standings_daily
+2026-04-18 10:43:20,870 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-18 10:43:20,870 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-18 10:43:20,871 | INFO | MLB standings daily pipeline completed successfully
+2026-04-18 11:14:25,350 | INFO | SQL Server engine created
+2026-04-18 11:14:25,352 | INFO | Starting hitter feature pipeline
+2026-04-18 11:14:25,352 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 11:14:27,327 | INFO | SQL executed successfully
+2026-04-18 11:14:27,328 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 11:14:27,328 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 11:14:29,862 | INFO | SQL executed successfully
+2026-04-18 11:14:29,862 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 11:14:29,863 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 11:14:33,018 | INFO | SQL executed successfully
+2026-04-18 11:14:33,018 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 11:14:33,019 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-18 11:14:33,937 | INFO | SQL executed successfully
+2026-04-18 11:14:33,937 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-18 11:14:33,938 | INFO | Finished hitter feature pipeline
+2026-04-18 11:14:40,223 | INFO | SQL Server engine created
+2026-04-18 11:14:40,224 | INFO | Starting pitcher feature pipeline
+2026-04-18 11:14:40,224 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 11:14:41,481 | INFO | SQL executed successfully
+2026-04-18 11:14:41,482 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 11:14:41,482 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 11:15:05,143 | INFO | SQL executed successfully
+2026-04-18 11:15:05,143 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 11:15:05,144 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 11:15:21,606 | INFO | SQL executed successfully
+2026-04-18 11:15:21,606 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 11:15:21,607 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-18 11:15:22,108 | INFO | SQL executed successfully
+2026-04-18 11:15:22,109 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-18 11:15:22,109 | INFO | Finished pitcher feature pipeline
+2026-04-18 11:15:25,935 | INFO | SQL Server engine created
+2026-04-18 11:15:25,935 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-18 11:15:25,936 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-18 11:15:26,317 | INFO | SQL executed successfully
+2026-04-18 11:15:26,317 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-18 11:15:26,318 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-18 11:15:28,071 | INFO | SQL executed successfully
+2026-04-18 11:15:28,071 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-18 11:15:28,071 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-18 11:15:31,657 | INFO | SQL Server engine created
+2026-04-18 11:15:31,657 | INFO | Starting lineup aggregate feature pipeline
+2026-04-18 11:15:31,658 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-18 11:15:32,303 | INFO | SQL executed successfully
+2026-04-18 11:15:32,303 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-18 11:15:32,304 | INFO | Finished lineup aggregate feature pipeline
+2026-04-18 11:15:36,178 | INFO | SQL Server engine created
+2026-04-18 11:15:36,178 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-18 11:15:36,178 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 11:15:36,698 | INFO | SQL executed successfully
+2026-04-18 11:15:36,698 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 11:15:36,699 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-18 11:15:41,572 | INFO | SQL Server engine created
+2026-04-18 11:15:41,573 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 11:16:00,126 | INFO | SQL executed successfully
+2026-04-18 11:16:00,126 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 14:23:19,393 | INFO | SQL Server engine created
+2026-04-18 14:23:19,393 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-18 14:23:19,393 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 14:40:08,297 | INFO | SQL Server engine created
+2026-04-18 14:40:08,298 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-18 14:40:08,298 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 14:42:33,563 | INFO | SQL Server engine created
+2026-04-18 14:42:33,564 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-18 14:42:33,564 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 14:42:34,142 | INFO | SQL executed successfully
+2026-04-18 14:42:34,143 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 14:42:34,143 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-18 16:39:15,529 | INFO | SQL Server engine created
+2026-04-18 16:39:15,530 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 16:39:20,828 | INFO | SQL executed successfully
+2026-04-18 16:39:20,828 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features

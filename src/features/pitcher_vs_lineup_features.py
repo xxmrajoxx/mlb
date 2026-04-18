@@ -465,6 +465,14 @@ SELECT
     END AS pitches_per_strikeout_efficiency_last_3,
 
     CASE
+        WHEN j.weighted_k_last_3 IS NULL OR j.weighted_k_last_3 = 0 OR j.weighted_pitches_last_3 IS NULL THEN NULL
+        WHEN (j.weighted_pitches_last_3 / NULLIF(j.weighted_k_last_3, 0)) <= 12.00 THEN 'elite'
+        WHEN (j.weighted_pitches_last_3 / NULLIF(j.weighted_k_last_3, 0)) <= 15.00 THEN 'good'
+        WHEN (j.weighted_pitches_last_3 / NULLIF(j.weighted_k_last_3, 0)) <= 18.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS weighted_pitches_per_strikeout_efficiency_last_3,
+
+    CASE
         WHEN j.avg_k_last_5 IS NULL OR j.avg_k_last_5 = 0 OR j.avg_pitches_last_5 IS NULL THEN NULL
         WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 12.00 THEN 'elite'
         WHEN (j.avg_pitches_last_5 / NULLIF(j.avg_k_last_5, 0)) <= 15.00 THEN 'good'
@@ -473,12 +481,28 @@ SELECT
     END AS pitches_per_strikeout_efficiency_last_5,
 
     CASE
+        WHEN j.weighted_k_last_5 IS NULL OR j.weighted_k_last_5 = 0 OR j.weighted_pitches_last_5 IS NULL THEN NULL
+        WHEN (j.weighted_pitches_last_5 / NULLIF(j.weighted_k_last_5, 0)) <= 12.00 THEN 'elite'
+        WHEN (j.weighted_pitches_last_5 / NULLIF(j.weighted_k_last_5, 0)) <= 15.00 THEN 'good'
+        WHEN (j.weighted_pitches_last_5 / NULLIF(j.weighted_k_last_5, 0)) <= 18.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS weighted_pitches_per_strikeout_efficiency_last_5,
+
+    CASE
         WHEN j.avg_k_last_10 IS NULL OR j.avg_k_last_10 = 0 OR j.avg_pitches_last_10 IS NULL THEN NULL
         WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 12.00 THEN 'elite'
         WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 15.00 THEN 'good'
         WHEN (j.avg_pitches_last_10 / NULLIF(j.avg_k_last_10, 0)) <= 18.00 THEN 'average'
         ELSE 'inefficient'
-    END AS pitches_per_strikeout_efficiency_last_10
+    END AS pitches_per_strikeout_efficiency_last_10,
+
+    CASE
+        WHEN j.weighted_k_last_10 IS NULL OR j.weighted_k_last_10 = 0 OR j.weighted_pitches_last_10 IS NULL THEN NULL
+        WHEN (j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0)) <= 12.00 THEN 'elite'
+        WHEN (j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0)) <= 15.00 THEN 'good'
+        WHEN (j.weighted_pitches_last_10 / NULLIF(j.weighted_k_last_10, 0)) <= 18.00 THEN 'average'
+        ELSE 'inefficient'
+    END AS weighted_pitches_per_strikeout_efficiency_last_10
 
 INTO mlb.dbo.fact_pitcher_vs_lineup_features
 FROM joined j;

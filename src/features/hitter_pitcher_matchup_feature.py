@@ -900,7 +900,48 @@ SELECT
     p.prev_chase_rate AS pitcher_prev_chase_rate,
 
     -- pitcher target
-    pg.strikeOuts AS pitcher_strikeOuts
+    pg.strikeOuts AS pitcher_strikeOuts,
+
+	-- mlb.dbo.fact_lineup_agg_features
+	la.lineup_spots,
+    la.matched_hitter_feature_rows,
+
+    la.lineup_avg_k_last_3,
+    la.lineup_avg_k_last_5,
+    la.lineup_avg_k_last_10,
+
+    la.lineup_avg_ops_last_3,
+    la.lineup_avg_ops_last_5,
+    la.lineup_avg_ops_last_10,
+
+    la.lineup_avg_whiff_rate_last_3,
+    la.lineup_avg_whiff_rate_last_5,
+    la.lineup_avg_whiff_rate_last_10,
+
+    la.lineup_avg_csw_against_rate_last_3,
+    la.lineup_avg_csw_against_rate_last_5,
+    la.lineup_avg_csw_against_rate_last_10,
+
+    la.lineup_wavg_k_last_3,
+    la.lineup_wavg_k_last_5,
+    la.lineup_wavg_k_last_10,
+
+    la.lineup_wavg_ops_last_3,
+    la.lineup_wavg_ops_last_5,
+    la.lineup_wavg_ops_last_10,
+
+    la.lineup_wavg_whiff_rate_last_3,
+    la.lineup_wavg_whiff_rate_last_5,
+    la.lineup_wavg_whiff_rate_last_10,
+
+    la.lineup_wavg_csw_against_rate_last_3,
+    la.lineup_wavg_csw_against_rate_last_5,
+    la.lineup_wavg_csw_against_rate_last_10,
+
+    la.lineup_num_high_k_hitters,
+    la.lineup_num_power_hitters,
+    la.lineup_num_high_whiff_hitters,
+    la.lineup_num_strong_bats
 
 INTO mlb.dbo.fact_hitter_pitcher_matchup_model_features
 FROM mlb.dbo.fact_hitter_model_features h
@@ -921,7 +962,11 @@ LEFT JOIN hitter_pa_game_features hpg
    AND h.season = hpg.season
 LEFT JOIN hitter_lineup hl
     ON h.gamePk = hl.gamePk
-   AND h.player_id = hl.hitter_id;
+   AND h.player_id = hl.hitter_id
+   LEFT JOIN mlb.dbo.fact_lineup_agg_features la
+    ON h.gamePk = la.gamePk
+   AND h.season = la.season
+   AND h.team_id = la.team_id;
     """
 
     execute_sql(sql)

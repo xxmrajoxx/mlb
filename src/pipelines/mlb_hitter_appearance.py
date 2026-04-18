@@ -4,7 +4,7 @@ import logging
 import time
 import os
 
-from src.utils.date_utils import get_start_end_dates
+
 from dotenv import load_dotenv
 from src.ingestion.mlb_gamePk import fetch_gamePk_with_dates
 from sql.sql_loader import load_dataframe, truncate_table, execute_sql
