@@ -28,8 +28,10 @@ def player_pitch_stats(start_dt: str, end_dt: str) -> pd.DataFrame:
         logger.warning(f"No player found")
         return pd.DataFrame()
 
-    # then filter by only selecting the pitcher     
-    pitcher_df = roster_df[roster_df["position"] == "P"].copy()
+    # then filter by only selecting the pitcher and two way player    
+    pitcher_df = roster_df[
+    roster_df["position"].str.upper().isin(["P", "TWP"])
+    ].copy()
 
     if pitcher_df.empty:
         logger.warning(f"No pitcher found")

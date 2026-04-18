@@ -34,7 +34,7 @@ def fetch_player_game_logs(start_dt: str, end_dt: str, season: int = 2026)->pd.D
 
     player_df = player_df[
         (player_df["team_id"].isin(team_ids)) &
-        (player_df["position"] == "P")
+        (player_df["position"].isin(["P", "TWP"]))
     ].copy()
 
     if player_df.empty:
