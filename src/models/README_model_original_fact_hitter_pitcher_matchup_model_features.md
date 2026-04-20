@@ -1,7 +1,7 @@
 # MLB Feature Table Documentation
 
 ## `mlb.dbo.fact_hitter_pitcher_matchup_model_features`
-
+### `Original way of creating a model`
 ---
 
 ## 🎯 Purpose
