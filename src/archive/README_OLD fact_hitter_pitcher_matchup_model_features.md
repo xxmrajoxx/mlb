@@ -20,6 +20,7 @@ Each row represents a **single matchup between a hitter and a pitcher in a speci
 
 * **1 row per hitter per game**
 * Only the **primary pitcher** was kept
+* The model was y = strikeOut
 * Used:
 
   ```sql
