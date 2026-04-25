@@ -89,7 +89,7 @@ FROM base
 GROUP BY
     gamePk,
     game_date,
-    YEAR(CAST(game_date AS date)),
+    season,
     batter_id,
     pitcher_id;
     """

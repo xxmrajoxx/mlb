@@ -3528,3 +3528,777 @@
 2026-04-18 16:39:15,530 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
 2026-04-18 16:39:20,828 | INFO | SQL executed successfully
 2026-04-18 16:39:20,828 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 17:21:56,479 | INFO | SQL Server engine created
+2026-04-18 17:21:56,479 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 17:35:32,508 | INFO | SQL Server engine created
+2026-04-18 17:35:32,508 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 17:35:59,492 | INFO | SQL Server engine created
+2026-04-18 17:35:59,493 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 17:36:12,609 | INFO | SQL executed successfully
+2026-04-18 17:36:12,609 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 20:53:37,031 | INFO | SQL Server engine created
+2026-04-18 20:53:37,031 | INFO | Starting hitter feature pipeline
+2026-04-18 20:53:37,032 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 20:53:38,904 | INFO | SQL executed successfully
+2026-04-18 20:53:38,904 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 20:53:38,904 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 20:53:42,309 | INFO | SQL executed successfully
+2026-04-18 20:53:42,309 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 20:53:42,310 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 20:53:44,350 | INFO | SQL executed successfully
+2026-04-18 20:53:44,351 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 20:53:44,351 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-18 20:57:29,160 | INFO | SQL Server engine created
+2026-04-18 20:57:29,161 | INFO | Starting hitter feature pipeline
+2026-04-18 20:57:29,162 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 20:57:30,433 | INFO | SQL executed successfully
+2026-04-18 20:57:30,433 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 20:57:30,433 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 20:57:33,854 | INFO | SQL executed successfully
+2026-04-18 20:57:33,855 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 20:57:33,855 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 20:57:35,601 | INFO | SQL executed successfully
+2026-04-18 20:57:35,601 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 20:57:35,602 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-18 20:57:36,550 | INFO | SQL executed successfully
+2026-04-18 20:57:36,550 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-18 20:57:36,551 | INFO | Finished hitter feature pipeline
+2026-04-18 20:59:51,142 | INFO | SQL Server engine created
+2026-04-18 20:59:51,143 | INFO | Starting pitcher feature pipeline
+2026-04-18 20:59:51,143 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 20:59:52,586 | INFO | SQL executed successfully
+2026-04-18 20:59:52,586 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 20:59:52,586 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 20:59:56,839 | INFO | SQL executed successfully
+2026-04-18 20:59:56,839 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 20:59:56,840 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:00:25,964 | INFO | SQL Server engine created
+2026-04-18 21:00:25,965 | INFO | Starting pitcher feature pipeline
+2026-04-18 21:00:25,965 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:00:26,996 | INFO | SQL executed successfully
+2026-04-18 21:00:26,997 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:00:26,997 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:00:31,020 | INFO | SQL executed successfully
+2026-04-18 21:00:31,021 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:00:31,021 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:03:29,744 | INFO | SQL Server engine created
+2026-04-18 21:03:29,745 | INFO | Starting pitcher feature pipeline
+2026-04-18 21:03:29,745 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:03:30,804 | INFO | SQL executed successfully
+2026-04-18 21:03:30,805 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:03:30,805 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:03:35,537 | INFO | SQL executed successfully
+2026-04-18 21:03:35,537 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:03:35,537 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:04:15,064 | INFO | SQL Server engine created
+2026-04-18 21:04:15,065 | INFO | Starting pitcher feature pipeline
+2026-04-18 21:04:15,066 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:04:15,992 | INFO | SQL executed successfully
+2026-04-18 21:04:15,992 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:04:15,993 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:04:20,005 | INFO | SQL executed successfully
+2026-04-18 21:04:20,005 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:04:20,005 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:13:26,141 | INFO | SQL Server engine created
+2026-04-18 21:13:26,142 | INFO | Starting pitcher feature pipeline
+2026-04-18 21:13:26,142 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:13:27,243 | INFO | SQL executed successfully
+2026-04-18 21:13:27,243 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:13:27,244 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:13:31,794 | INFO | SQL executed successfully
+2026-04-18 21:13:31,794 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:13:31,795 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:13:34,637 | INFO | SQL executed successfully
+2026-04-18 21:13:34,637 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:13:34,637 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-18 21:13:35,185 | INFO | SQL executed successfully
+2026-04-18 21:13:35,185 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-18 21:13:35,186 | INFO | Finished pitcher feature pipeline
+2026-04-18 21:13:48,049 | INFO | SQL Server engine created
+2026-04-18 21:13:48,050 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-18 21:13:48,050 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-18 21:13:48,539 | INFO | SQL executed successfully
+2026-04-18 21:13:48,540 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-18 21:13:48,540 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-18 21:13:50,537 | INFO | SQL executed successfully
+2026-04-18 21:13:50,537 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-18 21:13:50,538 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-18 21:13:53,311 | INFO | SQL Server engine created
+2026-04-18 21:13:53,313 | INFO | Starting lineup aggregate feature pipeline
+2026-04-18 21:13:53,313 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-18 21:19:10,041 | INFO | SQL Server engine created
+2026-04-18 21:19:10,042 | INFO | Starting lineup aggregate feature pipeline
+2026-04-18 21:19:10,042 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-18 21:19:10,805 | INFO | SQL executed successfully
+2026-04-18 21:19:10,806 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-18 21:19:10,806 | INFO | Finished lineup aggregate feature pipeline
+2026-04-18 21:19:14,770 | INFO | SQL Server engine created
+2026-04-18 21:19:14,771 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-18 21:19:14,771 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 21:19:23,868 | INFO | SQL Server engine created
+2026-04-18 21:19:23,869 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 21:25:38,062 | INFO | SQL Server engine created
+2026-04-18 21:25:38,062 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 21:26:05,318 | INFO | SQL Server engine created
+2026-04-18 21:26:05,318 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 21:35:40,390 | INFO | SQL Server engine created
+2026-04-18 21:35:40,390 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 21:35:51,574 | INFO | SQL executed successfully
+2026-04-18 21:35:51,574 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 21:37:33,861 | INFO | SQL Server engine created
+2026-04-18 21:37:33,862 | INFO | Starting hitter feature pipeline
+2026-04-18 21:37:33,862 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 21:37:34,989 | INFO | SQL executed successfully
+2026-04-18 21:37:34,990 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-18 21:37:34,990 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 21:37:38,069 | INFO | SQL executed successfully
+2026-04-18 21:37:38,070 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-18 21:37:38,070 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 21:37:40,032 | INFO | SQL executed successfully
+2026-04-18 21:37:40,033 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-18 21:37:40,033 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-18 21:37:40,936 | INFO | SQL executed successfully
+2026-04-18 21:37:40,937 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-18 21:37:40,937 | INFO | Finished hitter feature pipeline
+2026-04-18 21:37:59,530 | INFO | SQL Server engine created
+2026-04-18 21:37:59,530 | INFO | Starting pitcher feature pipeline
+2026-04-18 21:37:59,530 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:38:00,540 | INFO | SQL executed successfully
+2026-04-18 21:38:00,540 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-18 21:38:00,540 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:38:04,962 | INFO | SQL executed successfully
+2026-04-18 21:38:04,962 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-18 21:38:04,963 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:38:06,878 | INFO | SQL executed successfully
+2026-04-18 21:38:06,878 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-18 21:38:06,878 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-18 21:38:07,372 | INFO | SQL executed successfully
+2026-04-18 21:38:07,373 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-18 21:38:07,373 | INFO | Finished pitcher feature pipeline
+2026-04-18 21:38:09,911 | INFO | SQL Server engine created
+2026-04-18 21:38:09,911 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-18 21:38:09,912 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-18 21:38:10,224 | INFO | SQL executed successfully
+2026-04-18 21:38:10,225 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-18 21:38:10,225 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-18 21:38:11,746 | INFO | SQL executed successfully
+2026-04-18 21:38:11,746 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-18 21:38:11,747 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-18 21:38:14,789 | INFO | SQL Server engine created
+2026-04-18 21:38:14,789 | INFO | Starting lineup aggregate feature pipeline
+2026-04-18 21:38:14,790 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-18 21:38:15,573 | INFO | SQL executed successfully
+2026-04-18 21:38:15,573 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-18 21:38:15,573 | INFO | Finished lineup aggregate feature pipeline
+2026-04-18 21:38:21,602 | INFO | SQL Server engine created
+2026-04-18 21:38:21,603 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-18 21:38:21,603 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 21:38:22,058 | INFO | SQL executed successfully
+2026-04-18 21:38:22,058 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-18 21:38:22,058 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-18 21:38:26,689 | INFO | SQL Server engine created
+2026-04-18 21:38:26,690 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-18 21:38:36,745 | INFO | SQL executed successfully
+2026-04-18 21:38:36,746 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-19 20:57:03,646 | INFO | SQL Server engine created
+2026-04-19 20:57:03,647 | INFO | Starting MLB schedule extraction
+2026-04-19 20:57:03,650 | INFO | Starting MLB standings daily pipeline
+2026-04-19 20:57:03,886 | INFO | SQL executed successfully
+2026-04-19 20:57:03,886 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-19 20:57:07,295 | INFO | Starting load for table mlb_schedule
+2026-04-19 20:57:16,202 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-19 20:57:16,202 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-19 20:57:16,257 | INFO | Built standings dataframe with 4,856 rows
+2026-04-19 20:57:16,265 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-19 20:57:16,265 | INFO | Starting load for table mlb_standings_daily
+2026-04-19 20:57:16,532 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-19 20:57:16,533 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-19 20:57:16,533 | INFO | MLB standings daily pipeline completed successfully
+2026-04-19 21:36:23,807 | INFO | SQL Server engine created
+2026-04-19 21:36:23,808 | INFO | Starting hitter feature pipeline
+2026-04-19 21:36:23,809 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-19 21:36:25,287 | INFO | SQL executed successfully
+2026-04-19 21:36:25,287 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-19 21:36:25,288 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-19 21:36:28,935 | INFO | SQL executed successfully
+2026-04-19 21:36:28,935 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-19 21:36:28,936 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-19 21:36:31,270 | INFO | SQL executed successfully
+2026-04-19 21:36:31,271 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-19 21:36:31,271 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-19 21:36:32,889 | INFO | SQL executed successfully
+2026-04-19 21:36:32,889 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-19 21:36:32,890 | INFO | Finished hitter feature pipeline
+2026-04-19 21:36:35,755 | INFO | SQL Server engine created
+2026-04-19 21:36:35,755 | INFO | Starting pitcher feature pipeline
+2026-04-19 21:36:35,756 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-19 21:36:37,063 | INFO | SQL executed successfully
+2026-04-19 21:36:37,064 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-19 21:36:37,064 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-19 21:36:41,386 | INFO | SQL executed successfully
+2026-04-19 21:36:41,387 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-19 21:36:41,387 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-19 21:36:43,257 | INFO | SQL executed successfully
+2026-04-19 21:36:43,257 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-19 21:36:43,257 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-19 21:36:44,004 | INFO | SQL executed successfully
+2026-04-19 21:36:44,005 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-19 21:36:44,005 | INFO | Finished pitcher feature pipeline
+2026-04-19 21:36:47,467 | INFO | SQL Server engine created
+2026-04-19 21:36:47,468 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-19 21:36:47,468 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-19 21:36:47,859 | INFO | SQL executed successfully
+2026-04-19 21:36:47,860 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-19 21:36:47,860 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-19 21:36:50,176 | INFO | SQL executed successfully
+2026-04-19 21:36:50,176 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-19 21:36:50,176 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-19 21:36:53,278 | INFO | SQL Server engine created
+2026-04-19 21:36:53,279 | INFO | Starting lineup aggregate feature pipeline
+2026-04-19 21:36:53,279 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-19 21:36:54,508 | INFO | SQL executed successfully
+2026-04-19 21:36:54,508 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-19 21:36:54,508 | INFO | Finished lineup aggregate feature pipeline
+2026-04-19 21:36:58,032 | INFO | SQL Server engine created
+2026-04-19 21:36:58,032 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-19 21:36:58,033 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-19 21:36:58,688 | INFO | SQL executed successfully
+2026-04-19 21:36:58,688 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-19 21:36:58,688 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-19 21:37:04,080 | INFO | SQL Server engine created
+2026-04-19 21:37:04,081 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-19 21:37:50,255 | INFO | SQL executed successfully
+2026-04-19 21:37:50,256 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-20 20:06:30,802 | INFO | SQL Server engine created
+2026-04-20 20:06:30,802 | INFO | Starting MLB schedule extraction
+2026-04-20 20:06:30,805 | INFO | Starting MLB standings daily pipeline
+2026-04-20 20:06:30,952 | INFO | SQL executed successfully
+2026-04-20 20:06:30,952 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-20 20:08:22,876 | INFO | SQL Server engine created
+2026-04-20 20:08:22,876 | INFO | Starting MLB schedule extraction
+2026-04-20 20:08:22,879 | INFO | Starting MLB standings daily pipeline
+2026-04-20 20:08:22,915 | INFO | SQL executed successfully
+2026-04-20 20:08:22,915 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-20 20:08:29,263 | INFO | Starting load for table mlb_schedule
+2026-04-20 20:08:37,014 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-20 20:08:37,014 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-20 20:08:37,067 | INFO | Built standings dataframe with 4,856 rows
+2026-04-20 20:08:37,069 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-20 20:08:37,070 | INFO | Starting load for table mlb_standings_daily
+2026-04-20 20:08:37,301 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-20 20:08:37,301 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-20 20:08:37,301 | INFO | MLB standings daily pipeline completed successfully
+2026-04-21 20:35:56,861 | INFO | SQL Server engine created
+2026-04-21 20:35:56,862 | INFO | Starting MLB schedule extraction
+2026-04-21 20:35:56,865 | INFO | Starting MLB standings daily pipeline
+2026-04-21 20:35:57,178 | INFO | SQL executed successfully
+2026-04-21 20:35:57,179 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-21 20:36:00,920 | INFO | Starting load for table mlb_schedule
+2026-04-21 20:36:09,416 | INFO | Loaded 2923 rows into mlb_schedule
+2026-04-21 20:36:09,417 | INFO | Loaded 2,923 rows into mlb_schedule
+2026-04-21 20:36:09,488 | INFO | Built standings dataframe with 4,856 rows
+2026-04-21 20:36:09,493 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-21 20:36:09,493 | INFO | Starting load for table mlb_standings_daily
+2026-04-21 20:36:09,722 | INFO | Loaded 4856 rows into mlb_standings_daily
+2026-04-21 20:36:09,723 | INFO | Loaded 4,856 rows into mlb.dbo.mlb_standings_daily
+2026-04-21 20:36:09,723 | INFO | MLB standings daily pipeline completed successfully
+2026-04-21 21:23:00,974 | INFO | SQL Server engine created
+2026-04-21 21:50:29,235 | INFO | SQL Server engine created
+2026-04-21 21:50:29,236 | INFO | Starting hitter strikeout classifier pipeline...
+2026-04-21 21:50:29,237 | INFO | Loading model data from SQL Server...
+2026-04-21 21:50:29,237 | INFO | SQL Server engine created
+2026-04-21 21:50:50,529 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-21 21:50:50,529 | INFO | Preparing classifier features...
+2026-04-21 21:50:50,785 | INFO | Feature shape before split/encoding: (62220, 495)
+2026-04-21 21:50:50,785 | INFO | Overall target distribution:
+2026-04-21 21:50:50,789 | INFO | 
+target_hitter_k
+0    42120
+1    20100
+Name: count, dtype: int64
+2026-04-21 21:50:50,811 | INFO | Splitting data: train=2025, test=2026
+2026-04-21 21:50:51,022 | INFO | X_train shape: (47346, 495)
+2026-04-21 21:50:51,023 | INFO | y_train shape: (47346,)
+2026-04-21 21:50:51,023 | INFO | X_test shape: (14874, 495)
+2026-04-21 21:50:51,023 | INFO | y_test shape: (14874,)
+2026-04-21 21:50:51,023 | INFO | Train target distribution:
+2026-04-21 21:50:51,024 | INFO | 
+target_hitter_k
+0    31909
+1    15437
+Name: count, dtype: int64
+2026-04-21 21:50:51,025 | INFO | Test target distribution:
+2026-04-21 21:50:51,025 | INFO | 
+target_hitter_k
+0    10211
+1     4663
+Name: count, dtype: int64
+2026-04-21 21:50:51,026 | INFO | Encoding train/test feature matrices...
+2026-04-21 21:50:51,094 | INFO | Categorical columns from train: ['hitter_position', 'pitcher_throws', 'hitter_stand', 'hitter_lineup_position']
+2026-04-21 21:50:51,415 | INFO | Encoded X_train shape: (47346, 515)
+2026-04-21 21:50:51,416 | INFO | Encoded X_test shape: (14874, 515)
+2026-04-21 21:50:51,443 | INFO | Training XGBoost classifier...
+2026-04-21 21:51:16,171 | INFO | Model training complete
+2026-04-21 21:51:16,171 | INFO | Evaluating classifier...
+2026-04-21 21:51:16,363 | INFO | Accuracy: 0.6868
+2026-04-21 21:51:16,363 | INFO | ROC AUC: 0.6333
+2026-04-21 21:51:16,363 | INFO | Log Loss: 0.5998
+2026-04-21 21:51:16,504 | INFO | Predictions saved to outputs/hitter_strikeout_predictions.csv
+2026-04-21 21:51:16,504 | INFO | Top prediction sample:
+2026-04-21 21:51:16,520 | INFO | 
+       gamePk   game_date  season  hitter_id      hitter_name  ...  hitter_strikeOuts target_hitter_k  actual_target predicted_target  predicted_probability
+28753  822830  2026-04-11    2026     605170  Victor Caratini  ...                0.0               0              0                0               0.142782
+28754  822830  2026-04-11    2026     605170  Victor Caratini  ...                1.0               1              1                0               0.433142
+28755  822830  2026-04-11    2026     680777     Ryan Jeffers  ...                0.0               0              0                0               0.483274
+28756  822830  2026-04-11    2026     680777     Ryan Jeffers  ...                0.0               0              0                0               0.294076
+28757  822830  2026-04-11    2026     663616   Trevor Larnach  ...                0.0               0              0                0               0.381638
+28758  822830  2026-04-11    2026     663616   Trevor Larnach  ...                0.0               0              0                0               0.242530
+28759  822830  2026-04-11    2026     621439     Byron Buxton  ...                1.0               1              1                0               0.296521
+28768  822830  2026-04-11    2026     621439     Byron Buxton  ...                0.0               0              0                0               0.465099
+28769  822830  2026-04-11    2026     807712   Luke Keaschall  ...                0.0               0              0                0               0.403546
+28770  822830  2026-04-11    2026     807712   Luke Keaschall  ...                0.0               0              0                0               0.191763
+
+[10 rows x 16 columns]
+2026-04-21 22:10:51,672 | INFO | SQL Server engine created
+2026-04-21 22:10:51,673 | INFO | Starting hitter strikeout classifier pipeline...
+2026-04-21 22:10:51,673 | INFO | Loading model data from SQL Server...
+2026-04-21 22:10:51,674 | INFO | SQL Server engine created
+2026-04-21 22:11:13,146 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-21 22:11:13,146 | INFO | Preparing classifier features...
+2026-04-21 22:11:13,412 | INFO | Feature shape before split/encoding: (62220, 495)
+2026-04-21 22:11:13,412 | INFO | Overall target distribution:
+2026-04-21 22:11:13,414 | INFO | 
+target_hitter_k
+0    42120
+1    20100
+Name: count, dtype: int64
+2026-04-21 22:11:13,434 | INFO | Splitting data: train=2025, test=2026
+2026-04-21 22:11:13,640 | INFO | X_train shape: (47346, 495)
+2026-04-21 22:11:13,640 | INFO | y_train shape: (47346,)
+2026-04-21 22:11:13,640 | INFO | X_test shape: (14874, 495)
+2026-04-21 22:11:13,641 | INFO | y_test shape: (14874,)
+2026-04-21 22:11:13,641 | INFO | Train target distribution:
+2026-04-21 22:11:13,643 | INFO | 
+target_hitter_k
+0    31909
+1    15437
+Name: count, dtype: int64
+2026-04-21 22:11:13,643 | INFO | Test target distribution:
+2026-04-21 22:11:13,644 | INFO | 
+target_hitter_k
+0    10211
+1     4663
+Name: count, dtype: int64
+2026-04-21 22:11:13,644 | INFO | Encoding train/test feature matrices...
+2026-04-21 22:11:13,710 | INFO | Categorical columns from train: ['hitter_position', 'pitcher_throws', 'hitter_stand', 'hitter_lineup_position']
+2026-04-21 22:11:14,016 | INFO | Encoded X_train shape: (47346, 515)
+2026-04-21 22:11:14,017 | INFO | Encoded X_test shape: (14874, 515)
+2026-04-21 22:11:14,044 | INFO | Training XGBoost classifier...
+2026-04-21 22:11:39,710 | INFO | Model training complete
+2026-04-21 22:11:39,711 | INFO | Evaluating classifier...
+2026-04-21 22:11:39,880 | INFO | Accuracy: 0.6868
+2026-04-21 22:11:39,881 | INFO | ROC AUC: 0.6333
+2026-04-21 22:11:39,881 | INFO | Log Loss: 0.5998
+2026-04-21 22:11:39,886 | INFO | Saving results to SQL table: mlb.dbo.model_hitter_strikeout_predictions
+2026-04-21 22:13:11,632 | INFO | SQL Server engine created
+2026-04-21 22:13:11,633 | INFO | Starting hitter strikeout classifier pipeline...
+2026-04-21 22:13:11,633 | INFO | Loading model data from SQL Server...
+2026-04-21 22:13:11,634 | INFO | SQL Server engine created
+2026-04-21 22:13:32,155 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-21 22:13:32,155 | INFO | Preparing classifier features...
+2026-04-21 22:13:32,376 | INFO | Feature shape before split/encoding: (62220, 495)
+2026-04-21 22:13:32,376 | INFO | Overall target distribution:
+2026-04-21 22:13:32,379 | INFO | 
+target_hitter_k
+0    42120
+1    20100
+Name: count, dtype: int64
+2026-04-21 22:13:32,396 | INFO | Splitting data: train=2025, test=2026
+2026-04-21 22:13:32,580 | INFO | X_train shape: (47346, 495)
+2026-04-21 22:13:32,580 | INFO | y_train shape: (47346,)
+2026-04-21 22:13:32,581 | INFO | X_test shape: (14874, 495)
+2026-04-21 22:13:32,581 | INFO | y_test shape: (14874,)
+2026-04-21 22:13:32,581 | INFO | Train target distribution:
+2026-04-21 22:13:32,582 | INFO | 
+target_hitter_k
+0    31909
+1    15437
+Name: count, dtype: int64
+2026-04-21 22:13:32,582 | INFO | Test target distribution:
+2026-04-21 22:13:32,583 | INFO | 
+target_hitter_k
+0    10211
+1     4663
+Name: count, dtype: int64
+2026-04-21 22:13:32,583 | INFO | Encoding train/test feature matrices...
+2026-04-21 22:13:32,642 | INFO | Categorical columns from train: ['hitter_position', 'pitcher_throws', 'hitter_stand', 'hitter_lineup_position']
+2026-04-21 22:13:32,941 | INFO | Encoded X_train shape: (47346, 515)
+2026-04-21 22:13:32,941 | INFO | Encoded X_test shape: (14874, 515)
+2026-04-21 22:13:32,958 | INFO | Training XGBoost classifier...
+2026-04-21 22:13:57,960 | INFO | Model training complete
+2026-04-21 22:13:57,961 | INFO | Evaluating classifier...
+2026-04-21 22:13:58,155 | INFO | Accuracy: 0.6868
+2026-04-21 22:13:58,155 | INFO | ROC AUC: 0.6333
+2026-04-21 22:13:58,156 | INFO | Log Loss: 0.5998
+2026-04-21 22:13:58,160 | INFO | Saving results to SQL table: mlb.dbo.model_hitter_strikeout_predictions
+2026-04-21 22:13:58,196 | INFO | Truncated table dbo.model_hitter_strikeout_predictions
+2026-04-21 22:13:58,196 | INFO | Starting load for table model_hitter_strikeout_predictions
+2026-04-21 22:13:58,432 | ERROR | Error loading data into model_hitter_strikeout_predictions: Execution failed on sql 'INSERT INTO model_hitter_strikeout_predictions ("gamePk", game_date, season, hitter_id, hitter_name, hitter_team_id, hitter_team_name, pitcher_id, pitcher_name, pitcher_team_id, pitcher_team_name, "hitter_strikeOuts", target_hitter_k, actual_target, predicted_target, predicted_probability, load_ts) VALUES (:gamePk, :game_date, :season, :hitter_id, :hitter_name, :hitter_team_id, :hitter_team_name, :pitcher_id, :pitcher_name, :pitcher_team_id, :pitcher_team_name, :hitter_strikeOuts, :target_hitter_k, :actual_target, :predicted_target, :predicted_probability, :load_ts)': (pyodbc.ProgrammingError) ('42S22', "[42S22] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid column name 'target_hitter_k'. (207) (SQLExecDirectW); [42S22] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid column name 'target_hitter_k'. (207); [42S22] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Statement(s) could not be prepared. (8180)")
+[SQL: INSERT INTO model_hitter_strikeout_predictions ([gamePk], game_date, season, hitter_id, hitter_name, hitter_team_id, hitter_team_name, pitcher_id, pitcher_name, pitcher_team_id, pitcher_team_name, [hitter_strikeOuts], target_hitter_k, actual_target,  ... 6474 characters truncated ... ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (824856, datetime.datetime(2026, 4, 13, 0, 0), 2026, 680728, 'Adrian Del Castillo', 109, 'Arizona Diamondbacks', 544150, 'Albert Suárez', 110, 'Baltimore Orioles', 0.0, 0, 0, 0, 0.36771881580352783, datetime.datetime(2026, 4, 21, 22, 13, 58, 159657), 824856, datetime.datetime(2026, 4, 13, 0, 0), 2026, 699912, 'Jose Fernandez', 109, 'Arizona Diamondbacks', 544150, 'Albert Suárez', 110, 'Baltimore Orioles', 0.0, 0, 0, 0, 0.23061171174049377, datetime.datetime(2026, 4, 21, 22, 13, 58, 159657), 824856, datetime.datetime(2026, 4, 13, 0, 0), 2026, 606466, 'Ketel Marte', 109, 'Arizona Diamondbacks', 544150, 'Albert Suárez', 110, 'Baltimore Orioles', 0.0, 0, 0, 0, 0.25036123394966125 ... 1991 parameters truncated ... datetime.datetime(2026, 3, 28, 0, 0), 2026, 677950, 'Alek Thomas', 109, 'Arizona Diamondbacks', 621242, 'Edwin Díaz', 119, 'Los Angeles Dodgers', 0.0, 0, 0, 0, 0.4456636309623718, datetime.datetime(2026, 4, 21, 22, 13, 58, 159657), 823973, datetime.datetime(2026, 3, 28, 0, 0), 2026, 571448, 'Nolan Arenado', 109, 'Arizona Diamondbacks', 621242, 'Edwin Díaz', 119, 'Los Angeles Dodgers', 0.0, 0, 0, 0, 0.271352082490921, datetime.datetime(2026, 4, 21, 22, 13, 58, 159657), 823971, datetime.datetime(2026, 3, 27, 0, 0), 2026, 571448, 'Nolan Arenado', 109, 'Arizona Diamondbacks', 686218, 'Emmet Sheehan', 119, 'Los Angeles Dodgers', 2.0, 1, 1, 0, 0.4265608787536621, datetime.datetime(2026, 4, 21, 22, 13, 58, 159657))]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-04-21 22:13:58,432 | INFO | Finished saving results to mlb.dbo.model_hitter_strikeout_predictions
+2026-04-21 22:13:58,432 | INFO | Pipeline complete
+2026-04-21 22:17:27,979 | INFO | SQL Server engine created
+2026-04-21 22:17:27,980 | INFO | Starting hitter strikeout classifier pipeline...
+2026-04-21 22:17:27,980 | INFO | Loading model data from SQL Server...
+2026-04-21 22:17:27,981 | INFO | SQL Server engine created
+2026-04-21 22:17:48,329 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-21 22:17:48,329 | INFO | Preparing classifier features...
+2026-04-21 22:17:48,541 | INFO | Feature shape before split/encoding: (62220, 495)
+2026-04-21 22:17:48,542 | INFO | Overall target distribution:
+2026-04-21 22:17:48,546 | INFO | 
+target_hitter_k
+0    42120
+1    20100
+Name: count, dtype: int64
+2026-04-21 22:17:48,563 | INFO | Splitting data: train=2025, test=2026
+2026-04-21 22:17:48,753 | INFO | X_train shape: (47346, 495)
+2026-04-21 22:17:48,753 | INFO | y_train shape: (47346,)
+2026-04-21 22:17:48,754 | INFO | X_test shape: (14874, 495)
+2026-04-21 22:17:48,754 | INFO | y_test shape: (14874,)
+2026-04-21 22:17:48,754 | INFO | Train target distribution:
+2026-04-21 22:17:48,755 | INFO | 
+target_hitter_k
+0    31909
+1    15437
+Name: count, dtype: int64
+2026-04-21 22:17:48,756 | INFO | Test target distribution:
+2026-04-21 22:17:48,756 | INFO | 
+target_hitter_k
+0    10211
+1     4663
+Name: count, dtype: int64
+2026-04-21 22:17:48,757 | INFO | Encoding train/test feature matrices...
+2026-04-21 22:17:48,825 | INFO | Categorical columns from train: ['hitter_position', 'pitcher_throws', 'hitter_stand', 'hitter_lineup_position']
+2026-04-21 22:17:49,161 | INFO | Encoded X_train shape: (47346, 515)
+2026-04-21 22:17:49,162 | INFO | Encoded X_test shape: (14874, 515)
+2026-04-21 22:17:49,178 | INFO | Training XGBoost classifier...
+2026-04-21 22:18:14,361 | INFO | Model training complete
+2026-04-21 22:18:14,361 | INFO | Evaluating classifier...
+2026-04-21 22:18:14,536 | INFO | Accuracy: 0.6868
+2026-04-21 22:18:14,537 | INFO | ROC AUC: 0.6333
+2026-04-21 22:18:14,537 | INFO | Log Loss: 0.5998
+2026-04-21 22:18:14,540 | INFO | Saving results to SQL table: mlb.dbo.model_hitter_strikeout_predictions
+2026-04-21 22:18:14,573 | INFO | Truncated table dbo.model_hitter_strikeout_predictions
+2026-04-21 22:18:14,574 | INFO | Starting load for table model_hitter_strikeout_predictions
+2026-04-22 20:17:35,554 | INFO | SQL Server engine created
+2026-04-22 20:17:35,556 | INFO | ============================================================
+2026-04-22 20:17:35,556 | INFO | MLB Pitcher K Prediction Pipeline — START
+2026-04-22 20:17:35,557 | INFO | ============================================================
+2026-04-22 20:17:35,557 | INFO | Loading model data from SQL Server...
+2026-04-22 20:17:35,557 | INFO | SQL Server engine created
+2026-04-22 20:17:56,598 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-22 20:17:56,598 | INFO | Preparing features...
+2026-04-22 20:17:56,908 | INFO | Pinch hitter rows: 664 (retained in training, filtered in aggregation)
+2026-04-22 20:17:56,909 | INFO | Feature matrix shape: (62220, 492)
+2026-04-22 20:17:56,914 | INFO | Target distribution:
+target_hitter_k
+0    0.677
+1    0.323
+Name: proportion, dtype: float64
+2026-04-22 20:17:56,934 | INFO | Splitting — train: 2025, test: 2026
+2026-04-22 20:17:57,148 | INFO | Train rows: 47,346 | Test rows: 14,874
+2026-04-22 20:17:57,149 | INFO | Train K rate: 0.326 | Test K rate: 0.314
+2026-04-22 20:17:57,149 | INFO | Encoding and imputing...
+2026-04-22 20:17:57,216 | INFO | Categorical columns: ['pitcher_throws', 'hitter_stand']
+2026-04-22 20:18:00,598 | INFO | NULLs after imputation — train: 0, test: 0
+2026-04-22 20:18:00,598 | INFO | Encoded X_train shape: (47346, 492) | X_test shape: (14874, 492)
+2026-04-22 20:18:00,630 | INFO | Running 4-fold time-series CV on training data...
+2026-04-22 20:18:08,982 | INFO |   Fold 1: ROC AUC=0.6304 | Log Loss=0.6061 | Brier=0.2079
+2026-04-22 20:18:20,909 | INFO |   Fold 2: ROC AUC=0.6435 | Log Loss=0.6022 | Brier=0.2065
+2026-04-22 20:18:34,622 | INFO |   Fold 3: ROC AUC=0.6527 | Log Loss=0.6087 | Brier=0.2098
+2026-04-22 20:18:50,715 | INFO |   Fold 4: ROC AUC=0.6548 | Log Loss=0.6049 | Brier=0.2079
+2026-04-22 20:18:50,715 | INFO |   CV mean roc_auc: 0.6453 ± 0.0096
+2026-04-22 20:18:50,716 | INFO |   CV mean log_loss: 0.6055 ± 0.0023
+2026-04-22 20:18:50,716 | INFO |   CV mean brier: 0.2080 ± 0.0011
+2026-04-22 20:18:50,743 | INFO | Training calibrated XGBoost classifier...
+2026-04-22 20:20:09,084 | INFO | Calibrated model training complete
+2026-04-22 20:20:09,084 | INFO | Evaluating on 2026 holdout set...
+2026-04-22 20:20:09,896 | INFO | Accuracy:  0.6919
+2026-04-22 20:20:09,897 | INFO | ROC AUC:   0.6346
+2026-04-22 20:20:09,897 | INFO | Log Loss:  0.5977  (target: < 0.60 good, < 0.50 very good)
+2026-04-22 20:20:09,897 | INFO | Brier:     0.2046    (target: < 0.25; 0.25 = no-skill baseline)
+2026-04-22 20:20:09,898 | INFO | Precision: 0.5363
+2026-04-22 20:20:09,899 | INFO | Recall:    0.1267
+2026-04-22 20:20:09,899 | INFO | F1:        0.2050
+2026-04-22 20:20:10,248 | INFO | Aggregating per-hitter probabilities to pitcher K totals...
+2026-04-22 20:20:10,306 | INFO | Pitcher-level MAE:  0.869
+2026-04-22 20:20:10,306 | INFO | Pitcher-level RMSE: 1.134
+2026-04-22 20:20:10,316 | INFO | EV example for Adrian Houser: {'expected_ks': np.float64(2.830804803437657), 'line': 5.5, 'p_over': np.float64(0.0678), 'p_under': np.float64(0.8428), 'implied_over': 0.5349, 'implied_under': 0.5122, 'ev_over_pct': np.float64(-87.32), 'ev_under_pct': np.float64(64.56), 'edge_over': np.float64(-46.71), 'edge_under': np.float64(33.07)}
+2026-04-22 20:20:10,318 | INFO | Pipeline complete
+2026-04-22 20:37:26,691 | INFO | SQL Server engine created
+2026-04-22 20:37:26,693 | INFO | ============================================================
+2026-04-22 20:37:26,693 | INFO | MLB Pitcher K Prediction Pipeline — START
+2026-04-22 20:37:26,693 | INFO | ============================================================
+2026-04-22 20:37:26,693 | INFO | Loading model data from SQL Server...
+2026-04-22 20:37:26,694 | INFO | SQL Server engine created
+2026-04-22 20:37:47,919 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-22 20:37:47,919 | INFO | Preparing features...
+2026-04-22 20:37:48,169 | INFO | Pinch hitter rows: 664 (retained in training, filtered in aggregation)
+2026-04-22 20:37:48,169 | INFO | Feature matrix shape: (62220, 492)
+2026-04-22 20:37:48,172 | INFO | Target distribution:
+target_hitter_k
+0    0.677
+1    0.323
+Name: proportion, dtype: float64
+2026-04-22 20:37:48,190 | INFO | Splitting — train: 2025, test: 2026
+2026-04-22 20:37:48,399 | INFO | Train rows: 47,346 | Test rows: 14,874
+2026-04-22 20:37:48,400 | INFO | Train K rate: 0.326 | Test K rate: 0.314
+2026-04-22 20:37:48,400 | INFO | Encoding and imputing...
+2026-04-22 20:37:48,466 | INFO | Categorical columns: ['pitcher_throws', 'hitter_stand']
+2026-04-22 20:37:52,084 | INFO | NULLs after imputation — train: 0, test: 0
+2026-04-22 20:37:52,085 | INFO | Encoded X_train shape: (47346, 492) | X_test shape: (14874, 492)
+2026-04-22 20:37:52,121 | INFO | Running 4-fold time-series CV on training data...
+2026-04-22 20:38:01,567 | INFO |   Fold 1: ROC AUC=0.6304 | Log Loss=0.6061 | Brier=0.2079
+2026-04-22 20:38:14,855 | INFO |   Fold 2: ROC AUC=0.6435 | Log Loss=0.6022 | Brier=0.2065
+2026-04-22 20:38:30,469 | INFO |   Fold 3: ROC AUC=0.6527 | Log Loss=0.6087 | Brier=0.2098
+2026-04-22 20:38:47,544 | INFO |   Fold 4: ROC AUC=0.6548 | Log Loss=0.6049 | Brier=0.2079
+2026-04-22 20:38:47,545 | INFO |   CV mean roc_auc: 0.6453 ± 0.0096
+2026-04-22 20:38:47,545 | INFO |   CV mean log_loss: 0.6055 ± 0.0023
+2026-04-22 20:38:47,545 | INFO |   CV mean brier: 0.2080 ± 0.0011
+2026-04-22 20:38:47,575 | INFO | Training calibrated XGBoost classifier...
+2026-04-22 20:40:09,407 | INFO | Calibrated model training complete
+2026-04-22 20:40:09,407 | INFO | Evaluating on 2026 holdout set...
+2026-04-22 20:40:10,324 | INFO | Accuracy:  0.6919
+2026-04-22 20:40:10,324 | INFO | ROC AUC:   0.6346
+2026-04-22 20:40:10,325 | INFO | Log Loss:  0.5977  (target: < 0.60 good, < 0.50 very good)
+2026-04-22 20:40:10,325 | INFO | Brier:     0.2046    (target: < 0.25; 0.25 = no-skill baseline)
+2026-04-22 20:40:10,326 | INFO | Precision: 0.5363
+2026-04-22 20:40:10,326 | INFO | Recall:    0.1267
+2026-04-22 20:40:10,327 | INFO | F1:        0.2050
+2026-04-22 20:40:10,607 | INFO | Aggregating per-hitter probabilities to pitcher K totals...
+2026-04-22 20:40:10,653 | INFO | Pitcher-level MAE:  0.869
+2026-04-22 20:40:10,653 | INFO | Pitcher-level RMSE: 1.134
+2026-04-22 20:40:10,662 | INFO | EV example for Adrian Houser: {'expected_ks': np.float64(2.830804803437657), 'line': 5.5, 'p_over': np.float64(0.0678), 'p_under': np.float64(0.8428), 'implied_over': 0.5349, 'implied_under': 0.5122, 'ev_over_pct': np.float64(-87.32), 'ev_under_pct': np.float64(64.56), 'edge_over': np.float64(-46.71), 'edge_under': np.float64(33.07)}
+2026-04-22 20:40:10,664 | INFO | SQL Server engine created
+2026-04-22 20:40:10,664 | INFO | Upserting hitter predictions...
+2026-04-22 20:41:15,241 | INFO | Hitter predictions upserted: 14,874 rows
+2026-04-22 20:41:15,242 | INFO | Upserting pitcher aggregations...
+2026-04-22 20:41:19,077 | INFO | Pitcher aggregations upserted: 2,638 rows
+2026-04-22 20:41:19,077 | INFO | SQL upsert complete
+2026-04-22 20:41:19,077 | INFO | Pipeline complete
+2026-04-22 20:41:32,001 | INFO | SQL Server engine created
+2026-04-22 20:41:32,003 | INFO | ============================================================
+2026-04-22 20:41:32,003 | INFO | MLB Pitcher K Prediction Pipeline — START
+2026-04-22 20:41:32,004 | INFO | ============================================================
+2026-04-22 20:41:32,004 | INFO | Loading model data from SQL Server...
+2026-04-22 20:41:32,005 | INFO | SQL Server engine created
+2026-04-22 20:41:55,607 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-22 20:41:55,608 | INFO | Preparing features...
+2026-04-22 20:41:55,848 | INFO | Pinch hitter rows: 664 (retained in training, filtered in aggregation)
+2026-04-22 20:41:55,848 | INFO | Feature matrix shape: (62220, 492)
+2026-04-22 20:41:55,850 | INFO | Target distribution:
+target_hitter_k
+0    0.677
+1    0.323
+Name: proportion, dtype: float64
+2026-04-22 20:41:55,863 | INFO | Splitting — train: 2025, test: 2026
+2026-04-22 20:41:56,031 | INFO | Train rows: 47,346 | Test rows: 14,874
+2026-04-22 20:41:56,032 | INFO | Train K rate: 0.326 | Test K rate: 0.314
+2026-04-22 20:41:56,032 | INFO | Encoding and imputing...
+2026-04-22 20:41:56,087 | INFO | Categorical columns: ['pitcher_throws', 'hitter_stand']
+2026-04-22 20:41:59,598 | INFO | NULLs after imputation — train: 0, test: 0
+2026-04-22 20:41:59,598 | INFO | Encoded X_train shape: (47346, 492) | X_test shape: (14874, 492)
+2026-04-22 20:41:59,632 | INFO | Running 4-fold time-series CV on training data...
+2026-04-22 20:42:08,586 | INFO |   Fold 1: ROC AUC=0.6304 | Log Loss=0.6061 | Brier=0.2079
+2026-04-22 20:42:20,596 | INFO |   Fold 2: ROC AUC=0.6435 | Log Loss=0.6022 | Brier=0.2065
+2026-04-22 20:42:34,795 | INFO |   Fold 3: ROC AUC=0.6527 | Log Loss=0.6087 | Brier=0.2098
+2026-04-22 20:42:51,366 | INFO |   Fold 4: ROC AUC=0.6548 | Log Loss=0.6049 | Brier=0.2079
+2026-04-22 20:42:51,366 | INFO |   CV mean roc_auc: 0.6453 ± 0.0096
+2026-04-22 20:42:51,367 | INFO |   CV mean log_loss: 0.6055 ± 0.0023
+2026-04-22 20:42:51,367 | INFO |   CV mean brier: 0.2080 ± 0.0011
+2026-04-22 20:42:51,398 | INFO | Training calibrated XGBoost classifier...
+2026-04-22 20:44:20,448 | INFO | Calibrated model training complete
+2026-04-22 20:44:20,449 | INFO | Evaluating on 2026 holdout set...
+2026-04-22 20:44:21,321 | INFO | Accuracy:  0.6919
+2026-04-22 20:44:21,322 | INFO | ROC AUC:   0.6346
+2026-04-22 20:44:21,322 | INFO | Log Loss:  0.5977  (target: < 0.60 good, < 0.50 very good)
+2026-04-22 20:44:21,322 | INFO | Brier:     0.2046    (target: < 0.25; 0.25 = no-skill baseline)
+2026-04-22 20:44:21,322 | INFO | Precision: 0.5363
+2026-04-22 20:44:21,323 | INFO | Recall:    0.1267
+2026-04-22 20:44:21,323 | INFO | F1:        0.2050
+2026-04-22 20:44:21,567 | INFO | Aggregating per-hitter probabilities to pitcher K totals...
+2026-04-22 20:44:21,609 | INFO | Pitcher-level MAE:  0.869
+2026-04-22 20:44:21,610 | INFO | Pitcher-level RMSE: 1.134
+2026-04-22 20:44:21,620 | INFO | EV example for Adrian Houser: {'pitcher_expected_ks': np.float64(2.83), 'line': 5.5, 'stake_aud': 10.0, 'over_odds': 1.91, 'under_odds': 1.91, 'model_p_over': 0.0678, 'model_p_under': 0.9322, 'implied_p_over': 0.5236, 'implied_p_under': 0.5236, 'book_margin_pct': 4.71, 'ev_over_aud': -8.7, 'ev_under_aud': 7.8, 'edge_over_pct': -45.57, 'edge_under_pct': 40.86, 'signal': 'BET UNDER 5.5  (+$7.80 EV per $10)'}
+2026-04-22 20:44:21,622 | INFO | SQL Server engine created
+2026-04-22 20:44:21,622 | INFO | Upserting hitter predictions...
+2026-04-22 20:44:36,132 | INFO | Hitter predictions upserted: 14,874 rows
+2026-04-22 20:44:36,132 | INFO | Upserting pitcher aggregations...
+2026-04-22 20:44:38,214 | INFO | Pitcher aggregations upserted: 2,638 rows
+2026-04-22 20:44:38,214 | INFO | SQL upsert complete
+2026-04-22 20:44:38,214 | INFO | Pipeline complete
+2026-04-23 22:34:49,293 | INFO | SQL Server engine created
+2026-04-23 22:34:49,294 | INFO | ============================================================
+2026-04-23 22:34:49,295 | INFO | MLB Pitcher K Prediction Pipeline — START
+2026-04-23 22:34:49,295 | INFO | ============================================================
+2026-04-23 22:34:49,295 | INFO | Loading model data from SQL Server...
+2026-04-23 22:34:49,296 | INFO | SQL Server engine created
+2026-04-23 22:35:11,738 | INFO | Loaded 62,220 rows and 543 columns
+2026-04-23 22:35:11,739 | INFO | Preparing features...
+2026-04-23 22:35:12,018 | INFO | Pinch hitter rows: 664 (retained in training, filtered in aggregation)
+2026-04-23 22:35:12,019 | INFO | Feature matrix shape: (62220, 492)
+2026-04-23 22:35:12,024 | INFO | Target distribution:
+target_hitter_k
+0    0.677
+1    0.323
+Name: proportion, dtype: float64
+2026-04-23 22:35:12,046 | INFO | Splitting — train: 2025, test: 2026
+2026-04-23 22:35:12,288 | INFO | Train rows: 47,346 | Test rows: 14,874
+2026-04-23 22:35:12,288 | INFO | Train K rate: 0.326 | Test K rate: 0.314
+2026-04-23 22:35:12,289 | INFO | Encoding and imputing...
+2026-04-23 22:35:12,367 | INFO | Categorical columns: ['pitcher_throws', 'hitter_stand']
+2026-04-23 22:35:16,456 | INFO | NULLs after imputation — train: 0, test: 0
+2026-04-23 22:35:16,457 | INFO | Encoded X_train shape: (47346, 492) | X_test shape: (14874, 492)
+2026-04-23 22:35:16,493 | INFO | Running 4-fold time-series CV on training data...
+2026-04-23 22:35:26,789 | INFO |   Fold 1: ROC AUC=0.6304 | Log Loss=0.6061 | Brier=0.2079
+2026-04-23 22:35:38,842 | INFO |   Fold 2: ROC AUC=0.6435 | Log Loss=0.6022 | Brier=0.2065
+2026-04-23 22:35:53,740 | INFO |   Fold 3: ROC AUC=0.6527 | Log Loss=0.6087 | Brier=0.2098
+2026-04-23 22:36:11,208 | INFO |   Fold 4: ROC AUC=0.6548 | Log Loss=0.6049 | Brier=0.2079
+2026-04-23 22:36:11,208 | INFO |   CV mean roc_auc: 0.6453 ± 0.0096
+2026-04-23 22:36:11,209 | INFO |   CV mean log_loss: 0.6055 ± 0.0023
+2026-04-23 22:36:11,209 | INFO |   CV mean brier: 0.2080 ± 0.0011
+2026-04-23 22:36:11,238 | INFO | Training calibrated XGBoost classifier...
+2026-04-23 22:37:37,646 | INFO | Calibrated model training complete
+2026-04-23 22:37:37,646 | INFO | Evaluating on 2026 holdout set...
+2026-04-23 22:37:38,413 | INFO | Accuracy:  0.6919
+2026-04-23 22:37:38,413 | INFO | ROC AUC:   0.6346
+2026-04-23 22:37:38,413 | INFO | Log Loss:  0.5977  (target: < 0.60 good, < 0.50 very good)
+2026-04-23 22:37:38,414 | INFO | Brier:     0.2046    (target: < 0.25; 0.25 = no-skill baseline)
+2026-04-23 22:37:38,414 | INFO | Precision: 0.5363
+2026-04-23 22:37:38,414 | INFO | Recall:    0.1267
+2026-04-23 22:37:38,414 | INFO | F1:        0.2050
+2026-04-23 22:37:38,765 | INFO | Aggregating per-hitter probabilities to pitcher K totals...
+2026-04-23 22:37:38,832 | INFO | Pitcher-level MAE:  0.869
+2026-04-23 22:37:38,832 | INFO | Pitcher-level RMSE: 1.134
+2026-04-23 22:37:38,844 | INFO | EV example for Adrian Houser: {'pitcher_expected_ks': np.float64(2.83), 'line': 5.5, 'stake_aud': 10.0, 'over_odds': 1.91, 'under_odds': 1.91, 'model_p_over': 0.0678, 'model_p_under': 0.9322, 'implied_p_over': 0.5236, 'implied_p_under': 0.5236, 'book_margin_pct': 4.71, 'ev_over_aud': -8.7, 'ev_under_aud': 7.8, 'edge_over_pct': -45.57, 'edge_under_pct': 40.86, 'signal': 'BET UNDER 5.5  (+$7.80 EV per $10)'}
+2026-04-23 22:37:38,846 | INFO | SQL Server engine created
+2026-04-23 22:37:38,846 | INFO | Upserting hitter predictions...
+2026-04-23 22:38:40,561 | INFO | Hitter predictions upserted: 14,874 rows
+2026-04-23 22:38:40,561 | INFO | Upserting pitcher aggregations...
+2026-04-23 22:38:43,954 | INFO | Pitcher aggregations upserted: 2,638 rows
+2026-04-23 22:38:43,954 | INFO | SQL upsert complete
+2026-04-23 22:38:43,954 | INFO | Pipeline complete
+2026-04-25 20:31:32,134 | INFO | SQL Server engine created
+2026-04-25 20:31:32,135 | INFO | Starting hitter feature pipeline
+2026-04-25 20:31:32,135 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-25 20:31:58,731 | INFO | SQL executed successfully
+2026-04-25 20:31:58,732 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-25 20:31:58,732 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-25 20:32:32,092 | INFO | SQL executed successfully
+2026-04-25 20:32:32,093 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-25 20:32:32,093 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-25 20:32:38,042 | INFO | SQL executed successfully
+2026-04-25 20:32:38,042 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-25 20:32:38,042 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-25 20:32:52,486 | INFO | SQL executed successfully
+2026-04-25 20:32:52,486 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-25 20:32:52,487 | INFO | Finished hitter feature pipeline
+2026-04-25 20:32:56,869 | INFO | SQL Server engine created
+2026-04-25 20:32:56,870 | INFO | Starting hitter feature pipeline
+2026-04-25 20:32:56,870 | INFO | Building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-25 20:33:09,208 | INFO | SQL executed successfully
+2026-04-25 20:33:09,209 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-25 20:33:09,209 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-25 20:33:21,467 | INFO | SQL Server engine created
+2026-04-25 20:33:21,467 | INFO | Starting pitcher feature pipeline
+2026-04-25 20:33:21,468 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-25 20:33:22,123 | INFO | SQL executed successfully
+2026-04-25 20:33:22,124 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-25 20:33:22,124 | INFO | Building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-25 20:33:25,529 | INFO | SQL executed successfully
+2026-04-25 20:33:25,529 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-25 20:33:25,530 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-25 20:33:33,513 | INFO | SQL executed successfully
+2026-04-25 20:33:33,514 | INFO | Finished building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-25 20:33:33,516 | INFO | Building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-25 20:33:42,746 | INFO | SQL executed successfully
+2026-04-25 20:33:42,747 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-25 20:33:42,747 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-25 20:33:49,414 | INFO | SQL executed successfully
+2026-04-25 20:33:49,414 | INFO | Finished building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-25 20:33:49,415 | INFO | Finished hitter feature pipeline
+2026-04-25 20:33:54,312 | INFO | SQL executed successfully
+2026-04-25 20:33:54,313 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-25 20:33:54,313 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-25 20:33:57,078 | INFO | SQL executed successfully
+2026-04-25 20:33:57,078 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-25 20:33:57,079 | INFO | Finished pitcher feature pipeline
+2026-04-25 20:33:58,108 | INFO | SQL Server engine created
+2026-04-25 20:33:58,109 | INFO | Starting pitcher feature pipeline
+2026-04-25 20:33:58,109 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-25 20:34:01,066 | INFO | SQL executed successfully
+2026-04-25 20:34:01,067 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-25 20:34:01,067 | INFO | Building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-25 20:34:16,187 | INFO | SQL executed successfully
+2026-04-25 20:34:16,188 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-25 20:34:16,188 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-25 20:34:26,253 | INFO | SQL executed successfully
+2026-04-25 20:34:26,253 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-25 20:34:26,254 | INFO | Building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-25 20:34:28,643 | INFO | SQL executed successfully
+2026-04-25 20:34:28,643 | INFO | Finished building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-25 20:34:28,643 | INFO | Finished pitcher feature pipeline
+2026-04-25 20:35:06,732 | INFO | SQL Server engine created
+2026-04-25 20:35:06,733 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-25 20:35:06,733 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-25 20:35:07,720 | INFO | SQL executed successfully
+2026-04-25 20:35:07,720 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-25 20:35:07,720 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-25 20:35:13,657 | INFO | SQL executed successfully
+2026-04-25 20:35:13,658 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-25 20:35:13,658 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-25 20:35:14,182 | INFO | SQL Server engine created
+2026-04-25 20:35:14,182 | INFO | Starting hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-25 20:35:14,183 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-25 20:36:16,057 | INFO | SQL Server engine created
+2026-04-25 20:36:16,057 | INFO | Starting lineup aggregate feature pipeline
+2026-04-25 20:36:16,057 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-25 20:36:17,985 | INFO | SQL executed successfully
+2026-04-25 20:36:17,985 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-25 20:36:17,985 | INFO | Finished lineup aggregate feature pipeline
+2026-04-25 20:36:45,515 | INFO | SQL Server engine created
+2026-04-25 20:36:45,515 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-25 20:36:45,516 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-25 20:36:46,634 | INFO | SQL executed successfully
+2026-04-25 20:36:46,635 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-25 20:36:46,635 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-25 20:36:51,030 | INFO | SQL Server engine created
+2026-04-25 20:36:51,031 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-25 20:37:53,246 | INFO | SQL executed successfully
+2026-04-25 20:37:53,247 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-25 20:38:30,049 | INFO | SQL Server engine created
+2026-04-25 20:38:30,049 | INFO | Starting hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-25 20:38:30,049 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-25 20:38:31,126 | INFO | SQL executed successfully
+2026-04-25 20:38:31,126 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-25 20:38:31,126 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_featuresv2
+2026-04-25 20:38:46,103 | INFO | SQL executed successfully
+2026-04-25 20:38:46,103 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_featuresv2
+2026-04-25 20:38:46,103 | INFO | Finished hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-25 20:52:09,815 | INFO | SQL Server engine created
+2026-04-25 20:52:09,816 | INFO | Starting hitter-pitcher matchup feature pipeline (v2)
+2026-04-25 20:52:09,817 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-25 20:57:23,846 | INFO | SQL Server engine created
+2026-04-25 20:57:23,846 | INFO | Starting hitter-pitcher matchup feature pipeline (v2)
+2026-04-25 20:57:23,846 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-25 20:57:38,474 | INFO | SQL Server engine created
+2026-04-25 20:57:38,474 | INFO | Starting hitter-pitcher matchup feature pipeline (v2)
+2026-04-25 20:57:38,474 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-25 21:05:33,050 | INFO | SQL Server engine created
+2026-04-25 21:05:33,051 | INFO | Starting hitter-pitcher matchup feature pipeline (v2)
+2026-04-25 21:05:33,052 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-25 21:05:44,347 | INFO | SQL executed successfully
+2026-04-25 21:05:44,348 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-25 21:05:44,349 | INFO | Finished hitter-pitcher matchup feature pipeline (v2)
