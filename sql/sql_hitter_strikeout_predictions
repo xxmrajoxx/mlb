@@ -1,0 +1,103 @@
+-- =============================================================
+-- MLB Pitcher K Prediction Output Tables
+-- Run this once before executing the Python pipeline
+-- =============================================================
+
+-- -------------------------------------------------------------
+-- 1. Per-hitter predictions
+--    One row per hitter per pitcher per game
+--    Source: results_df from evaluate_model()
+-- -------------------------------------------------------------
+IF OBJECT_ID('mlb.dbo.fact_hitter_k_predictions', 'U') IS NULL
+BEGIN
+    CREATE TABLE mlb.dbo.fact_hitter_k_predictions (
+        gamePk                      INT             NOT NULL,
+        game_date                   DATE            NOT NULL,
+        season                      INT             NOT NULL,
+        hitter_id                   INT             NOT NULL,
+        hitter_name                 NVARCHAR(100)   NOT NULL,
+        hitter_team_id              INT             NULL,
+        hitter_team_name            NVARCHAR(100)   NULL,
+        pitcher_id                  INT             NOT NULL,
+        pitcher_name                NVARCHAR(100)   NOT NULL,
+        pitcher_team_id             INT             NULL,
+        pitcher_team_name           NVARCHAR(100)   NULL,
+        hitter_batting_order        INT             NULL,
+        hitter_lineup_position      NVARCHAR(10)    NULL,
+        hitter_lineup_position_name NVARCHAR(50)    NULL,
+        hitter_strikeOuts           INT             NULL,
+        target_hitter_k             INT             NOT NULL,
+        actual_target               INT             NOT NULL,
+        predicted_target            INT             NOT NULL,
+        predicted_probability       FLOAT           NOT NULL,
+        load_ts                     DATETIME2       NOT NULL DEFAULT GETDATE(),
+
+        CONSTRAINT PK_hitter_k_predictions
+            PRIMARY KEY (gamePk, hitter_id, pitcher_id)
+    );
+
+    PRINT 'Created mlb.dbo.fact_hitter_k_predictions';
+END
+ELSE
+    PRINT 'Table mlb.dbo.fact_hitter_k_predictions already exists — skipped';
+GO
+
+
+-- -------------------------------------------------------------
+-- 2. Per-pitcher aggregated K predictions
+--    One row per pitcher per game
+--    Source: agg_df from aggregate_pitcher_ks()
+-- -------------------------------------------------------------
+IF OBJECT_ID('mlb.dbo.fact_pitcher_k_predictions', 'U') IS NULL
+BEGIN
+    CREATE TABLE mlb.dbo.fact_pitcher_k_predictions (
+        gamePk                  INT             NOT NULL,
+        game_date               DATE            NOT NULL,
+        pitcher_id              INT             NOT NULL,
+        pitcher_name            NVARCHAR(100)   NOT NULL,
+        pitcher_team_id         INT             NULL,
+        pitcher_team_name       NVARCHAR(100)   NULL,
+        expected_pitcher_ks     FLOAT           NOT NULL,   -- model output: sum of weighted P(K)
+        actual_pitcher_ks       INT             NULL,        -- actual Ks recorded (NULL for future games)
+        hitter_count            INT             NOT NULL,   -- number of hitters in aggregation
+        avg_hitter_k_prob       FLOAT           NOT NULL,   -- mean P(K) across lineup
+        load_ts                 DATETIME2       NOT NULL DEFAULT GETDATE(),
+
+        CONSTRAINT PK_pitcher_k_predictions
+            PRIMARY KEY (gamePk, pitcher_id)
+    );
+
+    PRINT 'Created mlb.dbo.fact_pitcher_k_predictions';
+END
+ELSE
+    PRINT 'Table mlb.dbo.fact_pitcher_k_predictions already exists — skipped';
+GO
+
+
+-- -------------------------------------------------------------
+-- Useful views for downstream EV calculator
+-- -------------------------------------------------------------
+
+-- View: pitcher predictions with over/under context
+CREATE OR ALTER VIEW dbo.vw_pitcher_k_predictions AS
+SELECT
+    p.gamePk,
+    p.game_date,
+    p.pitcher_id,
+    p.pitcher_name,
+    p.pitcher_team_name,
+    p.expected_pitcher_ks,
+    p.actual_pitcher_ks,
+    p.hitter_count,
+    p.avg_hitter_k_prob,
+    -- Common sportsbook lines for quick EV reference
+    CASE WHEN p.expected_pitcher_ks > 5.5 THEN 'OVER 5.5'
+         WHEN p.expected_pitcher_ks > 4.5 THEN 'OVER 4.5'
+         ELSE 'UNDER 4.5' END                               AS model_signal_rough,
+    ABS(p.expected_pitcher_ks - p.actual_pitcher_ks)        AS abs_error,
+    p.load_ts
+FROM mlb.dbo.fact_pitcher_k_predictions p;
+GO
+
+PRINT 'Created mlb.dbo.vw_pitcher_k_predictions';
+GO
