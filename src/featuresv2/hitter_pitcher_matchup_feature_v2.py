@@ -37,6 +37,10 @@ Design principles vs. the old `fact_hitter_pitcher_matchup_model_features`:
    `prior.game_date < current.game_date`, which cleanly excludes the
    current game from the aggregation.
 
+6. pitcher_is_starter / pitcher_is_reliever are DERIVED inline from
+   gamesStarted (since the standalone is_starter/is_reliever columns
+   don't exist in fact_pitcher_model_featuresv2).
+
 Output table: mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
 (v2 suffix per user request; keeps the original table intact.)
 """
@@ -187,17 +191,6 @@ SELECT
     pa.pitcher_name,
     pa.pitcher_team_id,
     pa.pitcher_team_name,
-
-    /* -------------------------------------------------------------
-       HANDEDNESS + PLATOON
-       Note: fact_hitter_model_features may or may not have `stand`.
-       If not present, derive via pybaseball lookup in Python.
-       fact_pitcher_model_features has throwing hand via gamelogs join
-       downstream; we carry it through here.
-    ------------------------------------------------------------- */
-    -- NOTE: you may need to add `stand` to fact_hitter_model_features
-    -- and `p_throws` to fact_pitcher_model_features if not present.
-    -- These columns are essential for the platoon matchup feature.
 
     /* -------------------------------------------------------------
        TARGETS
@@ -431,11 +424,14 @@ SELECT
 
     /* -------------------------------------------------------------
        PITCHER ROLLING FEATURES (pre-game)
+       Note: pitcher_is_starter / pitcher_is_reliever are derived from
+       gamesStarted because the standalone columns don't exist in
+       fact_pitcher_model_featuresv2.
     ------------------------------------------------------------- */
     p.gamesStarted AS pitcher_gamesStarted,
     p.days_since_last_appearance AS pitcher_days_since_last_appearance,
-    p.is_starter AS pitcher_is_starter,
-    p.is_reliever AS pitcher_is_reliever,
+    CASE WHEN p.gamesStarted = 1 THEN 1 ELSE 0 END AS pitcher_is_starter,
+    CASE WHEN p.gamesStarted = 1 THEN 0 ELSE 1 END AS pitcher_is_reliever,
 
     -- pitcher simple 3
     p.avg_k_last_3 AS pitcher_avg_k_last_3,
