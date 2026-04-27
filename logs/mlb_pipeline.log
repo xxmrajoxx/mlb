@@ -4302,3 +4302,206 @@ Name: proportion, dtype: float64
 2026-04-25 21:05:44,347 | INFO | SQL executed successfully
 2026-04-25 21:05:44,348 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
 2026-04-25 21:05:44,349 | INFO | Finished hitter-pitcher matchup feature pipeline (v2)
+2026-04-26 14:07:06,808 | INFO | SQL Server engine created
+2026-04-26 14:07:06,809 | INFO | Starting MLB schedule extraction
+2026-04-26 14:07:06,811 | INFO | Starting MLB standings daily pipeline
+2026-04-26 14:07:07,355 | INFO | SQL executed successfully
+2026-04-26 14:07:07,356 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-26 14:07:10,001 | INFO | Starting load for table mlb_schedule
+2026-04-26 14:07:18,169 | INFO | Loaded 2924 rows into mlb_schedule
+2026-04-26 14:07:18,170 | INFO | Loaded 2,924 rows into mlb_schedule
+2026-04-26 14:07:18,253 | INFO | Built standings dataframe with 4,854 rows
+2026-04-26 14:07:18,262 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-26 14:07:18,262 | INFO | Starting load for table mlb_standings_daily
+2026-04-26 14:07:18,635 | INFO | Loaded 4854 rows into mlb_standings_daily
+2026-04-26 14:07:18,635 | INFO | Loaded 4,854 rows into mlb.dbo.mlb_standings_daily
+2026-04-26 14:07:18,635 | INFO | MLB standings daily pipeline completed successfully
+2026-04-26 14:57:32,990 | INFO | SQL Server engine created
+2026-04-26 14:57:32,990 | INFO | Starting hitter feature pipeline
+2026-04-26 14:57:32,991 | INFO | Building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-26 14:57:37,096 | INFO | SQL executed successfully
+2026-04-26 14:57:37,097 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_agg
+2026-04-26 14:57:37,097 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-26 14:57:39,521 | INFO | SQL Server engine created
+2026-04-26 14:57:39,522 | INFO | Starting pitcher feature pipeline
+2026-04-26 14:57:39,522 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-26 14:57:44,130 | INFO | SQL executed successfully
+2026-04-26 14:57:44,130 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_agg
+2026-04-26 14:57:44,131 | INFO | Building mlb.dbo.fact_pitcher_rolling_features
+2026-04-26 14:57:45,209 | INFO | SQL Server engine created
+2026-04-26 14:57:45,209 | INFO | Starting hitter vs pitcher plate appearance feature pipeline
+2026-04-26 14:57:45,209 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-26 14:57:47,301 | INFO | SQL executed successfully
+2026-04-26 14:57:47,302 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_features
+2026-04-26 14:57:47,302 | INFO | Building mlb.dbo.fact_hitter_rolling_features
+2026-04-26 14:57:51,900 | INFO | SQL Server engine created
+2026-04-26 14:57:51,900 | INFO | Starting lineup aggregate feature pipeline
+2026-04-26 14:57:51,901 | INFO | Building mlb.dbo.fact_lineup_agg_features
+2026-04-26 14:57:58,746 | INFO | SQL executed successfully
+2026-04-26 14:57:58,747 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_agg
+2026-04-26 14:57:58,747 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_features
+2026-04-26 14:58:01,363 | INFO | SQL executed successfully
+2026-04-26 14:58:01,365 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_features
+2026-04-26 14:58:01,366 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-26 14:58:06,105 | INFO | SQL executed successfully
+2026-04-26 14:58:06,106 | INFO | Finished building mlb.dbo.fact_lineup_agg_features
+2026-04-26 14:58:06,107 | INFO | Finished lineup aggregate feature pipeline
+2026-04-26 14:58:08,349 | INFO | SQL executed successfully
+2026-04-26 14:58:08,349 | INFO | Finished building mlb.dbo.fact_hitter_rolling_features
+2026-04-26 14:58:08,350 | INFO | Building mlb.dbo.fact_hitter_model_features
+2026-04-26 14:58:20,521 | INFO | SQL executed successfully
+2026-04-26 14:58:20,522 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_features
+2026-04-26 14:58:20,522 | INFO | Building mlb.dbo.fact_pitcher_model_features
+2026-04-26 14:58:33,454 | INFO | SQL executed successfully
+2026-04-26 14:58:33,454 | INFO | Finished building mlb.dbo.fact_pitcher_model_features
+2026-04-26 14:58:33,455 | INFO | Finished pitcher feature pipeline
+2026-04-26 14:58:36,122 | INFO | SQL executed successfully
+2026-04-26 14:58:36,122 | INFO | SQL executed successfully
+2026-04-26 14:58:36,122 | INFO | Finished building mlb.dbo.fact_hitter_model_features
+2026-04-26 14:58:36,122 | INFO | Finished hitter feature pipeline
+ter_pitcher_pa_rolling_features
+2026-04-26 14:58:36,123 | INFO | Finished hitter vs pitcher plate appearance feature pipeline
+2026-04-26 14:58:40,067 | INFO | SQL Server engine created
+2026-04-26 14:58:40,067 | INFO | Starting pitcher vs lineup feature pipeline
+2026-04-26 14:58:40,067 | INFO | Building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-26 14:58:44,200 | INFO | SQL executed successfully
+2026-04-26 14:58:44,200 | INFO | Finished building mlb.dbo.fact_pitcher_vs_lineup_features
+2026-04-26 14:58:44,200 | INFO | Finished pitcher vs lineup feature pipeline
+2026-04-26 14:58:47,123 | INFO | SQL Server engine created
+2026-04-26 14:58:47,124 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-26 14:58:53,438 | INFO | SQL Server engine created
+2026-04-26 14:58:53,439 | INFO | Starting hitter feature pipeline
+2026-04-26 14:58:53,439 | INFO | Building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-26 14:58:57,741 | INFO | SQL executed successfully
+2026-04-26 14:58:57,741 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-26 14:58:57,741 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-26 14:59:00,707 | INFO | SQL Server engine created
+2026-04-26 14:59:00,709 | INFO | Starting pitcher feature pipeline
+2026-04-26 14:59:00,709 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-26 14:59:08,147 | INFO | SQL Server engine created
+2026-04-26 14:59:08,150 | INFO | Starting hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-26 14:59:08,152 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-26 14:59:10,109 | INFO | SQL executed successfully
+2026-04-26 14:59:10,110 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-26 14:59:10,110 | INFO | Building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-26 14:59:15,577 | INFO | SQL executed successfully
+2026-04-26 14:59:15,578 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-26 14:59:15,580 | INFO | Building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-26 14:59:16,040 | INFO | SQL executed successfully
+2026-04-26 14:59:16,040 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-26 14:59:16,041 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_featuresv2
+2026-04-26 14:59:52,793 | INFO | SQL executed successfully
+2026-04-26 14:59:52,794 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_featuresv2
+2026-04-26 14:59:52,795 | INFO | Finished hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-26 14:59:54,355 | INFO | SQL executed successfully
+2026-04-26 14:59:54,356 | INFO | Finished building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-26 14:59:54,357 | INFO | Building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-26 15:00:03,005 | INFO | SQL executed successfully
+2026-04-26 15:00:03,006 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-26 15:00:03,006 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-26 15:00:06,168 | INFO | SQL executed successfully
+2026-04-26 15:00:06,168 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_features
+2026-04-26 15:00:30,806 | INFO | SQL executed successfully
+2026-04-26 15:00:30,807 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-26 15:00:30,807 | INFO | Building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-26 15:00:32,540 | INFO | SQL executed successfully
+2026-04-26 15:00:32,541 | INFO | Finished building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-26 15:00:32,541 | INFO | Finished hitter feature pipeline
+2026-04-26 15:00:35,469 | INFO | SQL executed successfully
+2026-04-26 15:00:35,469 | INFO | Finished building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-26 15:00:35,469 | INFO | Finished pitcher feature pipeline
+2026-04-26 15:00:41,563 | INFO | SQL Server engine created
+2026-04-26 15:00:41,563 | INFO | Starting hitter-pitcher matchup feature pipeline (v2)
+2026-04-26 15:00:41,564 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-26 15:01:03,264 | INFO | SQL executed successfully
+2026-04-26 15:01:03,264 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-26 15:01:03,265 | INFO | Finished hitter-pitcher matchup feature pipeline (v2)
+2026-04-27 12:37:49,892 | INFO | SQL Server engine created
+2026-04-27 12:37:49,893 | INFO | Starting hitter feature pipeline
+2026-04-27 12:37:49,894 | INFO | Building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-27 12:38:17,799 | INFO | SQL Server engine created
+2026-04-27 12:38:17,799 | INFO | Starting pitcher feature pipeline
+2026-04-27 12:38:17,799 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-27 12:38:39,818 | INFO | SQL executed successfully
+2026-04-27 12:38:39,818 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-27 12:38:39,818 | INFO | Building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-27 12:38:43,730 | INFO | SQL executed successfully
+2026-04-27 12:38:43,730 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-27 12:38:43,731 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-27 12:39:12,150 | INFO | SQL executed successfully
+2026-04-27 12:39:12,150 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-27 12:39:12,151 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-27 12:39:14,339 | INFO | SQL executed successfully
+2026-04-27 12:39:14,339 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-27 12:39:14,340 | INFO | Building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-27 12:39:25,592 | INFO | SQL executed successfully
+2026-04-27 12:39:25,593 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-27 12:39:25,593 | INFO | Building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-27 12:39:30,235 | INFO | SQL executed successfully
+2026-04-27 12:39:30,236 | INFO | Finished building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-27 12:39:30,236 | INFO | Finished pitcher feature pipeline
+2026-04-27 12:39:33,967 | INFO | SQL executed successfully
+2026-04-27 12:39:33,968 | INFO | Finished building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-27 12:39:33,968 | INFO | Building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-27 12:39:46,049 | INFO | SQL executed successfully
+2026-04-27 12:39:46,050 | INFO | Finished building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-27 12:39:46,050 | INFO | Finished hitter feature pipeline
+2026-04-27 12:42:57,731 | INFO | SQL Server engine created
+2026-04-27 12:42:57,731 | INFO | Starting hitter-pitcher matchup feature pipeline (v2)
+2026-04-27 12:42:57,731 | INFO | Building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 12:43:19,293 | INFO | SQL executed successfully
+2026-04-27 12:43:19,294 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 12:43:19,294 | INFO | Finished hitter-pitcher matchup feature pipeline (v2)
+2026-04-27 18:12:48,512 | INFO | SQL Server engine created
+2026-04-27 18:12:48,520 | INFO | Starting MLB schedule extraction
+2026-04-27 18:12:48,522 | INFO | Starting MLB standings daily pipeline
+2026-04-27 18:12:48,650 | INFO | SQL executed successfully
+2026-04-27 18:12:48,651 | INFO | Checked/created mlb.dbo.mlb_standings_daily
+2026-04-27 18:12:51,158 | INFO | Starting load for table mlb_schedule
+2026-04-27 18:12:58,138 | INFO | Loaded 2924 rows into mlb_schedule
+2026-04-27 18:12:58,139 | INFO | Loaded 2,924 rows into mlb_schedule
+2026-04-27 18:12:58,193 | INFO | Built standings dataframe with 4,854 rows
+2026-04-27 18:12:58,199 | INFO | Truncated table dbo.mlb_standings_daily
+2026-04-27 18:12:58,199 | INFO | Starting load for table mlb_standings_daily
+2026-04-27 18:12:58,403 | INFO | Loaded 4854 rows into mlb_standings_daily
+2026-04-27 18:12:58,403 | INFO | Loaded 4,854 rows into mlb.dbo.mlb_standings_daily
+2026-04-27 18:12:58,403 | INFO | MLB standings daily pipeline completed successfully
+2026-04-27 18:50:09,985 | INFO | SQL Server engine created
+2026-04-27 18:50:09,985 | INFO | Starting hitter feature pipeline
+2026-04-27 18:50:09,986 | INFO | Building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-27 18:50:13,870 | INFO | SQL executed successfully
+2026-04-27 18:50:13,870 | INFO | Finished building mlb.dbo.fact_hitter_statcast_game_aggv2
+2026-04-27 18:50:13,871 | INFO | Building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-27 18:50:15,234 | INFO | SQL Server engine created
+2026-04-27 18:50:15,235 | INFO | Starting pitcher feature pipeline
+2026-04-27 18:50:15,236 | INFO | Building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-27 18:50:18,857 | INFO | SQL executed successfully
+2026-04-27 18:50:18,858 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_game_aggv2
+2026-04-27 18:50:18,858 | INFO | Building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-27 18:50:29,208 | INFO | SQL executed successfully
+2026-04-27 18:50:29,209 | INFO | Finished building mlb.dbo.fact_hitter_statcast_rolling_featuresv2
+2026-04-27 18:50:29,209 | INFO | Building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-27 18:50:35,671 | INFO | SQL executed successfully
+2026-04-27 18:50:35,671 | INFO | Finished building mlb.dbo.fact_pitcher_rolling_featuresv2
+2026-04-27 18:50:35,672 | INFO | Building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-27 18:50:41,223 | INFO | SQL Server engine created
+2026-04-27 18:50:41,224 | INFO | Starting hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-27 18:50:41,224 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-27 18:50:45,222 | INFO | SQL executed successfully
+2026-04-27 18:50:45,222 | INFO | Finished building mlb.dbo.fact_hitter_rolling_featuresv2
+2026-04-27 18:50:45,223 | INFO | Building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-27 18:50:46,590 | INFO | SQL executed successfully
+2026-04-27 18:50:46,591 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_game_aggv2
+2026-04-27 18:50:46,591 | INFO | Building mlb.dbo.fact_hitter_pitcher_pa_rolling_featuresv2
+2026-04-27 18:50:50,752 | INFO | SQL executed successfully
+2026-04-27 18:50:50,753 | INFO | Finished building mlb.dbo.fact_pitcher_statcast_rolling_featuresv2
+2026-04-27 18:50:50,753 | INFO | Building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-27 18:51:13,512 | INFO | SQL executed successfully
+2026-04-27 18:51:13,512 | INFO | Finished building mlb.dbo.fact_pitcher_model_featuresv2
+2026-04-27 18:51:13,513 | INFO | Finished pitcher feature pipeline
+2026-04-27 18:51:30,050 | INFO | SQL executed successfully
+2026-04-27 18:51:30,050 | INFO | Finished building mlb.dbo.fact_hitter_pitcher_pa_rolling_featuresv2
+2026-04-27 18:51:30,051 | INFO | Finished hitter vs pitcher plate appearance feature pipeline (v2)
+2026-04-27 18:51:31,026 | INFO | SQL executed successfully
+2026-04-27 18:51:31,027 | INFO | Finished building mlb.dbo.fact_hitter_model_featuresv2
+2026-04-27 18:51:31,027 | INFO | Finished hitter feature pipeline

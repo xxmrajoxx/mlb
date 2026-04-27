@@ -1,0 +1,388 @@
+2026-04-27 13:42:00,702 | INFO | SQL Server engine created
+2026-04-27 13:42:08,847 | INFO | ======================================================================
+2026-04-27 13:42:08,847 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 13:42:08,847 | INFO | ======================================================================
+2026-04-27 13:42:08,848 | INFO | SQL Server engine created
+2026-04-27 13:42:08,848 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 13:42:41,639 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 13:42:41,974 | INFO | Dropped 0 rows with null target
+2026-04-27 13:42:42,702 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 13:42:42,727 | INFO | Selected 327 feature columns
+2026-04-27 13:42:43,792 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 13:42:43,792 | INFO | Training XGBoost...
+2026-04-27 13:43:07,259 | INFO | XGB best iteration: 81
+2026-04-27 13:43:07,293 | INFO | Training LightGBM...
+2026-04-27 13:43:20,638 | INFO | LGBM best iteration: 82
+2026-04-27 13:43:20,652 | INFO | Training Logistic Regression baseline...
+2026-04-27 13:43:31,667 | INFO | [xgb_calibrated] n=57,267  AUC=0.6640  LogLoss=0.4428  Brier=0.1394  Acc=0.8218
+2026-04-27 13:43:31,736 | INFO | [lgbm_calibrated] n=57,267  AUC=0.6610  LogLoss=0.4438  Brier=0.1397  Acc=0.8218
+2026-04-27 13:43:31,799 | INFO | [logreg_calibrated] n=57,267  AUC=0.6564  LogLoss=0.4452  Brier=0.1401  Acc=0.8218
+2026-04-27 13:43:31,859 | INFO | [ensemble] n=57,267  AUC=0.6674  LogLoss=0.4417  Brier=0.1391  Acc=0.8218
+2026-04-27 13:43:31,885 | INFO | [xgb_calibrated] n=16,792  AUC=0.6503  LogLoss=0.4446  Brier=0.1393  Acc=0.8241
+2026-04-27 13:43:31,913 | INFO | [lgbm_calibrated] n=16,792  AUC=0.6521  LogLoss=0.4443  Brier=0.1392  Acc=0.8241
+2026-04-27 13:43:31,940 | INFO | [logreg_calibrated] n=16,792  AUC=0.6433  LogLoss=0.4489  Brier=0.1399  Acc=0.8241
+2026-04-27 13:43:31,975 | INFO | [ensemble] n=16,792  AUC=0.6542  LogLoss=0.4454  Brier=0.1390  Acc=0.8241
+2026-04-27 13:43:31,999 | INFO | Aggregating 23,629 starter PAs into pitcher-games
+2026-04-27 13:43:33,855 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 13:43:33,863 | INFO | Aggregating 6,160 starter PAs into pitcher-games
+2026-04-27 13:43:34,267 | INFO | Built 695 pitcher-game predictions
+2026-04-27 13:43:34,272 | INFO | [ensemble_game] games=3,342  MAE=0.667  RMSE=0.818  Bias=+0.022  Actual=0.71  Predicted=0.73
+2026-04-27 13:43:34,275 | INFO | [ensemble_game] games=695  MAE=0.750  RMSE=0.919  Bias=+0.111  Actual=0.87  Predicted=0.98
+2026-04-27 13:43:34,333 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 13:43:34,334 | INFO | SQL Server engine created
+2026-04-27 13:43:34,458 | INFO | Output tables ready
+2026-04-27 13:43:34,471 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 13:43:35,594 | ERROR | Error loading data into fact_pa_strikeout_predictions: Execution failed on sql 'INSERT INTO fact_pa_strikeout_predictions ("gamePk", game_date, season, hitter_id, hitter_name, hitter_position, hitter_team_id, hitter_team_name, hitter_lineup_position, pitcher_id, pitcher_name, pitcher_team_id, pitcher_team_name, pitcher_is_starter, prob_xgb, prob_lgbm, prob_logreg, prob_strikeout, actual_strikeout, split_set, model_version, scored_at) VALUES (:gamePk, :game_date, :season, :hitter_id, :hitter_name, :hitter_position, :hitter_team_id, :hitter_team_name, :hitter_lineup_position, :pitcher_id, :pitcher_name, :pitcher_team_id, :pitcher_team_name, :pitcher_is_starter, :prob_xgb, :prob_lgbm, :prob_logreg, :prob_strikeout, :actual_strikeout, :split_set, :model_version, :scored_at)': (pyodbc.DataError) ('22018', "[22018] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Conversion failed when converting the varchar value '3B' to data type int. (245) (SQLExecDirectW)")
+[SQL: INSERT INTO fact_pa_strikeout_predictions ([gamePk], game_date, season, hitter_id, hitter_name, hitter_position, hitter_team_id, hitter_team_name, hitter_lineup_position, pitcher_id, pitcher_name, pitcher_team_id, pitcher_team_name, pitcher_is_starte ... 6473 characters truncated ... ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (777932, datetime.datetime(2025, 5, 13, 0, 0), 2025, 592518, 'Manny Machado', '3B', 135, 'San Diego Padres', '3B', 667755, 'José Soriano', 108, 'Los Angeles Angels', 1, 0.08374384045600891, 0.10251256281407035, 0.10267613326051338, 0.08941877794336811, 0, 'validation', 'v1.0.0', '2026-04-27 03:42:00', 777632, datetime.datetime(2025, 6, 5, 0, 0), 2025, 682928, 'CJ Abrams', 'SS', 120, 'Washington Nationals', 'SS', 573204, 'Caleb Thielbar', 112, 'Chicago Cubs', 0, 0.18390804529190063, 0.1752136752136752, 0.11515940143135979, 0.18238698576568121, 1, 'validation', 'v1.0.0', '2026-04-27 03:42:00', 778135, datetime.datetime(2025, 4, 29, 0, 0), 2025, 665833, 'Oneil Cruz', 'CF' ... 1990 parameters truncated ... 0.009615384615384616, 0.0, 0, 'validation', 'v1.0.0', '2026-04-27 03:42:00', 777584, datetime.datetime(2025, 6, 9, 0, 0), 2025, 657136, 'Connor Wong', 'C', 111, 'Boston Red Sox', None, 679358, 'Eric Orze', 139, 'Tampa Bay Rays', 0, 0.307779461145401, 0.28085735402808576, 0.23860852523272905, 0.2891421715656869, 0, 'validation', 'v1.0.0', '2026-04-27 03:42:00', 778365, datetime.datetime(2025, 4, 11, 0, 0), 2025, 607208, 'Trea Turner', 'SS', 143, 'Philadelphia Phillies', 'SS', 669467, 'Andre Pallante', 138, 'St. Louis Cardinals', 1, 0.15729883313179016, 0.10633875995843436, 0.11515940143135979, 0.122376493380691, 0, 'validation', 'v1.0.0', '2026-04-27 03:42:00')]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2026-04-27 13:43:35,602 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 13:43:36,053 | ERROR | Error loading data into fact_pa_strikeout_predictions: Execution failed on sql 'INSERT INTO fact_pa_strikeout_predictions ("gamePk", game_date, season, hitter_id, hitter_name, hitter_position, hitter_team_id, hitter_team_name, hitter_lineup_position, pitcher_id, pitcher_name, pitcher_team_id, pitcher_team_name, pitcher_is_starter, prob_xgb, prob_lgbm, prob_logreg, prob_strikeout, actual_strikeout, split_set, model_version, scored_at) VALUES (:gamePk, :game_date, :season, :hitter_id, :hitter_name, :hitter_position, :hitter_team_id, :hitter_team_name, :hitter_lineup_position, :pitcher_id, :pitcher_name, :pitcher_team_id, :pitcher_team_name, :pitcher_is_starter, :prob_xgb, :prob_lgbm, :prob_logreg, :prob_strikeout, :actual_strikeout, :split_set, :model_version, :scored_at)': (pyodbc.DataError) ('22018', "[22018] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Conversion failed when converting the varchar value 'C' to data type int. (245) (SQLExecDirectW)")
+[SQL: INSERT INTO fact_pa_strikeout_predictions ([gamePk], game_date, season, hitter_id, hitter_name, hitter_position, hitter_team_id, hitter_team_name, hitter_lineup_position, pitcher_id, pitcher_name, pitcher_team_id, pitcher_team_name, pitcher_is_starte ... 6473 characters truncated ... ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (825104, datetime.datetime(2026, 4, 4, 0, 0), 2026, 686948, 'Drake Baldwin', 'C', 144, 'Atlanta Braves', 'C', 666661, 'Juan Morillo', 109, 'Arizona Diamondbacks', 0, 0.2164461314678192, 0.21202003338898165, 0.22573363431151242, 0.21967120181405897, 0, 'test', 'v1.0.0', '2026-04-27 03:42:00', 823155, datetime.datetime(2026, 4, 11, 0, 0), 2026, 514888, 'Jose Altuve', 'LF', 117, 'Houston Astros', '2B', 622491, 'Luis Castillo', 136, 'Seattle Mariners', 1, 0.08374384045600891, 0.08893919793014231, 0.13232514177693763, 0.08934707903780069, 0, 'test', 'v1.0.0', '2026-04-27 03:42:00', 824778, datetime.datetime(2026, 4, 17, 0, 0), 2026, 650402, 'Gleyber Torres', '2B' ... 1990 parameters truncated ... 0.13232514177693763, 0.15956482320942886, 0, 'test', 'v1.0.0', '2026-04-27 03:42:00', 823403, datetime.datetime(2026, 4, 8, 0, 0), 2026, 592206, 'Nick Castellanos', 'RF', 135, 'San Diego Padres', 'DH', 664353, 'José Urquidy', 134, 'Pittsburgh Pirates', 0, 0.2164461314678192, 0.22345483359746435, 0.22088835534213686, 0.21967120181405897, 0, 'test', 'v1.0.0', '2026-04-27 03:42:00', 823718, datetime.datetime(2026, 4, 19, 0, 0), 2026, 681546, 'James Outman', 'CF', 142, 'Minnesota Twins', None, 683175, 'Connor Phillips', 113, 'Cincinnati Reds', 0, 0.3491227924823761, 0.3506493506493506, 0.3438685208596713, 0.3700564971751412, 0, 'test', 'v1.0.0', '2026-04-27 03:42:00')]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2026-04-27 13:43:36,058 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 13:43:36,443 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 13:43:36,448 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 13:43:36,524 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 13:43:36,530 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 13:43:37,188 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 13:43:37,190 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:43:37,201 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 13:43:37,202 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:43:37,212 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 13:43:37,213 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:43:37,223 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 13:43:37,224 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:43:37,232 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 13:43:37,233 | INFO | Pipeline complete.
+2026-04-27 13:46:40,983 | INFO | SQL Server engine created
+2026-04-27 13:46:43,070 | INFO | ======================================================================
+2026-04-27 13:46:43,070 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 13:46:43,071 | INFO | ======================================================================
+2026-04-27 13:46:43,072 | INFO | SQL Server engine created
+2026-04-27 13:46:43,072 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 13:47:14,201 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 13:47:14,509 | INFO | Dropped 0 rows with null target
+2026-04-27 13:47:15,068 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 13:47:15,084 | INFO | Selected 327 feature columns
+2026-04-27 13:47:15,839 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 13:47:15,839 | INFO | Training XGBoost...
+2026-04-27 13:47:34,151 | INFO | XGB best iteration: 81
+2026-04-27 13:47:34,183 | INFO | Training LightGBM...
+2026-04-27 13:47:44,611 | INFO | LGBM best iteration: 82
+2026-04-27 13:47:44,623 | INFO | Training Logistic Regression baseline...
+2026-04-27 13:47:54,103 | INFO | [xgb_calibrated] n=57,267  AUC=0.6640  LogLoss=0.4428  Brier=0.1394  Acc=0.8218
+2026-04-27 13:47:54,159 | INFO | [lgbm_calibrated] n=57,267  AUC=0.6610  LogLoss=0.4438  Brier=0.1397  Acc=0.8218
+2026-04-27 13:47:54,215 | INFO | [logreg_calibrated] n=57,267  AUC=0.6564  LogLoss=0.4452  Brier=0.1401  Acc=0.8218
+2026-04-27 13:47:54,272 | INFO | [ensemble] n=57,267  AUC=0.6674  LogLoss=0.4417  Brier=0.1391  Acc=0.8218
+2026-04-27 13:47:54,295 | INFO | [xgb_calibrated] n=16,792  AUC=0.6503  LogLoss=0.4446  Brier=0.1393  Acc=0.8241
+2026-04-27 13:47:54,317 | INFO | [lgbm_calibrated] n=16,792  AUC=0.6521  LogLoss=0.4443  Brier=0.1392  Acc=0.8241
+2026-04-27 13:47:54,341 | INFO | [logreg_calibrated] n=16,792  AUC=0.6433  LogLoss=0.4489  Brier=0.1399  Acc=0.8241
+2026-04-27 13:47:54,363 | INFO | [ensemble] n=16,792  AUC=0.6542  LogLoss=0.4454  Brier=0.1390  Acc=0.8241
+2026-04-27 13:47:54,380 | INFO | Aggregating 23,629 starter PAs into pitcher-games
+2026-04-27 13:47:56,066 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 13:47:56,073 | INFO | Aggregating 6,160 starter PAs into pitcher-games
+2026-04-27 13:47:56,415 | INFO | Built 695 pitcher-game predictions
+2026-04-27 13:47:56,420 | INFO | [ensemble_game] games=3,342  MAE=0.667  RMSE=0.818  Bias=+0.022  Actual=0.71  Predicted=0.73
+2026-04-27 13:47:56,423 | INFO | [ensemble_game] games=695  MAE=0.750  RMSE=0.919  Bias=+0.111  Actual=0.87  Predicted=0.98
+2026-04-27 13:47:56,475 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 13:47:56,476 | INFO | SQL Server engine created
+2026-04-27 13:47:56,589 | INFO | Output tables ready
+2026-04-27 13:47:56,601 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 13:48:38,513 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-27 13:48:38,519 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 13:48:49,766 | INFO | Loaded 16792 rows into fact_pa_strikeout_predictions
+2026-04-27 13:48:49,770 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 13:48:50,096 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 13:48:50,100 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 13:48:50,177 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 13:48:50,183 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 13:48:50,764 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 13:48:50,766 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:48:50,777 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 13:48:50,778 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:48:50,788 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 13:48:50,790 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:48:50,799 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 13:48:50,801 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 13:48:50,810 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 13:48:50,810 | INFO | Pipeline complete.
+2026-04-27 14:37:51,820 | INFO | SQL Server engine created
+2026-04-27 14:37:53,789 | INFO | ======================================================================
+2026-04-27 14:37:53,789 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 14:37:53,789 | INFO | ======================================================================
+2026-04-27 14:37:53,789 | INFO | SQL Server engine created
+2026-04-27 14:37:53,790 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 14:38:29,088 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 14:38:29,563 | INFO | Dropped 0 rows with null target
+2026-04-27 14:38:30,433 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 14:38:30,462 | INFO | Selected 327 feature columns
+2026-04-27 14:38:31,788 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 14:38:31,789 | INFO | Training XGBoost...
+2026-04-27 14:38:52,579 | INFO | XGB best iteration: 81
+2026-04-27 14:38:52,609 | INFO | Training LightGBM...
+2026-04-27 14:39:03,037 | INFO | LGBM best iteration: 82
+2026-04-27 14:39:03,049 | INFO | Training Logistic Regression baseline...
+2026-04-27 14:39:12,518 | INFO | [xgb_calibrated] n=57,267  AUC=0.6640  LogLoss=0.4428  Brier=0.1394  Acc=0.8218
+2026-04-27 14:39:12,584 | INFO | [lgbm_calibrated] n=57,267  AUC=0.6610  LogLoss=0.4438  Brier=0.1397  Acc=0.8218
+2026-04-27 14:39:12,649 | INFO | [logreg_calibrated] n=57,267  AUC=0.6564  LogLoss=0.4452  Brier=0.1401  Acc=0.8218
+2026-04-27 14:39:12,718 | INFO | [ensemble] n=57,267  AUC=0.6674  LogLoss=0.4417  Brier=0.1391  Acc=0.8218
+2026-04-27 14:39:12,745 | INFO | [xgb_calibrated] n=16,792  AUC=0.6503  LogLoss=0.4446  Brier=0.1393  Acc=0.8241
+2026-04-27 14:39:12,787 | INFO | [lgbm_calibrated] n=16,792  AUC=0.6521  LogLoss=0.4443  Brier=0.1392  Acc=0.8241
+2026-04-27 14:39:12,828 | INFO | [logreg_calibrated] n=16,792  AUC=0.6433  LogLoss=0.4489  Brier=0.1399  Acc=0.8241
+2026-04-27 14:39:12,860 | INFO | [ensemble] n=16,792  AUC=0.6542  LogLoss=0.4454  Brier=0.1390  Acc=0.8241
+2026-04-27 14:39:12,885 | INFO | Aggregating 23,629 starter PAs into pitcher-games
+2026-04-27 14:39:14,751 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 14:39:14,759 | INFO | Aggregating 6,160 starter PAs into pitcher-games
+2026-04-27 14:39:15,155 | INFO | Built 695 pitcher-game predictions
+2026-04-27 14:39:15,160 | INFO | [ensemble_game] games=3,342  MAE=0.667  RMSE=0.818  Bias=+0.022  Actual=0.71  Predicted=0.73
+2026-04-27 14:39:15,165 | INFO | [ensemble_game] games=695  MAE=0.750  RMSE=0.919  Bias=+0.111  Actual=0.87  Predicted=0.98
+2026-04-27 14:39:15,220 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 14:39:15,221 | INFO | SQL Server engine created
+2026-04-27 14:39:15,328 | INFO | Output tables ready
+2026-04-27 14:39:15,341 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 14:39:56,911 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-27 14:39:56,918 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 14:40:08,699 | INFO | Loaded 16792 rows into fact_pa_strikeout_predictions
+2026-04-27 14:40:08,702 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 14:40:09,040 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 14:40:09,045 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 14:40:09,119 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 14:40:09,127 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 14:40:09,720 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 14:40:09,722 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:40:09,735 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 14:40:09,737 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:40:09,744 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 14:40:09,746 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:40:09,757 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 14:40:09,759 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:40:09,768 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 14:40:09,768 | INFO | Pipeline complete.
+2026-04-27 14:42:09,494 | INFO | SQL Server engine created
+2026-04-27 14:42:12,071 | INFO | ======================================================================
+2026-04-27 14:42:12,071 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 14:42:12,071 | INFO | ======================================================================
+2026-04-27 14:42:12,072 | INFO | SQL Server engine created
+2026-04-27 14:42:12,072 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 14:42:50,056 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 14:42:50,338 | INFO | Dropped 0 rows with null target
+2026-04-27 14:42:50,912 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 14:42:50,933 | INFO | Selected 327 feature columns
+2026-04-27 14:42:51,830 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 14:42:51,830 | INFO | Training XGBoost...
+2026-04-27 14:43:12,476 | INFO | XGB best iteration: 81
+2026-04-27 14:43:12,510 | INFO | Training LightGBM...
+2026-04-27 14:43:24,251 | INFO | LGBM best iteration: 82
+2026-04-27 14:43:24,265 | INFO | Training Logistic Regression baseline...
+2026-04-27 14:43:34,531 | INFO | [xgb_calibrated] n=57,267  AUC=0.6640  LogLoss=0.4428  Brier=0.1394  Acc=0.8218
+2026-04-27 14:43:34,595 | INFO | [lgbm_calibrated] n=57,267  AUC=0.6610  LogLoss=0.4438  Brier=0.1397  Acc=0.8218
+2026-04-27 14:43:34,661 | INFO | [logreg_calibrated] n=57,267  AUC=0.6564  LogLoss=0.4452  Brier=0.1401  Acc=0.8218
+2026-04-27 14:43:34,727 | INFO | [ensemble] n=57,267  AUC=0.6674  LogLoss=0.4417  Brier=0.1391  Acc=0.8218
+2026-04-27 14:43:34,753 | INFO | [xgb_calibrated] n=16,792  AUC=0.6503  LogLoss=0.4446  Brier=0.1393  Acc=0.8241
+2026-04-27 14:43:34,781 | INFO | [lgbm_calibrated] n=16,792  AUC=0.6521  LogLoss=0.4443  Brier=0.1392  Acc=0.8241
+2026-04-27 14:43:34,807 | INFO | [logreg_calibrated] n=16,792  AUC=0.6433  LogLoss=0.4489  Brier=0.1399  Acc=0.8241
+2026-04-27 14:43:34,835 | INFO | [ensemble] n=16,792  AUC=0.6542  LogLoss=0.4454  Brier=0.1390  Acc=0.8241
+2026-04-27 14:43:34,854 | INFO | Aggregating 23,629 starter PAs into pitcher-games
+2026-04-27 14:43:36,759 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 14:43:36,767 | INFO | Aggregating 6,160 starter PAs into pitcher-games
+2026-04-27 14:43:37,140 | INFO | Built 695 pitcher-game predictions
+2026-04-27 14:43:37,144 | INFO | [ensemble_game] games=3,342  MAE=0.667  RMSE=0.818  Bias=+0.022  Actual=0.71  Predicted=0.73
+2026-04-27 14:43:37,147 | INFO | [ensemble_game] games=695  MAE=0.750  RMSE=0.919  Bias=+0.111  Actual=0.87  Predicted=0.98
+2026-04-27 14:43:37,200 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 14:43:37,201 | INFO | SQL Server engine created
+2026-04-27 14:43:37,312 | INFO | Output tables ready
+2026-04-27 14:43:37,313 | INFO | SQL Server engine created
+2026-04-27 14:43:37,497 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (74059 rows)
+2026-04-27 14:43:37,509 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4037 rows)
+2026-04-27 14:43:37,514 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (695 rows)
+2026-04-27 14:43:37,531 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 14:44:22,124 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-27 14:44:22,132 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 14:44:33,965 | INFO | Loaded 16792 rows into fact_pa_strikeout_predictions
+2026-04-27 14:44:33,969 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 14:44:34,319 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 14:44:34,323 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 14:44:34,403 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 14:44:34,409 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 14:44:35,029 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 14:44:35,031 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:44:35,042 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 14:44:35,045 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:44:35,052 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 14:44:35,055 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:44:35,064 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 14:44:35,065 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 14:44:35,073 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 14:44:35,073 | INFO | Pipeline complete.
+2026-04-27 15:34:03,957 | INFO | SQL Server engine created
+2026-04-27 15:34:11,524 | INFO | ======================================================================
+2026-04-27 15:34:11,524 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 15:34:11,524 | INFO | ======================================================================
+2026-04-27 15:34:11,525 | INFO | SQL Server engine created
+2026-04-27 15:34:11,525 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 15:34:46,771 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 15:34:47,080 | INFO | Dropped 0 rows with null target
+2026-04-27 15:34:47,646 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 15:34:47,661 | INFO | Selected 327 feature columns
+2026-04-27 15:34:48,458 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 15:34:48,458 | INFO | Training XGBoost...
+2026-04-27 15:35:08,974 | INFO | XGB best iteration: 81
+2026-04-27 15:35:09,013 | INFO | Training LightGBM...
+2026-04-27 15:35:24,643 | INFO | LGBM best iteration: 82
+2026-04-27 15:35:24,656 | INFO | Training Logistic Regression baseline...
+2026-04-27 15:35:35,329 | INFO | [xgb_calibrated] n=57,267  AUC=0.6640  LogLoss=0.4428  Brier=0.1394  Acc=0.8218
+2026-04-27 15:35:35,402 | INFO | [lgbm_calibrated] n=57,267  AUC=0.6610  LogLoss=0.4438  Brier=0.1397  Acc=0.8218
+2026-04-27 15:35:35,480 | INFO | [logreg_calibrated] n=57,267  AUC=0.6564  LogLoss=0.4452  Brier=0.1401  Acc=0.8218
+2026-04-27 15:35:35,557 | INFO | [ensemble] n=57,267  AUC=0.6674  LogLoss=0.4417  Brier=0.1391  Acc=0.8218
+2026-04-27 15:35:35,585 | INFO | [xgb_calibrated] n=16,792  AUC=0.6503  LogLoss=0.4446  Brier=0.1393  Acc=0.8241
+2026-04-27 15:35:35,613 | INFO | [lgbm_calibrated] n=16,792  AUC=0.6521  LogLoss=0.4443  Brier=0.1392  Acc=0.8241
+2026-04-27 15:35:35,642 | INFO | [logreg_calibrated] n=16,792  AUC=0.6433  LogLoss=0.4489  Brier=0.1399  Acc=0.8241
+2026-04-27 15:35:35,670 | INFO | [ensemble] n=16,792  AUC=0.6542  LogLoss=0.4454  Brier=0.1390  Acc=0.8241
+2026-04-27 15:35:35,694 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-04-27 15:35:38,870 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 15:35:38,878 | INFO | Aggregating 6,160 starter rows into pitcher-games
+2026-04-27 15:35:39,595 | INFO | Built 695 pitcher-game predictions
+2026-04-27 15:35:39,599 | INFO | [ensemble_game] games=3,342  MAE=2.212  RMSE=2.781  Bias=-2.007  Actual=3.84  Predicted=1.83
+2026-04-27 15:35:39,602 | INFO | [ensemble_game] games=695  MAE=2.607  RMSE=3.235  Bias=-2.395  Actual=4.76  Predicted=2.36
+2026-04-27 15:35:39,658 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 15:35:39,659 | INFO | SQL Server engine created
+2026-04-27 15:35:39,781 | INFO | Output tables ready
+2026-04-27 15:35:39,782 | INFO | SQL Server engine created
+2026-04-27 15:35:40,013 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (74059 rows)
+2026-04-27 15:35:40,052 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4037 rows)
+2026-04-27 15:35:40,076 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (695 rows)
+2026-04-27 15:35:40,090 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 15:36:20,757 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-27 15:36:20,763 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 15:36:32,128 | INFO | Loaded 16792 rows into fact_pa_strikeout_predictions
+2026-04-27 15:36:32,131 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 15:36:32,475 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 15:36:32,478 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 15:36:32,560 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 15:36:32,567 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 15:36:33,339 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 15:36:33,341 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:36:33,353 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 15:36:33,355 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:36:33,364 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 15:36:33,366 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:36:33,377 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 15:36:33,379 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:36:33,386 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 15:36:33,387 | INFO | Pipeline complete.
+2026-04-27 15:44:01,737 | INFO | SQL Server engine created
+2026-04-27 15:44:04,327 | INFO | ======================================================================
+2026-04-27 15:44:04,328 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 15:44:04,328 | INFO | ======================================================================
+2026-04-27 15:44:04,329 | INFO | SQL Server engine created
+2026-04-27 15:44:04,329 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 15:44:39,846 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 15:44:40,175 | INFO | Dropped 0 rows with null target
+2026-04-27 15:44:40,779 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 15:44:40,804 | INFO | Selected 327 feature columns
+2026-04-27 15:44:41,645 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 15:44:41,645 | INFO | Training XGBoost...
+2026-04-27 15:45:00,323 | INFO | XGB best iteration: 65
+2026-04-27 15:45:00,358 | INFO | Training LightGBM...
+2026-04-27 15:45:10,430 | INFO | LGBM best iteration: 64
+2026-04-27 15:45:10,443 | INFO | Training Logistic Regression baseline...
+2026-04-27 15:45:13,604 | INFO |   Logreg fitting on expanded shape: (104205, 327)
+2026-04-27 15:45:23,043 | INFO | [xgb_calibrated] n=57,267  AUC=0.5916  LogLoss=0.5302  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-04-27 15:45:23,087 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5485  LogLoss=0.5366  Brier=0.1364  Acc=0.7571  BaseRate=0.230  PredRate=0.216
+2026-04-27 15:45:23,131 | INFO | [logreg_calibrated] n=57,267  AUC=0.5892  LogLoss=0.5308  Brier=0.1343  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-04-27 15:45:23,172 | INFO | [ensemble] n=57,267  AUC=0.5948  LogLoss=0.5297  Brier=0.1340  Acc=0.7572  BaseRate=0.230  PredRate=0.224
+2026-04-27 15:45:23,192 | INFO | [xgb_calibrated] n=16,792  AUC=0.5777  LogLoss=0.5323  Brier=0.1370  Acc=0.7501  BaseRate=0.228  PredRate=0.238
+2026-04-27 15:45:23,211 | INFO | [lgbm_calibrated] n=16,792  AUC=0.5581  LogLoss=0.5347  Brier=0.1382  Acc=0.7502  BaseRate=0.228  PredRate=0.217
+2026-04-27 15:45:23,231 | INFO | [logreg_calibrated] n=16,792  AUC=0.5777  LogLoss=0.5304  Brier=0.1370  Acc=0.7499  BaseRate=0.228  PredRate=0.237
+2026-04-27 15:45:23,251 | INFO | [ensemble] n=16,792  AUC=0.5842  LogLoss=0.5333  Brier=0.1367  Acc=0.7502  BaseRate=0.228  PredRate=0.232
+2026-04-27 15:45:23,277 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-04-27 15:45:26,696 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 15:45:26,703 | INFO | Aggregating 6,160 starter rows into pitcher-games
+2026-04-27 15:45:27,436 | INFO | Built 695 pitcher-game predictions
+2026-04-27 15:45:27,440 | INFO | [ensemble_game] games=3,342  MAE=1.484  RMSE=1.869  Bias=+0.126  Actual=3.84  Predicted=3.97
+2026-04-27 15:45:27,443 | INFO | [ensemble_game] games=695  MAE=1.716  RMSE=2.161  Bias=+0.301  Actual=4.76  Predicted=5.06
+2026-04-27 15:45:27,492 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 15:45:27,493 | INFO | SQL Server engine created
+2026-04-27 15:45:27,621 | INFO | Output tables ready
+2026-04-27 15:45:27,622 | INFO | SQL Server engine created
+2026-04-27 15:45:27,875 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (74059 rows)
+2026-04-27 15:45:27,902 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4037 rows)
+2026-04-27 15:45:27,908 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (695 rows)
+2026-04-27 15:45:27,937 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 15:46:07,471 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-27 15:46:07,478 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 15:46:18,420 | INFO | Loaded 16792 rows into fact_pa_strikeout_predictions
+2026-04-27 15:46:18,424 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 15:46:18,804 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 15:46:18,808 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 15:46:18,881 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 15:46:18,887 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 15:46:19,507 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 15:46:19,508 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:46:19,519 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 15:46:19,521 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:46:19,529 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 15:46:19,531 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:46:19,539 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 15:46:19,540 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 15:46:19,548 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 15:46:19,548 | INFO | Pipeline complete.
+2026-04-27 17:25:08,060 | INFO | SQL Server engine created
+2026-04-27 17:25:10,704 | INFO | ======================================================================
+2026-04-27 17:25:10,704 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-27 17:25:10,704 | INFO | ======================================================================
+2026-04-27 17:25:10,705 | INFO | SQL Server engine created
+2026-04-27 17:25:10,705 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+2026-04-27 17:25:40,515 | INFO | Loaded 135,581 rows, 346 columns
+2026-04-27 17:25:40,834 | INFO | Dropped 0 rows with null target
+2026-04-27 17:25:41,535 | INFO | Split sizes - train: 61,522  val: 57,267  test: 16,792
+2026-04-27 17:25:41,554 | INFO | Selected 327 feature columns
+2026-04-27 17:25:42,428 | INFO | Feature matrix shapes - train (61522, 327)  val (57267, 327)  test (16792, 327)
+2026-04-27 17:25:42,428 | INFO | Training XGBoost...
+2026-04-27 17:26:00,347 | INFO | XGB best iteration: 65
+2026-04-27 17:26:00,372 | INFO | Training LightGBM...
+2026-04-27 17:26:09,027 | INFO | LGBM best iteration: 64
+2026-04-27 17:26:09,039 | INFO | Training Logistic Regression baseline...
+2026-04-27 17:26:11,887 | INFO |   Logreg fitting on expanded shape: (104205, 327)
+2026-04-27 17:26:20,341 | INFO | [xgb_calibrated] n=57,267  AUC=0.5916  LogLoss=0.5302  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-04-27 17:26:20,372 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5485  LogLoss=0.5366  Brier=0.1364  Acc=0.7571  BaseRate=0.230  PredRate=0.216
+2026-04-27 17:26:20,403 | INFO | [logreg_calibrated] n=57,267  AUC=0.5892  LogLoss=0.5308  Brier=0.1343  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-04-27 17:26:20,435 | INFO | [ensemble] n=57,267  AUC=0.5948  LogLoss=0.5297  Brier=0.1340  Acc=0.7572  BaseRate=0.230  PredRate=0.224
+2026-04-27 17:26:20,451 | INFO | [xgb_calibrated] n=16,792  AUC=0.5777  LogLoss=0.5323  Brier=0.1370  Acc=0.7501  BaseRate=0.228  PredRate=0.238
+2026-04-27 17:26:20,464 | INFO | [lgbm_calibrated] n=16,792  AUC=0.5581  LogLoss=0.5347  Brier=0.1382  Acc=0.7502  BaseRate=0.228  PredRate=0.217
+2026-04-27 17:26:20,477 | INFO | [logreg_calibrated] n=16,792  AUC=0.5777  LogLoss=0.5304  Brier=0.1370  Acc=0.7499  BaseRate=0.228  PredRate=0.237
+2026-04-27 17:26:20,490 | INFO | [ensemble] n=16,792  AUC=0.5842  LogLoss=0.5333  Brier=0.1367  Acc=0.7502  BaseRate=0.228  PredRate=0.232
+2026-04-27 17:26:20,509 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-04-27 17:26:22,876 | INFO | Built 3,342 pitcher-game predictions
+2026-04-27 17:26:22,883 | INFO | Aggregating 6,160 starter rows into pitcher-games
+2026-04-27 17:26:23,435 | INFO | Built 695 pitcher-game predictions
+2026-04-27 17:26:23,438 | INFO | [ensemble_game] games=3,342  MAE=1.484  RMSE=1.869  Bias=+0.126  Actual=3.84  Predicted=3.97
+2026-04-27 17:26:23,441 | INFO | [ensemble_game] games=695  MAE=1.716  RMSE=2.161  Bias=+0.301  Actual=4.76  Predicted=5.06
+2026-04-27 17:26:23,483 | INFO | Saved model artefacts to ./artifacts/
+2026-04-27 17:26:23,484 | INFO | SQL Server engine created
+2026-04-27 17:26:23,560 | INFO | Output tables ready
+2026-04-27 17:26:23,560 | INFO | SQL Server engine created
+2026-04-27 17:26:23,755 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (74059 rows)
+2026-04-27 17:26:23,767 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4037 rows)
+2026-04-27 17:26:23,773 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (695 rows)
+2026-04-27 17:26:23,787 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 17:27:03,789 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-27 17:27:03,796 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-27 17:27:14,654 | INFO | Loaded 16792 rows into fact_pa_strikeout_predictions
+2026-04-27 17:27:14,657 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 17:27:14,992 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 17:27:14,995 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-27 17:27:15,070 | INFO | Loaded 695 rows into fact_pitcher_game_strikeout_predictions
+2026-04-27 17:27:15,076 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-27 17:27:15,653 | INFO | Loaded 695 rows into fact_pitcher_strikeout_betting_ev
+2026-04-27 17:27:15,655 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 17:27:15,667 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 17:27:15,669 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 17:27:15,678 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-27 17:27:15,679 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 17:27:15,689 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 17:27:15,692 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-27 17:27:15,699 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-27 17:27:15,699 | INFO | Pipeline complete.
