@@ -10,7 +10,12 @@ from datetime import datetime
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
-SOURCE_TABLE = "dbo.fact_hitter_pitcher_matchup_model_featuresv2"
+# Source feature view. We point at the handedness-enriched view rather than
+# the raw matchup features table - it adds pitcher_throws, hitter_bats, and
+# platoon flags as columns. To create that view, run sql/create_handedness_view.sql
+# once. If you ever need to fall back to raw features, change this back to
+# "dbo.fact_hitter_pitcher_matchup_model_featuresv2".
+SOURCE_TABLE = "dbo.fact_hitter_pitcher_matchup_with_handedness"
 
 # Output tables that this pipeline writes to.
 PA_PREDICTIONS_TABLE = "fact_pa_strikeout_predictions"     # per plate-appearance
@@ -47,6 +52,12 @@ LEAKAGE_COLS = [
 CATEGORICAL_COLS = [
     "hitter_position",
     "hitter_lineup_position_name",
+    # Handedness features - added via the handedness-enriched view.
+    # These give the trees direct access to platoon information rather than
+    # forcing them to infer it from whiff-vs-rhp/lhp split stats.
+    "hitter_bats",        # 'L', 'R', or 'S' (switch hitter)
+    "pitcher_throws",     # 'L' or 'R'
+    "platoon_matchup",    # 'Same', 'Opposite', or 'Switch'
 ]
 
 # XGBoost params - tuned for tabular, slightly imbalanced binary classification

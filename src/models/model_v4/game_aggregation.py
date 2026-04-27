@@ -136,11 +136,42 @@ def aggregate_to_pitcher_game(pa_df: pd.DataFrame) -> pd.DataFrame:
         opp_team_id = sub["hitter_team_id"].iloc[0]
         opp_team_name = sub["hitter_team_name"].iloc[0]
 
+        # Pitcher handedness (same for every row in the group)
+        pitcher_throws = (sub["pitcher_throws"].iloc[0]
+                          if "pitcher_throws" in sub.columns else None)
+
+        # Lineup-handedness composition - counts of each batter type the
+        # pitcher faces. Useful for spotting heavy-platoon-advantage games.
+        if "hitter_bats" in sub.columns:
+            # Each row is one HITTER, weight by their PA count to get true
+            # batter-instances faced
+            bats = sub["hitter_bats"].fillna("")
+            opp_lhb = int(((bats == "L") * pa_counts).sum())
+            opp_rhb = int(((bats == "R") * pa_counts).sum())
+            opp_switch = int(((bats == "S") * pa_counts).sum())
+
+            if pitcher_throws in ("L", "R"):
+                # Switch hitters always have platoon advantage; count them
+                # as opposite-side for this purpose
+                opp_same = int(((bats == pitcher_throws) * pa_counts).sum())
+                opp_opposite = int((((bats != pitcher_throws) & (bats != "")) * pa_counts).sum())
+            else:
+                opp_same = None
+                opp_opposite = None
+        else:
+            opp_lhb = opp_rhb = opp_switch = opp_same = opp_opposite = None
+
         row = dict(zip(group_cols, keys))
         row.update({
+            "pitcher_throws": pitcher_throws,
             "opponent_team_id": opp_team_id,
             "opponent_team_name": opp_team_name,
             "batters_faced_modeled": int(len(probs)),  # now reflects total PAs
+            "opp_lhb_count": opp_lhb,
+            "opp_rhb_count": opp_rhb,
+            "opp_switch_count": opp_switch,
+            "opp_same_side_count": opp_same,
+            "opp_opposite_side_count": opp_opposite,
             "predicted_strikeouts": expected_k,
             "predicted_k_stddev": float(np.sqrt(var_k)),
             "most_likely_k": mode_k,

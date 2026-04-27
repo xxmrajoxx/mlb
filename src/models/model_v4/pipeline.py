@@ -53,12 +53,15 @@ def ensure_output_tables():
             hitter_position   VARCHAR(10),
             hitter_team_id    INT,
             hitter_team_name  VARCHAR(100),
-            hitter_lineup_position INT,
+            hitter_lineup_position VARCHAR(20),
             pitcher_id        INT,
             pitcher_name      VARCHAR(100),
             pitcher_team_id   INT,
             pitcher_team_name VARCHAR(100),
             pitcher_is_starter BIT,
+            hitter_bats       VARCHAR(2),     -- 'L', 'R', or 'S'
+            pitcher_throws    VARCHAR(2),     -- 'L' or 'R'
+            platoon_matchup   VARCHAR(10),    -- 'Same', 'Opposite', or 'Switch'
             prob_xgb          FLOAT,
             prob_lgbm         FLOAT,
             prob_logreg       FLOAT,
@@ -82,9 +85,16 @@ def ensure_output_tables():
             pitcher_name       VARCHAR(100),
             pitcher_team_id    INT,
             pitcher_team_name  VARCHAR(100),
+            pitcher_throws     VARCHAR(2),     -- 'L' or 'R'
             opponent_team_id   INT,
             opponent_team_name VARCHAR(100),
             batters_faced_modeled INT,
+            -- Lineup composition aggregates (counts of L / R / S hitters faced)
+            opp_lhb_count       INT,            -- left-handed batters in lineup
+            opp_rhb_count       INT,            -- right-handed batters
+            opp_switch_count    INT,            -- switch hitters
+            opp_same_side_count INT,            -- batters with same handedness as pitcher
+            opp_opposite_side_count INT,        -- batters with opposite handedness
             predicted_strikeouts  FLOAT,
             predicted_k_stddev    FLOAT,
             most_likely_k         INT,
@@ -114,7 +124,15 @@ def ensure_output_tables():
             pitcher_id        INT,
             pitcher_name      VARCHAR(100),
             pitcher_team_name VARCHAR(100),
+            pitcher_throws    VARCHAR(2),      -- 'L' or 'R'
             opponent_team_name VARCHAR(100),
+
+            -- Lineup composition (handedness counts)
+            opp_lhb_count           INT,
+            opp_rhb_count           INT,
+            opp_switch_count        INT,
+            opp_same_side_count     INT,
+            opp_opposite_side_count INT,
 
             -- Model output
             predicted_strikeouts FLOAT,
@@ -224,6 +242,7 @@ def save_pa_predictions(pa_df: pd.DataFrame, split_set: str):
         "hitter_team_id", "hitter_team_name", "hitter_lineup_position",
         "pitcher_id", "pitcher_name", "pitcher_team_id", "pitcher_team_name",
         "pitcher_is_starter",
+        "hitter_bats", "pitcher_throws", "platoon_matchup",
         "prob_xgb", "prob_lgbm", "prob_logreg", "prob_strikeout",
         "actual_strikeout",
     ]
@@ -283,7 +302,10 @@ def save_ev_template(game_df: pd.DataFrame):
     rows = game_df[[
         "gamePk", "game_date", "season",
         "pitcher_id", "pitcher_name", "pitcher_team_name",
+        "pitcher_throws",
         "opponent_team_name",
+        "opp_lhb_count", "opp_rhb_count", "opp_switch_count",
+        "opp_same_side_count", "opp_opposite_side_count",
         "predicted_strikeouts", "predicted_k_stddev",
         "actual_strikeouts",
     ]].copy()
@@ -397,6 +419,10 @@ def run():
         # the pitcher multiple times in a game.
         out["hitter_plate_appearances"] = source_df.get("hitter_plate_appearances", 1)
         out["hitter_strikeouts"] = source_df.get("hitter_strikeouts", 0)
+        # Handedness columns - keep on the PA-level output for inspection
+        out["hitter_bats"] = source_df.get("hitter_bats")
+        out["pitcher_throws"] = source_df.get("pitcher_throws")
+        out["platoon_matchup"] = source_df.get("platoon_matchup")
         out["prob_xgb"] = p_xgb
         out["prob_lgbm"] = p_lgbm
         out["prob_logreg"] = p_lr

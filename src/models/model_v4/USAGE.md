@@ -18,9 +18,10 @@ This document is the companion to the technical README. **The technical README e
 8. [The Daily Betting Workflow](#8-the-daily-betting-workflow)
 9. [Metrics Reference: What Good and Bad Look Like](#9-metrics-reference-what-good-and-bad-look-like)
 10. [How to Identify Good Bets](#10-how-to-identify-good-bets)
-11. [Things to Watch Out For](#11-things-to-watch-out-for)
-12. [Troubleshooting](#12-troubleshooting)
-13. [Maintenance](#13-maintenance)
+11. [Handedness — Reading Platoon Matchups](#11-handedness--reading-platoon-matchups)
+12. [Things to Watch Out For](#12-things-to-watch-out-for)
+13. [Troubleshooting](#13-troubleshooting)
+14. [Maintenance](#14-maintenance)
 
 ---
 
@@ -269,8 +270,10 @@ mlb/
             ├── game_aggregation.py      ← turns per-PA predictions into pitcher-game totals
             ├── sql_loader.py            ← your SQL Server connection helper
             ├── sql/
-            │   ├── compute_ev.sql        ← the EV calculator script (run after entering odds)
-            │   └── cleanup_duplicates.sql ← one-time tool for removing duplicate rows from older runs
+            │   ├── compute_ev.sql                  ← the EV calculator script (run after entering odds)
+            │   ├── cleanup_duplicates.sql          ← one-time tool for removing duplicate rows from older runs
+            │   ├── create_handedness_view.sql      ← creates the handedness-enriched source view
+            │   └── drop_for_handedness_migration.sql ← one-time, for upgrading existing tables to new schema
             ├── artifacts/               ← saved models (created by pipeline; don't edit)
             │   ├── xgb.json
             │   ├── lgbm.txt
@@ -319,6 +322,38 @@ SELECT TOP 10 * FROM mlb.dbo.fact_hitter_pitcher_matchup_model_featuresv2;
 ```
 
 If that returns rows, you're set up.
+
+### Step 4: Create the handedness-enriched view
+This adds `pitcher_throws`, `hitter_bats`, and platoon flags to the source data by joining to `dim_player`. Run once:
+
+```sql
+-- In SSMS, open sql/create_handedness_view.sql and press F5
+```
+
+Verify it worked:
+```sql
+SELECT TOP 5 hitter_bats, pitcher_throws, platoon_matchup
+FROM mlb.dbo.fact_hitter_pitcher_matchup_with_handedness;
+```
+
+You should see 'L'/'R'/'S' values, not all NULLs.
+
+### Step 5 (only if upgrading from a previous version): Drop old prediction tables
+If your prediction tables already exist from earlier pipeline runs, they'll have the old schema (no handedness columns). Drop them so the pipeline recreates them:
+
+```sql
+-- In SSMS, open sql/drop_for_handedness_migration.sql and press F5
+```
+
+This preserves `fact_model_evaluation_metrics` (run history) but drops the three prediction tables. They'll be recreated with the new schema on the next pipeline run.
+
+**If you've already entered odds for any bets**, save them first:
+```sql
+SELECT *
+INTO mlb.dbo.bets_backup_handedness_migration
+FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+WHERE sportsbook IS NOT NULL;
+```
 
 ---
 
@@ -373,7 +408,13 @@ The pipeline writes four tables to `mlb.dbo`. Here's what each holds and when yo
 | `gamePk` | MLB's unique game ID |
 | `game_date` | Date of the game |
 | `pitcher_name` | The starter you're betting on |
+| `pitcher_throws` | Pitcher's throwing arm — 'L' or 'R' |
 | `opponent_team_name` | The lineup they're facing |
+| `opp_lhb_count` | Total left-handed batter PAs in the lineup |
+| `opp_rhb_count` | Total right-handed batter PAs |
+| `opp_switch_count` | Total switch-hitter PAs |
+| `opp_same_side_count` | PAs with same-handedness matchup (K-friendly) |
+| `opp_opposite_side_count` | PAs with opposite-handedness matchup |
 | `batters_faced_modeled` | How many batters were factored into the prediction (typically 18–28 for starters) |
 | `predicted_strikeouts` | Model's expected total Ks |
 | `predicted_k_stddev` | Uncertainty around the prediction (lower = more confident) |
@@ -388,6 +429,8 @@ The pipeline writes four tables to `mlb.dbo`. Here's what each holds and when yo
 | `prob_over_9_5` | P(≥ 10 Ks) |
 | `actual_strikeouts` | What actually happened (NULL until game completes) |
 | `split_set` | `validation` (2025) or `test` (2026) |
+
+For more on how to read the handedness columns, see section 11.
 
 ### 6.2 `fact_pitcher_strikeout_betting_ev` — your EV worksheet
 
@@ -731,7 +774,7 @@ raw_predicted_K  bias_corrected_K  model_prob_over  recommended_side
 8.5              8.5 (no correct.) 0.62              PASS  ← bucket 4, auto-PASS
 ```
 
-**Rebuild this correction every 3-4 months once you've accumulated 100+ bets** — see section 13 (Maintenance).
+**Rebuild this correction every 3-4 months once you've accumulated 100+ bets** — see section 14 (Maintenance).
 
 ### Example interpretations
 
@@ -802,7 +845,127 @@ If you can't find a reason for the discrepancy, skip it. The book is rarely that
 
 ---
 
-## 11. Things to Watch Out For
+## 11. Handedness — Reading Platoon Matchups
+
+The model now uses **batter handedness and pitcher throwing arm** as direct features. This section explains what's exposed in the output tables and how to read it for bet decisions.
+
+### Why handedness matters
+
+Same-side matchups (RHP vs RHB, LHP vs LHB) produce K rates 2-4 percentage points higher than opposite-side matchups. Some pitchers have huge platoon splits (devastating vs same-handed batters, average vs opposite); others are flat. For a starter facing a lineup, the lineup's handedness mix can swing the predicted K total by 0.5-1.5 Ks compared to a "platoon-neutral" lineup.
+
+### What handedness columns are now in your tables
+
+#### `fact_pa_strikeout_predictions` — per-PA detail
+
+Each row now shows:
+
+| Column | Values | Meaning |
+|---|---|---|
+| `hitter_bats` | 'L', 'R', 'S' | Hitter's batting side. 'S' = switch hitter |
+| `pitcher_throws` | 'L', 'R' | Pitcher's throwing arm |
+| `platoon_matchup` | 'Same', 'Opposite', 'Switch' | Convenience label |
+
+#### `fact_pitcher_game_strikeout_predictions` — daily betting board
+
+Each row now shows the full lineup composition the pitcher faced:
+
+| Column | Meaning |
+|---|---|
+| `pitcher_throws` | 'L' or 'R' |
+| `opp_lhb_count` | Total left-handed batter PAs in the lineup |
+| `opp_rhb_count` | Total right-handed batter PAs |
+| `opp_switch_count` | Total switch-hitter PAs |
+| `opp_same_side_count` | PAs where pitcher and batter are same-handed (best for K) |
+| `opp_opposite_side_count` | PAs where pitcher and batter are opposite-handed |
+
+These are PA counts, not hitter counts — i.e. a hitter who faces the pitcher 3 times contributes 3 to the relevant count.
+
+#### `fact_pitcher_strikeout_betting_ev` — your EV worksheet
+
+Same lineup composition columns as the game predictions table, plus `pitcher_throws`. You don't need to enter these — they're filled by the pipeline.
+
+### How to read these for bet decisions
+
+#### The "platoon advantage" diagnostic
+
+Compute the same-side ratio for each pitcher-game:
+
+```sql
+SELECT
+    pitcher_name,
+    pitcher_throws,
+    opponent_team_name,
+    predicted_strikeouts,
+    opp_lhb_count,
+    opp_rhb_count,
+    opp_switch_count,
+    opp_same_side_count,
+    opp_opposite_side_count,
+    -- Higher = more platoon advantage = K-friendly matchup
+    CAST(opp_same_side_count AS FLOAT) /
+        NULLIF(opp_same_side_count + opp_opposite_side_count, 0)
+        AS same_side_ratio
+FROM mlb.dbo.fact_pitcher_game_strikeout_predictions
+WHERE game_date = CAST(GETDATE() AS DATE)
+ORDER BY same_side_ratio DESC;
+```
+
+**What `same_side_ratio` means:**
+
+| Value | Interpretation |
+|---|---|
+| > 0.55 | **Strong platoon edge** — pitcher faces mostly same-handed batters |
+| 0.45 – 0.55 | **Mixed** — typical lineup |
+| < 0.45 | **Reverse platoon** — pitcher faces mostly opposite-handed batters (harder for K) |
+
+**Practical implication:** The model has already factored handedness into the prediction. But if you see a starter facing a heavily mismatched lineup (say `same_side_ratio = 0.70`), that's a context you might lean OVER on if everything else is borderline. Conversely, a `0.30` lineup is a context that supports UNDER.
+
+#### Watch out for switch-hitter heavy lineups
+
+If `opp_switch_count` is high (say > 6 PAs), the pitcher faces many hitters who effectively have platoon advantage every PA. This is K-suppressing. Some lineups (Yankees, Twins) often run 3+ switch hitters. If the model's prediction looks high on that day, the platoon context isn't supporting it.
+
+#### Sanity check for left-handed pitchers
+
+LHPs typically face RHB-heavy lineups because most MLB hitters are right-handed. If you see a LHP with `opp_same_side_count > 9`, that's an unusually favorable matchup — the model already knows this but it's a flag worth noticing.
+
+### Example — full read of a pitcher-game
+
+```
+pitcher_name: Parker Messick
+pitcher_throws: L
+opponent_team_name: Atlanta Braves
+predicted_strikeouts: 7.24
+opp_lhb_count: 6
+opp_rhb_count: 18
+opp_switch_count: 3
+opp_same_side_count: 6        ← only 6 PAs with platoon advantage
+opp_opposite_side_count: 21   ← 21 PAs where the Braves' hitters have advantage
+same_side_ratio: 0.22         ← reverse-platoon lineup
+```
+
+This is a tough K matchup for Messick — most batters he faces have the platoon advantage. The model prediction of 7.24 already accounts for this; if it had been a same-side-heavy lineup, the prediction would have been higher. But knowing this helps you trust an UNDER lean if odds come in close.
+
+### What the model learned about platoon
+
+Once the pipeline has been re-trained with handedness features included, you can verify the model is using them. Run this:
+
+```sql
+-- Compare avg predicted K probability by platoon matchup
+SELECT
+    platoon_matchup,
+    COUNT(*) AS n,
+    AVG(prob_strikeout) AS avg_pred_k_prob
+FROM mlb.dbo.fact_pa_strikeout_predictions
+WHERE split_set IN ('validation', 'test')
+GROUP BY platoon_matchup
+ORDER BY avg_pred_k_prob DESC;
+```
+
+**Healthy result:** `Same` should average ~2-4 percentage points higher than `Opposite`. If they're equal, the model isn't using handedness effectively.
+
+---
+
+## 12. Things to Watch Out For
 
 ### Calibration drift
 
@@ -810,7 +973,7 @@ If `Brier` starts climbing across pipeline runs (e.g. 0.137 → 0.145 → 0.152)
 
 ### Bias drift
 
-If overall `bias` consistently exceeds ±0.4 across runs, the model is drifting from where the bias correction was calibrated. Re-run the bucket diagnostic in section 13 and update the correction values in `compute_ev.sql`. If retraining doesn't fix it, the lineup encoding or a feature has changed upstream.
+If overall `bias` consistently exceeds ±0.4 across runs, the model is drifting from where the bias correction was calibrated. Re-run the bucket diagnostic in section 14 and update the correction values in `compute_ev.sql`. If retraining doesn't fix it, the lineup encoding or a feature has changed upstream.
 
 ### Suspicious AUC jumps
 
@@ -842,7 +1005,7 @@ Don't bet from your everyday checking account. Set up a dedicated bankroll. With
 
 ---
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 | Symptom | Cause | Fix |
 |---|---|---|
@@ -861,7 +1024,7 @@ Don't bet from your everyday checking account. Set up a dedicated bankroll. With
 
 ---
 
-## 13. Maintenance
+## 14. Maintenance
 
 ### Weekly
 - Re-run `pipeline.py` to pick up new game data (auto-deduplicates predictions; preserves any rows where you've entered odds)
