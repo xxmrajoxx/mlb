@@ -112,10 +112,12 @@ def aggregate_to_pitcher_game(pa_df: pd.DataFrame) -> pd.DataFrame:
         var_k = float(((ks - expected_k) ** 2 * pmf).sum())
 
         # Probability of going OVER each common line. P(K > line) = P(K >= ceil(line+epsilon))
+        # Column name: prob_over_5_5 (underscores match SQL DDL, NOT prob_over_5.5)
         over_probs = {}
         for line in [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5]:
             threshold = int(np.ceil(line))  # K must be >= threshold
-            over_probs[f"prob_over_{line}"] = float(pmf[threshold:].sum())
+            col_name = f"prob_over_{str(line).replace('.', '_')}"
+            over_probs[col_name] = float(pmf[threshold:].sum())
 
         # Most likely K count and that count's probability.
         mode_k = int(ks[np.argmax(pmf)])

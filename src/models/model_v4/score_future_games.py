@@ -40,6 +40,7 @@ import features as features_module
 import models as models_module
 import game_aggregation
 from sql_loader import get_engine, load_dataframe
+from pipeline import ensure_output_tables  # creates tables if missing
 
 logger = logging.getLogger("score_future")
 logging.basicConfig(
@@ -118,13 +119,14 @@ def score_matchups(future_df: pd.DataFrame, artifacts: dict) -> pd.DataFrame:
     feature_cols = artifacts["feature_cols"]
     cat_maps = artifacts["cat_maps"]
 
-    # Make sure every column the model expects is present (fill with NaN if missing)
-    missing = set(feature_cols) - set(future_df.columns)
+    # Make sure every column the model expects is present (fill with NaN if missing).
+    # Use a single pd.concat instead of repeated inserts to avoid pandas fragmentation warnings.
+    missing = list(set(feature_cols) - set(future_df.columns))
     if missing:
         logger.warning(f"Future data missing {len(missing)} feature columns - filling with NaN. "
-                       f"Sample missing columns: {list(missing)[:5]}")
-        for col in missing:
-            future_df[col] = np.nan
+                       f"Sample missing columns: {missing[:5]}")
+        nan_block = pd.DataFrame(np.nan, index=future_df.index, columns=missing)
+        future_df = pd.concat([future_df, nan_block], axis=1).copy()
 
     # Apply the same preprocessing used during training. cat_maps preserves
     # the categorical encodings so 'L' / 'R' / 'S' map to the same integers
@@ -179,6 +181,11 @@ def aggregate_and_save(scored: pd.DataFrame):
     games["split_set"] = "future"
     games["model_version"] = config.MODEL_VERSION
     games["scored_at"] = config.RUN_TIMESTAMP
+
+    # Make sure the output tables exist before we try to DELETE/INSERT.
+    # The pipeline.py training run is the usual creator, but when we re-run
+    # scoring after dropping a table for migration, this saves us.
+    ensure_output_tables()
 
     engine = get_engine()
 
