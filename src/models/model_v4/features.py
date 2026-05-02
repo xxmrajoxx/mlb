@@ -22,7 +22,8 @@ def select_feature_columns(df: pd.DataFrame) -> list[str]:
     Anything in LEAKAGE_COLS is excluded. Everything else that is numeric
     or one of our designated categorical columns is kept.
     """
-    candidate_cols = [c for c in df.columns if c not in config.LEAKAGE_COLS]
+    _exclude = set(config.LEAKAGE_COLS) | set(config.FEATURES_TO_DROP)
+    candidate_cols = [c for c in df.columns if c not in _exclude]
 
     feature_cols = []
     for col in candidate_cols:
