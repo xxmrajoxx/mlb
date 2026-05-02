@@ -190,8 +190,8 @@ def ensure_output_tables():
     END
     """
 
-    # Add historical game-count columns to the EV table if they don't exist yet
-    # (handles tables created before this feature was added).
+    # Add new columns to the EV table if they don't exist yet
+    # (handles tables created before these features were added).
     ev_history_cols_sql = """
         IF NOT EXISTS (SELECT 1 FROM sys.columns
                        WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2023')
@@ -205,6 +205,33 @@ def ensure_output_tables():
         IF NOT EXISTS (SELECT 1 FROM sys.columns
                        WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2026')
             ALTER TABLE dbo.{ev} ADD games_2026 INT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'weighted_k_per_bf_last_3')
+            ALTER TABLE dbo.{ev} ADD weighted_k_per_bf_last_3 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'weighted_k_per_bf_last_5')
+            ALTER TABLE dbo.{ev} ADD weighted_k_per_bf_last_5 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'weighted_k_per_bf_last_10')
+            ALTER TABLE dbo.{ev} ADD weighted_k_per_bf_last_10 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_strike_pct_last_3')
+            ALTER TABLE dbo.{ev} ADD avg_strike_pct_last_3 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_strike_pct_last_5')
+            ALTER TABLE dbo.{ev} ADD avg_strike_pct_last_5 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_strike_pct_last_10')
+            ALTER TABLE dbo.{ev} ADD avg_strike_pct_last_10 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_pitches_per_inning_last_3')
+            ALTER TABLE dbo.{ev} ADD avg_pitches_per_inning_last_3 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_pitches_per_inning_last_5')
+            ALTER TABLE dbo.{ev} ADD avg_pitches_per_inning_last_5 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_pitches_per_inning_last_10')
+            ALTER TABLE dbo.{ev} ADD avg_pitches_per_inning_last_10 FLOAT;
     """.format(ev=config.EV_TABLE)
 
     with engine.begin() as conn:
@@ -309,6 +336,45 @@ def save_metrics(metrics_list: list[dict], split_set: str, metric_type: str):
     load_dataframe(df, config.MODEL_METRICS_TABLE, if_exists="append")
 
 
+def load_pitcher_recent_stats() -> pd.DataFrame:
+    """
+    Return each pitcher's most recent rolling form stats (from their last game).
+
+    Uses the latest gamePk per pitcher in fact_pitcher_model_featuresv2 so the
+    values reflect the pre-game rolling window heading into their next start.
+
+    Columns returned:
+        pitcher_id
+        weighted_k_per_bf_last_3/5/10  — PA-weighted K rate per batter faced
+        avg_strike_pct_last_3/5/10     — strike percentage
+        avg_pitches_per_inning_last_3/5/10 — pitches per inning
+    """
+    engine = get_engine()
+    sql = """
+        WITH latest AS (
+            SELECT player_id, MAX(gamePk) AS latest_gamePk
+            FROM dbo.fact_pitcher_model_featuresv2
+            GROUP BY player_id
+        )
+        SELECT
+            CAST(p.player_id AS INT)        AS pitcher_id,
+            p.weighted_k_per_bf_last_3,
+            p.weighted_k_per_bf_last_5,
+            p.weighted_k_per_bf_last_10,
+            p.avg_strike_pct_last_3,
+            p.avg_strike_pct_last_5,
+            p.avg_strike_pct_last_10,
+            p.avg_pitches_per_inning_last_3,
+            p.avg_pitches_per_inning_last_5,
+            p.avg_pitches_per_inning_last_10
+        FROM dbo.fact_pitcher_model_featuresv2 p
+        INNER JOIN latest l
+            ON CAST(p.player_id AS INT) = CAST(l.player_id AS INT)
+           AND p.gamePk = l.latest_gamePk
+    """
+    return pd.read_sql(sql, engine)
+
+
 def load_pitcher_season_games() -> pd.DataFrame:
     """
     Return pitcher_id + distinct game counts per season (2023-2026).
@@ -410,6 +476,10 @@ def save_ev_template(game_df: pd.DataFrame):
     rows = rows.merge(season_games, on="pitcher_id", how="left")
     for col in ["games_2023", "games_2024", "games_2025", "games_2026"]:
         rows[col] = rows[col].fillna(0).astype(int)
+
+    # Recent form stats (weighted K rate, strike %, pitches per inning — last 3/5/10)
+    recent_stats = load_pitcher_recent_stats()
+    rows = rows.merge(recent_stats, on="pitcher_id", how="left")
 
     # Empty columns for manual entry
     for c in ["sportsbook", "line", "over_odds", "under_odds",

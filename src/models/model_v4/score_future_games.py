@@ -40,7 +40,7 @@ import features as features_module
 import models as models_module
 import game_aggregation
 from sql_loader import get_engine, load_dataframe
-from pipeline import ensure_output_tables, load_pitcher_season_games
+from pipeline import ensure_output_tables, load_pitcher_season_games, load_pitcher_recent_stats
 
 logger = logging.getLogger("score_future")
 logging.basicConfig(
@@ -225,6 +225,10 @@ def aggregate_and_save(scored: pd.DataFrame):
     ev_rows = ev_rows.merge(season_games, on="pitcher_id", how="left")
     for col in ["games_2023", "games_2024", "games_2025", "games_2026"]:
         ev_rows[col] = ev_rows[col].fillna(0).astype(int)
+
+    # Recent form stats (weighted K rate, strike %, pitches per inning — last 3/5/10)
+    recent_stats = load_pitcher_recent_stats()
+    ev_rows = ev_rows.merge(recent_stats, on="pitcher_id", how="left")
 
     for c in ["sportsbook", "line", "over_odds", "under_odds",
               "model_prob_over", "model_prob_under",
