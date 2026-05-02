@@ -40,7 +40,7 @@ import features as features_module
 import models as models_module
 import game_aggregation
 from sql_loader import get_engine, load_dataframe
-from pipeline import ensure_output_tables  # creates tables if missing
+from pipeline import ensure_output_tables, load_pitcher_season_games
 
 logger = logging.getLogger("score_future")
 logging.basicConfig(
@@ -219,6 +219,12 @@ def aggregate_and_save(scored: pd.DataFrame):
         "predicted_strikeouts", "predicted_k_stddev",
         "actual_strikeouts",
     ]].copy()
+
+    # Historical game counts per season
+    season_games = load_pitcher_season_games()
+    ev_rows = ev_rows.merge(season_games, on="pitcher_id", how="left")
+    for col in ["games_2023", "games_2024", "games_2025", "games_2026"]:
+        ev_rows[col] = ev_rows[col].fillna(0).astype(int)
 
     for c in ["sportsbook", "line", "over_odds", "under_odds",
               "model_prob_over", "model_prob_under",

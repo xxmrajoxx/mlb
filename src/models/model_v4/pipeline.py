@@ -190,9 +190,27 @@ def ensure_output_tables():
     END
     """
 
+    # Add historical game-count columns to the EV table if they don't exist yet
+    # (handles tables created before this feature was added).
+    ev_history_cols_sql = """
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2023')
+            ALTER TABLE dbo.{ev} ADD games_2023 INT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2024')
+            ALTER TABLE dbo.{ev} ADD games_2024 INT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2025')
+            ALTER TABLE dbo.{ev} ADD games_2025 INT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2026')
+            ALTER TABLE dbo.{ev} ADD games_2026 INT;
+    """.format(ev=config.EV_TABLE)
+
     with engine.begin() as conn:
         for sql in [pa_table_sql, game_table_sql, ev_table_sql, metrics_table_sql]:
             conn.execute(text(sql))
+        conn.execute(text(ev_history_cols_sql))
     logger.info("Output tables ready")
 
 
@@ -291,6 +309,83 @@ def save_metrics(metrics_list: list[dict], split_set: str, metric_type: str):
     load_dataframe(df, config.MODEL_METRICS_TABLE, if_exists="append")
 
 
+def load_pitcher_season_games() -> pd.DataFrame:
+    """
+    Return pitcher_id + distinct game counts per season (2023-2026).
+    Counts every gamePk the pitcher appears in regardless of start/relief.
+    """
+    engine = get_engine()
+    sql = """
+        SELECT
+            CAST(pitcher_id AS INT) AS pitcher_id,
+            COUNT(DISTINCT CASE WHEN season = 2023 THEN gamePk END) AS games_2023,
+            COUNT(DISTINCT CASE WHEN season = 2024 THEN gamePk END) AS games_2024,
+            COUNT(DISTINCT CASE WHEN season = 2025 THEN gamePk END) AS games_2025,
+            COUNT(DISTINCT CASE WHEN season = 2026 THEN gamePk END) AS games_2026
+        FROM dbo.fact_hitter_pitcher_matchup_model_featuresv2
+        WHERE season BETWEEN 2023 AND 2026
+        GROUP BY CAST(pitcher_id AS INT)
+    """
+    return pd.read_sql(sql, engine)
+
+
+def update_ev_actuals(game_df: pd.DataFrame):
+    """
+    Back-fill actual_strikeouts and bet_result on EV rows that have odds entered
+    (sportsbook IS NOT NULL) but were scored before the game was played.
+
+    clear_existing_predictions() intentionally preserves those rows to protect
+    historical bets, but it never updates them with actual results. This does.
+
+    bet_result logic:
+        OVER bet  → WIN if actual > line, LOSS if actual < line, PUSH if equal
+        UNDER bet → WIN if actual < line, LOSS if actual > line, PUSH if equal
+        PASS      → recorded as PASS (no bet placed)
+    """
+    actuals = game_df[game_df["actual_strikeouts"].notna()][
+        ["gamePk", "pitcher_id", "actual_strikeouts"]
+    ].copy()
+
+    if actuals.empty:
+        logger.info("update_ev_actuals: no completed games to back-fill")
+        return
+
+    engine = get_engine()
+    updated = 0
+    with engine.begin() as conn:
+        for _, row in actuals.iterrows():
+            result = conn.execute(
+                text(f"""
+                    UPDATE dbo.{config.EV_TABLE}
+                    SET
+                        actual_strikeouts = :actual_k,
+                        bet_result = CASE
+                            WHEN recommended_side = 'PASS' THEN 'PASS'
+                            WHEN line IS NULL              THEN NULL
+                            WHEN recommended_side = 'OVER'  AND :actual_k > line  THEN 'WIN'
+                            WHEN recommended_side = 'OVER'  AND :actual_k < line  THEN 'LOSS'
+                            WHEN recommended_side = 'OVER'  AND :actual_k = line  THEN 'PUSH'
+                            WHEN recommended_side = 'UNDER' AND :actual_k < line  THEN 'WIN'
+                            WHEN recommended_side = 'UNDER' AND :actual_k > line  THEN 'LOSS'
+                            WHEN recommended_side = 'UNDER' AND :actual_k = line  THEN 'PUSH'
+                            ELSE NULL
+                        END
+                    WHERE gamePk    = :gamePk
+                      AND pitcher_id = :pitcher_id
+                      AND sportsbook IS NOT NULL
+                      AND actual_strikeouts IS NULL
+                """),
+                {
+                    "actual_k": int(row["actual_strikeouts"]),
+                    "gamePk":   int(row["gamePk"]),
+                    "pitcher_id": int(row["pitcher_id"]),
+                },
+            )
+            updated += result.rowcount
+
+    logger.info(f"update_ev_actuals: back-filled {updated} sportsbook rows with actual results")
+
+
 def save_ev_template(game_df: pd.DataFrame):
     """
     Pre-populate the EV table with rows for the test season's pitcher-games.
@@ -309,6 +404,12 @@ def save_ev_template(game_df: pd.DataFrame):
         "predicted_strikeouts", "predicted_k_stddev",
         "actual_strikeouts",
     ]].copy()
+
+    # Historical game counts per season
+    season_games = load_pitcher_season_games()
+    rows = rows.merge(season_games, on="pitcher_id", how="left")
+    for col in ["games_2023", "games_2024", "games_2025", "games_2026"]:
+        rows[col] = rows[col].fillna(0).astype(int)
 
     # Empty columns for manual entry
     for c in ["sportsbook", "line", "over_odds", "under_odds",
@@ -476,7 +577,8 @@ def run():
     save_pa_predictions(pa_test, split_set="test")
     save_game_predictions(game_val, split_set="validation")
     save_game_predictions(game_test, split_set="test")
-    save_ev_template(game_test)  # only test season into EV template - that's where you'll bet
+    save_ev_template(game_test)   # only test season into EV template - that's where you'll bet
+    update_ev_actuals(game_test)  # back-fill actual_strikeouts on protected sportsbook rows
 
     save_metrics(val_metrics, "validation", "per_pa")
     save_metrics(test_metrics, "test", "per_pa")
