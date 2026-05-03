@@ -1091,3 +1091,1251 @@
 2026-04-28 21:37:53,543 | INFO | Loaded 64 rows into fact_pitcher_strikeout_betting_ev
 2026-04-28 21:37:53,544 | INFO | Wrote 64 EV rows ready for odds entry
 2026-04-28 21:37:53,544 | INFO | Future game scoring complete.
+2026-04-29 20:52:49,231 | INFO | SQL Server engine created
+2026-04-29 20:52:57,256 | INFO | ======================================================================
+2026-04-29 20:52:57,257 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-04-29 20:52:57,257 | INFO | ======================================================================
+2026-04-29 20:52:57,257 | INFO | SQL Server engine created
+2026-04-29 20:52:57,258 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-04-29 20:53:32,616 | INFO | Loaded 138,076 rows, 353 columns
+2026-04-29 20:53:32,923 | INFO | Dropped 0 rows with null target
+2026-04-29 20:53:33,786 | INFO | Split sizes - train: 61,522  val: 57,267  test: 19,287
+2026-04-29 20:53:33,809 | INFO | Selected 334 feature columns
+2026-04-29 20:53:34,806 | INFO | Feature matrix shapes - train (61522, 334)  val (57267, 334)  test (19287, 334)
+2026-04-29 20:53:34,806 | INFO | Training XGBoost...
+2026-04-29 20:53:53,937 | INFO | XGB best iteration: 73
+2026-04-29 20:53:53,973 | INFO | Training LightGBM...
+2026-04-29 20:54:03,708 | INFO | LGBM best iteration: 78
+2026-04-29 20:54:03,719 | INFO | Training Logistic Regression baseline...
+2026-04-29 20:54:06,830 | INFO |   Logreg fitting on expanded shape: (104205, 334)
+2026-04-29 20:54:17,467 | INFO | [xgb_calibrated] n=57,267  AUC=0.5923  LogLoss=0.5301  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-04-29 20:54:17,499 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5499  LogLoss=0.5365  Brier=0.1363  Acc=0.7571  BaseRate=0.230  PredRate=0.216
+2026-04-29 20:54:17,532 | INFO | [logreg_calibrated] n=57,267  AUC=0.5903  LogLoss=0.5304  Brier=0.1342  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-04-29 20:54:17,565 | INFO | [ensemble] n=57,267  AUC=0.5952  LogLoss=0.5296  Brier=0.1339  Acc=0.7572  BaseRate=0.230  PredRate=0.224
+2026-04-29 20:54:17,580 | INFO | [xgb_calibrated] n=19,287  AUC=0.5755  LogLoss=0.5308  Brier=0.1374  Acc=0.7512  BaseRate=0.228  PredRate=0.236
+2026-04-29 20:54:17,595 | INFO | [lgbm_calibrated] n=19,287  AUC=0.5531  LogLoss=0.5343  Brier=0.1387  Acc=0.7512  BaseRate=0.228  PredRate=0.217
+2026-04-29 20:54:17,610 | INFO | [logreg_calibrated] n=19,287  AUC=0.5746  LogLoss=0.5311  Brier=0.1375  Acc=0.7508  BaseRate=0.228  PredRate=0.234
+2026-04-29 20:54:17,625 | INFO | [ensemble] n=19,287  AUC=0.5813  LogLoss=0.5310  Brier=0.1372  Acc=0.7511  BaseRate=0.228  PredRate=0.230
+2026-04-29 20:54:17,648 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-04-29 20:54:24,430 | INFO | Built 3,342 pitcher-game predictions
+2026-04-29 20:54:24,437 | INFO | Aggregating 7,095 starter rows into pitcher-games
+2026-04-29 20:54:26,244 | INFO | Built 800 pitcher-game predictions
+2026-04-29 20:54:26,247 | INFO | [ensemble_game] games=3,342  MAE=1.489  RMSE=1.877  Bias=+0.133  Actual=3.84  Predicted=3.97
+2026-04-29 20:54:26,251 | INFO | [ensemble_game] games=800  MAE=1.724  RMSE=2.171  Bias=+0.263  Actual=4.77  Predicted=5.04
+2026-04-29 20:54:26,310 | INFO | Saved model artefacts to ./artifacts/
+2026-04-29 20:54:26,312 | INFO | SQL Server engine created
+2026-04-29 20:54:26,423 | INFO | Output tables ready
+2026-04-29 20:54:26,424 | INFO | SQL Server engine created
+2026-04-29 20:54:26,738 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (74059 rows)
+2026-04-29 20:54:26,741 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (0 rows)
+2026-04-29 20:54:26,747 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (759 rows)
+2026-04-29 20:54:26,758 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-29 20:55:07,125 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-04-29 20:55:07,131 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-04-29 20:55:21,720 | INFO | Loaded 19287 rows into fact_pa_strikeout_predictions
+2026-04-29 20:55:21,724 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-29 20:55:27,084 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-04-29 20:55:27,088 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-29 20:55:28,496 | INFO | Loaded 800 rows into fact_pitcher_game_strikeout_predictions
+2026-04-29 20:55:28,502 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-29 20:55:30,044 | INFO | Loaded 800 rows into fact_pitcher_strikeout_betting_ev
+2026-04-29 20:55:30,046 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-29 20:55:30,060 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-29 20:55:30,062 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-29 20:55:30,070 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-04-29 20:55:30,072 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-29 20:55:30,081 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-29 20:55:30,082 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-04-29 20:55:30,089 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-04-29 20:55:30,089 | INFO | Pipeline complete.
+2026-04-29 20:55:51,018 | INFO | SQL Server engine created
+2026-04-29 20:55:53,091 | INFO | ======================================================================
+2026-04-29 20:55:53,091 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-04-29 20:55:53,091 | INFO | ======================================================================
+2026-04-29 20:55:53,091 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-04-29 20:55:53,093 | INFO | SQL Server engine created
+2026-04-29 20:55:53,194 | INFO | Cleared 48 existing probable-pitcher rows for re-fetch
+2026-04-29 20:55:53,195 | INFO | Fetching schedule for 2026-04-29
+2026-04-29 20:55:59,566 | INFO |   2026-04-29: 30 team-game rows (30 with probable pitcher)
+2026-04-29 20:55:59,567 | INFO | Fetching schedule for 2026-04-30
+2026-04-29 20:56:02,794 | INFO |   2026-04-30: 18 team-game rows (16 with probable pitcher)
+2026-04-29 20:56:02,794 | INFO | Fetching schedule for 2026-05-01
+2026-04-29 20:56:07,896 | INFO |   2026-05-01: 30 team-game rows (8 with probable pitcher)
+2026-04-29 20:56:07,901 | INFO | Starting load for table dim_probable_pitchers
+2026-04-29 20:56:07,963 | INFO | Loaded 78 rows into dim_probable_pitchers
+2026-04-29 20:56:07,963 | INFO | Wrote 78 rows to dim_probable_pitchers
+2026-04-29 20:56:07,966 | INFO | ============================================================
+2026-04-29 20:56:07,966 | INFO | Summary of upcoming probable pitchers in DB:
+2026-04-29 20:56:07,966 | INFO |   2026-04-29: 30 team-rows, 30 probable pitchers known
+2026-04-29 20:56:07,967 | INFO |   2026-04-30: 18 team-rows, 16 probable pitchers known
+2026-04-29 20:56:07,967 | INFO |   2026-05-01: 30 team-rows, 8 probable pitchers known
+2026-04-29 20:56:07,968 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-04-29 20:56:07,968 | INFO | ======================================================================
+2026-04-29 20:56:07,968 | INFO | MLB Strikeout - Future Game Scoring
+2026-04-29 20:56:07,968 | INFO | ======================================================================
+2026-04-29 20:56:07,968 | INFO | Loading model artifacts from artifacts
+2026-04-29 20:56:08,283 | INFO | Loaded models. Expected feature columns: 334
+2026-04-29 20:56:08,284 | INFO | SQL Server engine created
+2026-04-29 20:56:08,284 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-04-29 20:56:09,248 | INFO | Loaded 486 synthetic matchup rows for 30 games
+2026-04-29 20:56:09,249 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-04-29 20:56:09,328 | INFO | Feature matrix shape: (486, 334)
+2026-04-29 20:56:09,369 | INFO | Aggregating to pitcher-game level...
+2026-04-29 20:56:09,373 | INFO | Aggregating 486 starter rows into pitcher-games
+2026-04-29 20:56:09,525 | INFO | Built 54 pitcher-game predictions
+2026-04-29 20:56:09,526 | INFO | Built 54 pitcher-game predictions
+2026-04-29 20:56:09,528 | INFO | SQL Server engine created
+2026-04-29 20:56:09,556 | INFO | Output tables ready
+2026-04-29 20:56:09,557 | INFO | SQL Server engine created
+2026-04-29 20:56:09,573 | INFO | Cleared 64 existing 'future' game predictions
+2026-04-29 20:56:09,579 | INFO | Cleared 0 pristine future EV rows
+2026-04-29 20:56:09,580 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-29 20:56:09,669 | INFO | Loaded 54 rows into fact_pitcher_game_strikeout_predictions
+2026-04-29 20:56:09,669 | INFO | Wrote 54 game predictions
+2026-04-29 20:56:09,675 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-29 20:56:09,768 | INFO | Loaded 54 rows into fact_pitcher_strikeout_betting_ev
+2026-04-29 20:56:09,769 | INFO | Wrote 54 EV rows ready for odds entry
+2026-04-29 20:56:09,769 | INFO | Future game scoring complete.
+2026-04-29 20:56:09,770 | INFO | 
+======================================================================
+2026-04-29 20:56:09,770 | INFO | DONE. Next steps in SSMS:
+2026-04-29 20:56:09,770 | INFO | ======================================================================
+2026-04-29 20:56:09,771 | INFO | 
+2026-04-29 20:56:09,771 | INFO | 1. Look at upcoming games:
+2026-04-29 20:56:09,771 | INFO | 
+2026-04-29 20:56:09,771 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-04-29 20:56:09,771 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-04-29 20:56:09,771 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-04-29 20:56:09,771 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-04-29 20:56:09,772 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-04-29 20:56:09,772 | INFO |      AND sportsbook IS NULL
+2026-04-29 20:56:09,772 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-04-29 20:56:09,772 | INFO | 
+2026-04-29 20:56:09,772 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-04-29 20:56:09,772 | INFO | 
+2026-04-29 20:56:09,773 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-04-29 20:56:09,773 | INFO | 
+2026-04-29 20:56:09,773 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-04-29 20:56:09,773 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-04-29 20:56:09,773 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-04-29 20:56:09,773 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-04-29 20:56:09,774 | INFO | 
+2026-04-29 20:56:09,774 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-04-29 20:56:09,774 | INFO | 
+2026-04-29 20:56:09,774 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-04-29 20:56:09,774 | INFO | ======================================================================
+2026-04-30 22:15:12,044 | INFO | SQL Server engine created
+2026-04-30 22:15:14,163 | INFO | ======================================================================
+2026-04-30 22:15:14,163 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-04-30 22:15:14,163 | INFO | ======================================================================
+2026-04-30 22:15:14,164 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-04-30 22:15:14,166 | INFO | SQL Server engine created
+2026-04-30 22:15:14,222 | INFO | Cleared 82 existing probable-pitcher rows for re-fetch
+2026-04-30 22:15:14,223 | INFO | Fetching schedule for 2026-04-30
+2026-04-30 22:15:15,864 | INFO |   2026-04-30: 22 team-game rows (19 with probable pitcher)
+2026-04-30 22:15:15,865 | INFO | Fetching schedule for 2026-05-01
+2026-04-30 22:15:17,496 | INFO |   2026-05-01: 30 team-game rows (19 with probable pitcher)
+2026-04-30 22:15:17,497 | INFO | Fetching schedule for 2026-05-02
+2026-04-30 22:15:19,032 | INFO |   2026-05-02: 30 team-game rows (19 with probable pitcher)
+2026-04-30 22:15:19,034 | INFO | Starting load for table dim_probable_pitchers
+2026-04-30 22:15:19,080 | INFO | Loaded 82 rows into dim_probable_pitchers
+2026-04-30 22:15:19,081 | INFO | Wrote 82 rows to dim_probable_pitchers
+2026-04-30 22:15:19,082 | INFO | ============================================================
+2026-04-30 22:15:19,082 | INFO | Summary of upcoming probable pitchers in DB:
+2026-04-30 22:15:19,082 | INFO |   2026-04-30: 22 team-rows, 19 probable pitchers known
+2026-04-30 22:15:19,082 | INFO |   2026-05-01: 30 team-rows, 19 probable pitchers known
+2026-04-30 22:15:19,083 | INFO |   2026-05-02: 30 team-rows, 19 probable pitchers known
+2026-04-30 22:15:19,083 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-04-30 22:15:19,084 | INFO | ======================================================================
+2026-04-30 22:15:19,084 | INFO | MLB Strikeout - Future Game Scoring
+2026-04-30 22:15:19,084 | INFO | ======================================================================
+2026-04-30 22:15:19,084 | INFO | Loading model artifacts from artifacts
+2026-04-30 22:15:19,519 | INFO | Loaded models. Expected feature columns: 334
+2026-04-30 22:15:19,520 | INFO | SQL Server engine created
+2026-04-30 22:15:19,520 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-04-30 22:15:20,817 | INFO | Loaded 549 synthetic matchup rows for 37 games
+2026-04-30 22:15:20,818 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-04-30 22:15:20,909 | INFO | Feature matrix shape: (549, 334)
+2026-04-30 22:15:20,985 | INFO | Aggregating to pitcher-game level...
+2026-04-30 22:15:20,989 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-04-30 22:15:21,194 | INFO | Built 61 pitcher-game predictions
+2026-04-30 22:15:21,194 | INFO | Built 61 pitcher-game predictions
+2026-04-30 22:15:21,196 | INFO | SQL Server engine created
+2026-04-30 22:15:21,234 | INFO | Output tables ready
+2026-04-30 22:15:21,235 | INFO | SQL Server engine created
+2026-04-30 22:15:21,248 | INFO | Cleared 54 existing 'future' game predictions
+2026-04-30 22:15:21,250 | INFO | Cleared 26 pristine future EV rows
+2026-04-30 22:15:21,251 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-04-30 22:15:21,364 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-04-30 22:15:21,364 | INFO | Wrote 61 game predictions
+2026-04-30 22:15:21,370 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-04-30 22:15:21,526 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-04-30 22:15:21,526 | INFO | Wrote 61 EV rows ready for odds entry
+2026-04-30 22:15:21,527 | INFO | Future game scoring complete.
+2026-04-30 22:15:21,530 | INFO | 
+======================================================================
+2026-04-30 22:15:21,530 | INFO | DONE. Next steps in SSMS:
+2026-04-30 22:15:21,531 | INFO | ======================================================================
+2026-04-30 22:15:21,531 | INFO | 
+2026-04-30 22:15:21,531 | INFO | 1. Look at upcoming games:
+2026-04-30 22:15:21,531 | INFO | 
+2026-04-30 22:15:21,531 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-04-30 22:15:21,532 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-04-30 22:15:21,532 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-04-30 22:15:21,532 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-04-30 22:15:21,532 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-04-30 22:15:21,533 | INFO |      AND sportsbook IS NULL
+2026-04-30 22:15:21,533 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-04-30 22:15:21,533 | INFO | 
+2026-04-30 22:15:21,533 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-04-30 22:15:21,534 | INFO | 
+2026-04-30 22:15:21,534 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-04-30 22:15:21,534 | INFO | 
+2026-04-30 22:15:21,534 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-04-30 22:15:21,534 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-04-30 22:15:21,535 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-04-30 22:15:21,535 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-04-30 22:15:21,535 | INFO | 
+2026-04-30 22:15:21,535 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-04-30 22:15:21,535 | INFO | 
+2026-04-30 22:15:21,536 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-04-30 22:15:21,536 | INFO | ======================================================================
+2026-05-02 15:16:37,331 | INFO | SQL Server engine created
+2026-05-02 15:16:41,362 | INFO | ======================================================================
+2026-05-02 15:16:41,362 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-05-02 15:16:41,362 | INFO | ======================================================================
+2026-05-02 15:16:41,363 | INFO | SQL Server engine created
+2026-05-02 15:16:41,363 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-05-02 15:17:19,414 | INFO | Loaded 140,667 rows, 353 columns
+2026-05-02 15:17:19,811 | INFO | Dropped 0 rows with null target
+2026-05-02 15:17:20,427 | INFO | Split sizes - train: 61,522  val: 57,267  test: 21,878
+2026-05-02 15:17:20,446 | INFO | Selected 218 feature columns
+2026-05-02 15:17:21,078 | INFO | Feature matrix shapes - train (61522, 218)  val (57267, 218)  test (21878, 218)
+2026-05-02 15:17:21,079 | INFO | Training XGBoost...
+2026-05-02 15:17:46,269 | INFO | XGB best iteration: 347
+2026-05-02 15:17:46,293 | INFO | Training LightGBM...
+2026-05-02 15:17:54,299 | INFO | LGBM best iteration: 262
+2026-05-02 15:17:54,308 | INFO | Training Logistic Regression baseline...
+2026-05-02 15:17:56,288 | INFO |   Logreg fitting on expanded shape: (104205, 218)
+2026-05-02 15:18:01,430 | INFO | [xgb_calibrated] n=57,267  AUC=0.5939  LogLoss=0.5296  Brier=0.1339  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 15:18:01,477 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5486  LogLoss=0.5366  Brier=0.1364  Acc=0.7571  BaseRate=0.230  PredRate=0.215
+2026-05-02 15:18:01,512 | INFO | [logreg_calibrated] n=57,267  AUC=0.5914  LogLoss=0.5302  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 15:18:01,546 | INFO | [ensemble] n=57,267  AUC=0.5972  LogLoss=0.5290  Brier=0.1337  Acc=0.7572  BaseRate=0.230  PredRate=0.226
+2026-05-02 15:18:01,566 | INFO | [xgb_calibrated] n=21,878  AUC=0.5807  LogLoss=0.5286  Brier=0.1365  Acc=0.7536  BaseRate=0.227  PredRate=0.233
+2026-05-02 15:18:01,602 | INFO | [lgbm_calibrated] n=21,878  AUC=0.5551  LogLoss=0.5325  Brier=0.1379  Acc=0.7536  BaseRate=0.227  PredRate=0.216
+2026-05-02 15:18:01,632 | INFO | [logreg_calibrated] n=21,878  AUC=0.5824  LogLoss=0.5287  Brier=0.1365  Acc=0.7534  BaseRate=0.227  PredRate=0.234
+2026-05-02 15:18:01,652 | INFO | [ensemble] n=21,878  AUC=0.5856  LogLoss=0.5301  Brier=0.1363  Acc=0.7534  BaseRate=0.227  PredRate=0.230
+2026-05-02 15:18:01,680 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-05-02 15:18:08,614 | INFO | Built 3,342 pitcher-game predictions
+2026-05-02 15:18:08,622 | INFO | Aggregating 8,107 starter rows into pitcher-games
+2026-05-02 15:18:10,573 | INFO | Built 917 pitcher-game predictions
+2026-05-02 15:18:10,578 | INFO | [ensemble_game] games=3,342  MAE=1.480  RMSE=1.868  Bias=+0.071  Actual=3.84  Predicted=3.91
+2026-05-02 15:18:10,581 | INFO | [ensemble_game] games=917  MAE=1.703  RMSE=2.143  Bias=+0.177  Actual=4.75  Predicted=4.93
+2026-05-02 15:18:10,673 | INFO | Saved model artefacts to ./artifacts/
+2026-05-02 15:18:10,674 | INFO | SQL Server engine created
+2026-05-02 15:18:10,782 | INFO | Output tables ready
+2026-05-02 15:18:10,783 | INFO | SQL Server engine created
+2026-05-02 15:18:10,983 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (76554 rows)
+2026-05-02 15:18:10,998 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4142 rows)
+2026-05-02 15:18:11,004 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (851 rows)
+2026-05-02 15:18:11,020 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 15:18:48,694 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-05-02 15:18:48,702 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 15:19:05,029 | INFO | Loaded 21878 rows into fact_pa_strikeout_predictions
+2026-05-02 15:19:05,034 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:19:11,279 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:19:11,282 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:19:12,830 | INFO | Loaded 917 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:19:12,842 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:19:14,512 | INFO | Loaded 917 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:19:14,514 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:19:14,530 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 15:19:14,531 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:19:14,539 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 15:19:14,540 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:19:14,549 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 15:19:14,551 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:19:14,558 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 15:19:14,559 | INFO | Pipeline complete.
+2026-05-02 15:19:21,943 | INFO | SQL Server engine created
+2026-05-02 15:19:21,946 | INFO | SQL Server engine created
+2026-05-02 15:19:22,044 | INFO | Cleared 30 existing probable-pitcher rows for re-fetch
+2026-05-02 15:19:22,045 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 15:19:23,919 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 15:19:23,920 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 15:19:25,638 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 15:19:25,639 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 15:19:27,172 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 15:19:27,179 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 15:19:27,285 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 15:19:27,285 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 15:19:27,292 | INFO | ============================================================
+2026-05-02 15:19:27,292 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 15:19:27,293 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 15:19:27,293 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 15:19:27,293 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 15:19:40,659 | INFO | SQL Server engine created
+2026-05-02 15:19:40,666 | INFO | ======================================================================
+2026-05-02 15:19:40,666 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 15:19:40,666 | INFO | ======================================================================
+2026-05-02 15:19:40,666 | INFO | Loading model artifacts from artifacts
+2026-05-02 15:19:41,156 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 15:19:41,157 | INFO | SQL Server engine created
+2026-05-02 15:19:41,157 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 15:19:42,712 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 15:19:42,713 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_batting_order', 'hitter_lineup_position_name']
+2026-05-02 15:19:42,791 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 15:19:42,837 | INFO | Aggregating to pitcher-game level...
+2026-05-02 15:19:42,842 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 15:19:43,096 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:19:43,097 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:19:43,099 | INFO | SQL Server engine created
+2026-05-02 15:19:43,121 | INFO | Output tables ready
+2026-05-02 15:19:43,122 | INFO | SQL Server engine created
+2026-05-02 15:19:43,142 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 15:19:43,150 | INFO | Cleared 0 pristine future EV rows
+2026-05-02 15:19:43,151 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:19:43,324 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:19:43,325 | INFO | Wrote 61 game predictions
+2026-05-02 15:19:43,334 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:19:43,506 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:19:43,506 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 15:19:43,507 | INFO | Future game scoring complete.
+2026-05-02 15:20:48,072 | INFO | SQL Server engine created
+2026-05-02 15:20:50,496 | INFO | ======================================================================
+2026-05-02 15:20:50,496 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-02 15:20:50,496 | INFO | ======================================================================
+2026-05-02 15:20:50,497 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-02 15:20:50,499 | INFO | SQL Server engine created
+2026-05-02 15:20:50,558 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-02 15:20:50,559 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 15:20:52,370 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 15:20:52,371 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 15:20:54,311 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 15:20:54,312 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 15:20:56,710 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 15:20:56,712 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 15:20:56,770 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 15:20:56,770 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 15:20:56,772 | INFO | ============================================================
+2026-05-02 15:20:56,773 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 15:20:56,773 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 15:20:56,774 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 15:20:56,774 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 15:20:56,776 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-02 15:20:56,776 | INFO | ======================================================================
+2026-05-02 15:20:56,776 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 15:20:56,777 | INFO | ======================================================================
+2026-05-02 15:20:56,777 | INFO | Loading model artifacts from artifacts
+2026-05-02 15:20:57,134 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 15:20:57,135 | INFO | SQL Server engine created
+2026-05-02 15:20:57,135 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 15:20:57,773 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 15:20:57,774 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-05-02 15:20:57,844 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 15:20:57,886 | INFO | Aggregating to pitcher-game level...
+2026-05-02 15:20:57,891 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 15:20:58,112 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:20:58,113 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:20:58,116 | INFO | SQL Server engine created
+2026-05-02 15:20:58,128 | INFO | Output tables ready
+2026-05-02 15:20:58,129 | INFO | SQL Server engine created
+2026-05-02 15:20:58,140 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 15:20:58,142 | INFO | Cleared 61 pristine future EV rows
+2026-05-02 15:20:58,144 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:20:58,221 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:20:58,222 | INFO | Wrote 61 game predictions
+2026-05-02 15:20:58,230 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:20:58,311 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:20:58,312 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 15:20:58,312 | INFO | Future game scoring complete.
+2026-05-02 15:20:58,314 | INFO | 
+======================================================================
+2026-05-02 15:20:58,314 | INFO | DONE. Next steps in SSMS:
+2026-05-02 15:20:58,315 | INFO | ======================================================================
+2026-05-02 15:20:58,315 | INFO | 
+2026-05-02 15:20:58,315 | INFO | 1. Look at upcoming games:
+2026-05-02 15:20:58,315 | INFO | 
+2026-05-02 15:20:58,316 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-02 15:20:58,316 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-02 15:20:58,316 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-02 15:20:58,317 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:20:58,317 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-02 15:20:58,317 | INFO |      AND sportsbook IS NULL
+2026-05-02 15:20:58,317 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-02 15:20:58,317 | INFO | 
+2026-05-02 15:20:58,318 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-02 15:20:58,318 | INFO | 
+2026-05-02 15:20:58,318 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-02 15:20:58,318 | INFO | 
+2026-05-02 15:20:58,319 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:20:58,319 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-02 15:20:58,319 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-02 15:20:58,319 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-02 15:20:58,319 | INFO | 
+2026-05-02 15:20:58,319 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-02 15:20:58,320 | INFO | 
+2026-05-02 15:20:58,320 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-02 15:20:58,320 | INFO | ======================================================================
+2026-05-02 15:26:34,662 | INFO | SQL Server engine created
+2026-05-02 15:26:37,243 | INFO | ======================================================================
+2026-05-02 15:26:37,243 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-05-02 15:26:37,243 | INFO | ======================================================================
+2026-05-02 15:26:37,244 | INFO | SQL Server engine created
+2026-05-02 15:26:37,245 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-05-02 15:27:13,187 | INFO | Loaded 140,667 rows, 353 columns
+2026-05-02 15:27:13,689 | INFO | Dropped 0 rows with null target
+2026-05-02 15:27:14,540 | INFO | Split sizes - train: 61,522  val: 57,267  test: 21,878
+2026-05-02 15:27:14,571 | INFO | Selected 218 feature columns
+2026-05-02 15:27:15,772 | INFO | Feature matrix shapes - train (61522, 218)  val (57267, 218)  test (21878, 218)
+2026-05-02 15:27:15,772 | INFO | Training XGBoost...
+2026-05-02 15:27:37,356 | INFO | XGB best iteration: 347
+2026-05-02 15:27:37,378 | INFO | Training LightGBM...
+2026-05-02 15:27:44,706 | INFO | LGBM best iteration: 262
+2026-05-02 15:27:44,714 | INFO | Training Logistic Regression baseline...
+2026-05-02 15:27:46,554 | INFO |   Logreg fitting on expanded shape: (104205, 218)
+2026-05-02 15:27:51,577 | INFO | [xgb_calibrated] n=57,267  AUC=0.5939  LogLoss=0.5296  Brier=0.1339  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 15:27:51,607 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5486  LogLoss=0.5366  Brier=0.1364  Acc=0.7571  BaseRate=0.230  PredRate=0.215
+2026-05-02 15:27:51,638 | INFO | [logreg_calibrated] n=57,267  AUC=0.5914  LogLoss=0.5302  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 15:27:51,668 | INFO | [ensemble] n=57,267  AUC=0.5972  LogLoss=0.5290  Brier=0.1337  Acc=0.7572  BaseRate=0.230  PredRate=0.226
+2026-05-02 15:27:51,685 | INFO | [xgb_calibrated] n=21,878  AUC=0.5807  LogLoss=0.5286  Brier=0.1365  Acc=0.7536  BaseRate=0.227  PredRate=0.233
+2026-05-02 15:27:51,700 | INFO | [lgbm_calibrated] n=21,878  AUC=0.5551  LogLoss=0.5325  Brier=0.1379  Acc=0.7536  BaseRate=0.227  PredRate=0.216
+2026-05-02 15:27:51,717 | INFO | [logreg_calibrated] n=21,878  AUC=0.5824  LogLoss=0.5287  Brier=0.1365  Acc=0.7534  BaseRate=0.227  PredRate=0.234
+2026-05-02 15:27:51,732 | INFO | [ensemble] n=21,878  AUC=0.5856  LogLoss=0.5301  Brier=0.1363  Acc=0.7534  BaseRate=0.227  PredRate=0.230
+2026-05-02 15:27:51,754 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-05-02 15:27:58,209 | INFO | Built 3,342 pitcher-game predictions
+2026-05-02 15:27:58,218 | INFO | Aggregating 8,107 starter rows into pitcher-games
+2026-05-02 15:28:00,389 | INFO | Built 917 pitcher-game predictions
+2026-05-02 15:28:00,393 | INFO | [ensemble_game] games=3,342  MAE=1.480  RMSE=1.868  Bias=+0.071  Actual=3.84  Predicted=3.91
+2026-05-02 15:28:00,396 | INFO | [ensemble_game] games=917  MAE=1.703  RMSE=2.143  Bias=+0.177  Actual=4.75  Predicted=4.93
+2026-05-02 15:28:00,477 | INFO | Saved model artefacts to ./artifacts/
+2026-05-02 15:28:00,479 | INFO | SQL Server engine created
+2026-05-02 15:28:00,600 | INFO | Output tables ready
+2026-05-02 15:28:00,601 | INFO | SQL Server engine created
+2026-05-02 15:28:00,793 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (79145 rows)
+2026-05-02 15:28:00,805 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4259 rows)
+2026-05-02 15:28:00,811 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (978 rows)
+2026-05-02 15:28:00,828 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 15:28:39,040 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-05-02 15:28:39,048 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 15:28:52,999 | INFO | Loaded 21878 rows into fact_pa_strikeout_predictions
+2026-05-02 15:28:53,003 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:28:58,494 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:28:58,498 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:29:00,011 | INFO | Loaded 917 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:29:00,018 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:29:01,679 | INFO | Loaded 917 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:29:01,680 | INFO | SQL Server engine created
+2026-05-02 15:29:02,605 | INFO | update_ev_actuals: back-filled 29 sportsbook rows with actual results
+2026-05-02 15:29:02,607 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:29:02,618 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 15:29:02,620 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:29:02,631 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 15:29:02,632 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:29:02,641 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 15:29:02,643 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:29:02,652 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 15:29:02,653 | INFO | Pipeline complete.
+2026-05-02 15:29:54,575 | INFO | SQL Server engine created
+2026-05-02 15:29:57,012 | INFO | ======================================================================
+2026-05-02 15:29:57,012 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-02 15:29:57,012 | INFO | ======================================================================
+2026-05-02 15:29:57,013 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-02 15:29:57,015 | INFO | SQL Server engine created
+2026-05-02 15:29:57,154 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-02 15:29:57,156 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 15:29:58,975 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 15:29:58,975 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 15:30:00,505 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 15:30:00,506 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 15:30:02,963 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 15:30:02,965 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 15:30:03,063 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 15:30:03,064 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 15:30:03,067 | INFO | ============================================================
+2026-05-02 15:30:03,068 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 15:30:03,068 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 15:30:03,068 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 15:30:03,069 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 15:30:03,070 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-02 15:30:03,070 | INFO | ======================================================================
+2026-05-02 15:30:03,071 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 15:30:03,071 | INFO | ======================================================================
+2026-05-02 15:30:03,071 | INFO | Loading model artifacts from artifacts
+2026-05-02 15:30:03,525 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 15:30:03,527 | INFO | SQL Server engine created
+2026-05-02 15:30:03,527 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 15:30:04,858 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 15:30:04,859 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-05-02 15:30:04,937 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 15:30:04,985 | INFO | Aggregating to pitcher-game level...
+2026-05-02 15:30:04,991 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 15:30:05,230 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:30:05,231 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:30:05,235 | INFO | SQL Server engine created
+2026-05-02 15:30:05,282 | INFO | Output tables ready
+2026-05-02 15:30:05,283 | INFO | SQL Server engine created
+2026-05-02 15:30:05,301 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 15:30:05,305 | INFO | Cleared 0 pristine future EV rows
+2026-05-02 15:30:05,306 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:30:05,467 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:30:05,467 | INFO | Wrote 61 game predictions
+2026-05-02 15:30:05,476 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:05,649 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:05,650 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 15:30:05,651 | INFO | Future game scoring complete.
+2026-05-02 15:30:05,652 | INFO | 
+======================================================================
+2026-05-02 15:30:05,653 | INFO | DONE. Next steps in SSMS:
+2026-05-02 15:30:05,653 | INFO | ======================================================================
+2026-05-02 15:30:05,653 | INFO | 
+2026-05-02 15:30:05,654 | INFO | 1. Look at upcoming games:
+2026-05-02 15:30:05,654 | INFO | 
+2026-05-02 15:30:05,654 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-02 15:30:05,654 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-02 15:30:05,655 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-02 15:30:05,655 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:05,655 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-02 15:30:05,655 | INFO |      AND sportsbook IS NULL
+2026-05-02 15:30:05,655 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-02 15:30:05,655 | INFO | 
+2026-05-02 15:30:05,656 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-02 15:30:05,656 | INFO | 
+2026-05-02 15:30:05,656 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-02 15:30:05,656 | INFO | 
+2026-05-02 15:30:05,657 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:05,657 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-02 15:30:05,657 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-02 15:30:05,658 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-02 15:30:05,658 | INFO | 
+2026-05-02 15:30:05,658 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-02 15:30:05,658 | INFO | 
+2026-05-02 15:30:05,659 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-02 15:30:05,659 | INFO | ======================================================================
+2026-05-02 15:30:31,213 | INFO | SQL Server engine created
+2026-05-02 15:30:33,849 | INFO | ======================================================================
+2026-05-02 15:30:33,850 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-02 15:30:33,850 | INFO | ======================================================================
+2026-05-02 15:30:33,850 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-02 15:30:33,852 | INFO | SQL Server engine created
+2026-05-02 15:30:33,991 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-02 15:30:33,992 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 15:30:36,358 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 15:30:36,358 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 15:30:38,701 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 15:30:38,702 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 15:30:40,441 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 15:30:40,444 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 15:30:40,572 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 15:30:40,572 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 15:30:40,578 | INFO | ============================================================
+2026-05-02 15:30:40,579 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 15:30:40,579 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 15:30:40,580 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 15:30:40,580 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 15:30:40,581 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-02 15:30:40,582 | INFO | ======================================================================
+2026-05-02 15:30:40,582 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 15:30:40,582 | INFO | ======================================================================
+2026-05-02 15:30:40,583 | INFO | Loading model artifacts from artifacts
+2026-05-02 15:30:40,986 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 15:30:40,987 | INFO | SQL Server engine created
+2026-05-02 15:30:40,987 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 15:30:42,521 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 15:30:42,523 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_batting_order', 'hitter_lineup_position_name']
+2026-05-02 15:30:42,602 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 15:30:42,650 | INFO | Aggregating to pitcher-game level...
+2026-05-02 15:30:42,656 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 15:30:42,906 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:30:42,906 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:30:42,909 | INFO | SQL Server engine created
+2026-05-02 15:30:42,957 | INFO | Output tables ready
+2026-05-02 15:30:42,958 | INFO | SQL Server engine created
+2026-05-02 15:30:42,975 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 15:30:42,979 | INFO | Cleared 61 pristine future EV rows
+2026-05-02 15:30:42,980 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:30:43,145 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:30:43,145 | INFO | Wrote 61 game predictions
+2026-05-02 15:30:43,155 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:43,332 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:43,332 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 15:30:43,333 | INFO | Future game scoring complete.
+2026-05-02 15:30:43,334 | INFO | 
+======================================================================
+2026-05-02 15:30:43,335 | INFO | DONE. Next steps in SSMS:
+2026-05-02 15:30:43,335 | INFO | ======================================================================
+2026-05-02 15:30:43,335 | INFO | 
+2026-05-02 15:30:43,336 | INFO | 1. Look at upcoming games:
+2026-05-02 15:30:43,336 | INFO | 
+2026-05-02 15:30:43,336 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-02 15:30:43,336 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-02 15:30:43,337 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-02 15:30:43,337 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:43,337 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-02 15:30:43,337 | INFO |      AND sportsbook IS NULL
+2026-05-02 15:30:43,338 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-02 15:30:43,338 | INFO | 
+2026-05-02 15:30:43,338 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-02 15:30:43,339 | INFO | 
+2026-05-02 15:30:43,339 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-02 15:30:43,339 | INFO | 
+2026-05-02 15:30:43,339 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:30:43,340 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-02 15:30:43,340 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-02 15:30:43,340 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-02 15:30:43,340 | INFO | 
+2026-05-02 15:30:43,341 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-02 15:30:43,341 | INFO | 
+2026-05-02 15:30:43,341 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-02 15:30:43,342 | INFO | ======================================================================
+2026-05-02 15:38:01,735 | INFO | SQL Server engine created
+2026-05-02 15:38:04,457 | INFO | ======================================================================
+2026-05-02 15:38:04,457 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-05-02 15:38:04,457 | INFO | ======================================================================
+2026-05-02 15:38:04,458 | INFO | SQL Server engine created
+2026-05-02 15:38:04,458 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-05-02 15:38:40,953 | INFO | Loaded 140,667 rows, 353 columns
+2026-05-02 15:38:41,269 | INFO | Dropped 0 rows with null target
+2026-05-02 15:38:41,849 | INFO | Split sizes - train: 61,522  val: 57,267  test: 21,878
+2026-05-02 15:38:41,863 | INFO | Selected 218 feature columns
+2026-05-02 15:38:42,507 | INFO | Feature matrix shapes - train (61522, 218)  val (57267, 218)  test (21878, 218)
+2026-05-02 15:38:42,507 | INFO | Training XGBoost...
+2026-05-02 15:39:04,483 | INFO | XGB best iteration: 347
+2026-05-02 15:39:04,506 | INFO | Training LightGBM...
+2026-05-02 15:39:11,995 | INFO | LGBM best iteration: 262
+2026-05-02 15:39:12,004 | INFO | Training Logistic Regression baseline...
+2026-05-02 15:39:13,865 | INFO |   Logreg fitting on expanded shape: (104205, 218)
+2026-05-02 15:39:19,064 | INFO | [xgb_calibrated] n=57,267  AUC=0.5939  LogLoss=0.5296  Brier=0.1339  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 15:39:19,096 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5486  LogLoss=0.5366  Brier=0.1364  Acc=0.7571  BaseRate=0.230  PredRate=0.215
+2026-05-02 15:39:19,126 | INFO | [logreg_calibrated] n=57,267  AUC=0.5914  LogLoss=0.5302  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 15:39:19,158 | INFO | [ensemble] n=57,267  AUC=0.5972  LogLoss=0.5290  Brier=0.1337  Acc=0.7572  BaseRate=0.230  PredRate=0.226
+2026-05-02 15:39:19,174 | INFO | [xgb_calibrated] n=21,878  AUC=0.5807  LogLoss=0.5286  Brier=0.1365  Acc=0.7536  BaseRate=0.227  PredRate=0.233
+2026-05-02 15:39:19,189 | INFO | [lgbm_calibrated] n=21,878  AUC=0.5551  LogLoss=0.5325  Brier=0.1379  Acc=0.7536  BaseRate=0.227  PredRate=0.216
+2026-05-02 15:39:19,205 | INFO | [logreg_calibrated] n=21,878  AUC=0.5824  LogLoss=0.5287  Brier=0.1365  Acc=0.7534  BaseRate=0.227  PredRate=0.234
+2026-05-02 15:39:19,222 | INFO | [ensemble] n=21,878  AUC=0.5856  LogLoss=0.5301  Brier=0.1363  Acc=0.7534  BaseRate=0.227  PredRate=0.230
+2026-05-02 15:39:19,243 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-05-02 15:39:25,602 | INFO | Built 3,342 pitcher-game predictions
+2026-05-02 15:39:25,610 | INFO | Aggregating 8,107 starter rows into pitcher-games
+2026-05-02 15:39:27,391 | INFO | Built 917 pitcher-game predictions
+2026-05-02 15:39:27,394 | INFO | [ensemble_game] games=3,342  MAE=1.480  RMSE=1.868  Bias=+0.071  Actual=3.84  Predicted=3.91
+2026-05-02 15:39:27,397 | INFO | [ensemble_game] games=917  MAE=1.703  RMSE=2.143  Bias=+0.177  Actual=4.75  Predicted=4.93
+2026-05-02 15:39:27,479 | INFO | Saved model artefacts to ./artifacts/
+2026-05-02 15:39:27,480 | INFO | SQL Server engine created
+2026-05-02 15:39:27,637 | INFO | Output tables ready
+2026-05-02 15:39:27,637 | INFO | SQL Server engine created
+2026-05-02 15:39:27,810 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (79145 rows)
+2026-05-02 15:39:27,821 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4259 rows)
+2026-05-02 15:39:27,825 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (978 rows)
+2026-05-02 15:39:27,838 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 15:40:05,865 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-05-02 15:40:05,872 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 15:40:21,434 | INFO | Loaded 21878 rows into fact_pa_strikeout_predictions
+2026-05-02 15:40:21,439 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:40:27,542 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:40:27,545 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:40:29,060 | INFO | Loaded 917 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:40:29,062 | INFO | SQL Server engine created
+2026-05-02 15:40:29,194 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:40:30,947 | INFO | Loaded 917 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:40:30,949 | INFO | SQL Server engine created
+2026-05-02 15:40:31,823 | INFO | update_ev_actuals: back-filled 0 sportsbook rows with actual results
+2026-05-02 15:40:31,825 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:40:31,838 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 15:40:31,840 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:40:31,851 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 15:40:31,853 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:40:31,864 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 15:40:31,866 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 15:40:31,875 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 15:40:31,875 | INFO | Pipeline complete.
+2026-05-02 15:40:37,652 | INFO | SQL Server engine created
+2026-05-02 15:40:40,132 | INFO | ======================================================================
+2026-05-02 15:40:40,133 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-02 15:40:40,133 | INFO | ======================================================================
+2026-05-02 15:40:40,133 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-02 15:40:40,135 | INFO | SQL Server engine created
+2026-05-02 15:40:40,219 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-02 15:40:40,221 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 15:40:42,553 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 15:40:42,554 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 15:40:43,980 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 15:40:43,980 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 15:40:45,618 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 15:40:45,622 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 15:40:45,730 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 15:40:45,731 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 15:40:45,735 | INFO | ============================================================
+2026-05-02 15:40:45,735 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 15:40:45,736 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 15:40:45,737 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 15:40:45,737 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 15:40:45,738 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-02 15:40:45,739 | INFO | ======================================================================
+2026-05-02 15:40:45,739 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 15:40:45,739 | INFO | ======================================================================
+2026-05-02 15:40:45,740 | INFO | Loading model artifacts from artifacts
+2026-05-02 15:40:46,229 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 15:40:46,230 | INFO | SQL Server engine created
+2026-05-02 15:40:46,230 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 15:40:47,693 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 15:40:47,694 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_batting_order', 'hitter_lineup_position_name']
+2026-05-02 15:40:47,771 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 15:40:47,813 | INFO | Aggregating to pitcher-game level...
+2026-05-02 15:40:47,818 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 15:40:48,047 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:40:48,048 | INFO | Built 61 pitcher-game predictions
+2026-05-02 15:40:48,051 | INFO | SQL Server engine created
+2026-05-02 15:40:48,122 | INFO | Output tables ready
+2026-05-02 15:40:48,124 | INFO | SQL Server engine created
+2026-05-02 15:40:48,141 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 15:40:48,147 | INFO | Cleared 0 pristine future EV rows
+2026-05-02 15:40:48,148 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 15:40:48,309 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 15:40:48,310 | INFO | Wrote 61 game predictions
+2026-05-02 15:40:48,312 | INFO | SQL Server engine created
+2026-05-02 15:40:48,384 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 15:40:48,589 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 15:40:48,590 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 15:40:48,590 | INFO | Future game scoring complete.
+2026-05-02 15:40:48,592 | INFO | 
+======================================================================
+2026-05-02 15:40:48,592 | INFO | DONE. Next steps in SSMS:
+2026-05-02 15:40:48,592 | INFO | ======================================================================
+2026-05-02 15:40:48,593 | INFO | 
+2026-05-02 15:40:48,593 | INFO | 1. Look at upcoming games:
+2026-05-02 15:40:48,593 | INFO | 
+2026-05-02 15:40:48,594 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-02 15:40:48,594 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-02 15:40:48,594 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-02 15:40:48,595 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:40:48,595 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-02 15:40:48,595 | INFO |      AND sportsbook IS NULL
+2026-05-02 15:40:48,595 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-02 15:40:48,596 | INFO | 
+2026-05-02 15:40:48,596 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-02 15:40:48,597 | INFO | 
+2026-05-02 15:40:48,597 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-02 15:40:48,597 | INFO | 
+2026-05-02 15:40:48,597 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 15:40:48,598 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-02 15:40:48,598 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-02 15:40:48,598 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-02 15:40:48,598 | INFO | 
+2026-05-02 15:40:48,599 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-02 15:40:48,599 | INFO | 
+2026-05-02 15:40:48,599 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-02 15:40:48,599 | INFO | ======================================================================
+2026-05-02 19:32:04,373 | INFO | SQL Server engine created
+2026-05-02 19:32:07,513 | INFO | ======================================================================
+2026-05-02 19:32:07,513 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-02 19:32:07,514 | INFO | ======================================================================
+2026-05-02 19:32:07,514 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-02 19:32:07,516 | INFO | SQL Server engine created
+2026-05-02 19:32:07,965 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-02 19:32:07,968 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 19:32:09,487 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 19:32:09,488 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 19:32:10,825 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 19:32:10,826 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 19:32:12,035 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 19:32:12,039 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 19:32:12,218 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 19:32:12,219 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 19:32:12,224 | INFO | ============================================================
+2026-05-02 19:32:12,225 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 19:32:12,225 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 19:32:12,226 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 19:32:12,226 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 19:32:12,227 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-02 19:32:12,228 | INFO | ======================================================================
+2026-05-02 19:32:12,228 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 19:32:12,228 | INFO | ======================================================================
+2026-05-02 19:32:12,229 | INFO | Loading model artifacts from artifacts
+2026-05-02 19:32:12,541 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 19:32:12,541 | INFO | SQL Server engine created
+2026-05-02 19:32:12,542 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 19:32:14,251 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 19:32:14,251 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-05-02 19:32:14,304 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 19:32:14,352 | INFO | Aggregating to pitcher-game level...
+2026-05-02 19:32:14,358 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 19:32:14,544 | INFO | Built 61 pitcher-game predictions
+2026-05-02 19:32:14,545 | INFO | Built 61 pitcher-game predictions
+2026-05-02 19:32:14,547 | INFO | SQL Server engine created
+2026-05-02 19:32:14,611 | INFO | Output tables ready
+2026-05-02 19:32:14,612 | INFO | SQL Server engine created
+2026-05-02 19:32:14,635 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 19:32:14,640 | INFO | Cleared 61 pristine future EV rows
+2026-05-02 19:32:14,641 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 19:32:14,748 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 19:32:14,748 | INFO | Wrote 61 game predictions
+2026-05-02 19:32:14,751 | INFO | SQL Server engine created
+2026-05-02 19:32:14,830 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 19:32:14,963 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 19:32:14,964 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 19:32:14,964 | INFO | Future game scoring complete.
+2026-05-02 19:32:14,966 | INFO | 
+======================================================================
+2026-05-02 19:32:14,966 | INFO | DONE. Next steps in SSMS:
+2026-05-02 19:32:14,966 | INFO | ======================================================================
+2026-05-02 19:32:14,966 | INFO | 
+2026-05-02 19:32:14,966 | INFO | 1. Look at upcoming games:
+2026-05-02 19:32:14,967 | INFO | 
+2026-05-02 19:32:14,967 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-02 19:32:14,967 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-02 19:32:14,967 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-02 19:32:14,967 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 19:32:14,967 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-02 19:32:14,968 | INFO |      AND sportsbook IS NULL
+2026-05-02 19:32:14,968 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-02 19:32:14,968 | INFO | 
+2026-05-02 19:32:14,968 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-02 19:32:14,968 | INFO | 
+2026-05-02 19:32:14,968 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-02 19:32:14,968 | INFO | 
+2026-05-02 19:32:14,969 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 19:32:14,969 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-02 19:32:14,969 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-02 19:32:14,969 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-02 19:32:14,969 | INFO | 
+2026-05-02 19:32:14,969 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-02 19:32:14,970 | INFO | 
+2026-05-02 19:32:14,970 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-02 19:32:14,970 | INFO | ======================================================================
+2026-05-02 20:22:54,886 | INFO | SQL Server engine created
+2026-05-02 20:22:57,347 | INFO | ======================================================================
+2026-05-02 20:22:57,347 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-05-02 20:22:57,347 | INFO | ======================================================================
+2026-05-02 20:22:57,348 | INFO | SQL Server engine created
+2026-05-02 20:22:57,349 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-05-02 20:23:31,021 | INFO | Loaded 140,667 rows, 353 columns
+2026-05-02 20:23:31,408 | INFO | Dropped 0 rows with null target
+2026-05-02 20:23:32,005 | INFO | Split sizes - train: 61,522  val: 57,267  test: 21,878
+2026-05-02 20:23:32,024 | INFO | Selected 218 feature columns
+2026-05-02 20:23:32,711 | INFO | Feature matrix shapes - train (61522, 218)  val (57267, 218)  test (21878, 218)
+2026-05-02 20:23:32,711 | INFO | Training XGBoost...
+2026-05-02 20:23:53,765 | INFO | XGB best iteration: 347
+2026-05-02 20:23:53,787 | INFO | Training LightGBM...
+2026-05-02 20:24:00,472 | INFO | LGBM best iteration: 262
+2026-05-02 20:24:00,481 | INFO | Training Logistic Regression baseline...
+2026-05-02 20:24:02,342 | INFO |   Logreg fitting on expanded shape: (104205, 218)
+2026-05-02 20:24:07,173 | INFO | [xgb_calibrated] n=57,267  AUC=0.5939  LogLoss=0.5296  Brier=0.1339  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 20:24:07,208 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5486  LogLoss=0.5366  Brier=0.1364  Acc=0.7571  BaseRate=0.230  PredRate=0.215
+2026-05-02 20:24:07,244 | INFO | [logreg_calibrated] n=57,267  AUC=0.5914  LogLoss=0.5302  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-02 20:24:07,279 | INFO | [ensemble] n=57,267  AUC=0.5972  LogLoss=0.5290  Brier=0.1337  Acc=0.7572  BaseRate=0.230  PredRate=0.226
+2026-05-02 20:24:07,296 | INFO | [xgb_calibrated] n=21,878  AUC=0.5807  LogLoss=0.5286  Brier=0.1365  Acc=0.7536  BaseRate=0.227  PredRate=0.233
+2026-05-02 20:24:07,312 | INFO | [lgbm_calibrated] n=21,878  AUC=0.5551  LogLoss=0.5325  Brier=0.1379  Acc=0.7536  BaseRate=0.227  PredRate=0.216
+2026-05-02 20:24:07,329 | INFO | [logreg_calibrated] n=21,878  AUC=0.5824  LogLoss=0.5287  Brier=0.1365  Acc=0.7534  BaseRate=0.227  PredRate=0.234
+2026-05-02 20:24:07,346 | INFO | [ensemble] n=21,878  AUC=0.5856  LogLoss=0.5301  Brier=0.1363  Acc=0.7534  BaseRate=0.227  PredRate=0.230
+2026-05-02 20:24:07,368 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-05-02 20:24:14,402 | INFO | Built 3,342 pitcher-game predictions
+2026-05-02 20:24:14,410 | INFO | Aggregating 8,107 starter rows into pitcher-games
+2026-05-02 20:24:16,469 | INFO | Built 917 pitcher-game predictions
+2026-05-02 20:24:16,473 | INFO | [ensemble_game] games=3,342  MAE=1.480  RMSE=1.868  Bias=+0.071  Actual=3.84  Predicted=3.91
+2026-05-02 20:24:16,475 | INFO | [ensemble_game] games=917  MAE=1.703  RMSE=2.143  Bias=+0.177  Actual=4.75  Predicted=4.93
+2026-05-02 20:24:16,553 | INFO | Saved model artefacts to ./artifacts/
+2026-05-02 20:24:16,554 | INFO | SQL Server engine created
+2026-05-02 20:24:16,692 | INFO | Output tables ready
+2026-05-02 20:24:16,693 | INFO | SQL Server engine created
+2026-05-02 20:24:17,027 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (79145 rows)
+2026-05-02 20:24:17,042 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4259 rows)
+2026-05-02 20:24:17,047 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (972 rows)
+2026-05-02 20:24:17,060 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 20:24:54,831 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-05-02 20:24:54,837 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-02 20:25:08,840 | INFO | Loaded 21878 rows into fact_pa_strikeout_predictions
+2026-05-02 20:25:08,843 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 20:25:14,128 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 20:25:14,132 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 20:25:15,847 | INFO | Loaded 917 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 20:25:15,849 | INFO | SQL Server engine created
+2026-05-02 20:25:15,903 | INFO | SQL Server engine created
+2026-05-02 20:25:16,047 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 20:25:18,681 | INFO | Loaded 917 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 20:25:18,683 | INFO | SQL Server engine created
+2026-05-02 20:25:19,632 | INFO | update_ev_actuals: back-filled 0 sportsbook rows with actual results
+2026-05-02 20:25:19,633 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 20:25:19,645 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 20:25:19,647 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 20:25:19,655 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-02 20:25:19,656 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 20:25:19,665 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 20:25:19,667 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-02 20:25:19,674 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-02 20:25:19,674 | INFO | Pipeline complete.
+2026-05-02 20:25:31,293 | INFO | SQL Server engine created
+2026-05-02 20:25:33,432 | INFO | ======================================================================
+2026-05-02 20:25:33,432 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-02 20:25:33,432 | INFO | ======================================================================
+2026-05-02 20:25:33,432 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-02 20:25:33,434 | INFO | SQL Server engine created
+2026-05-02 20:25:33,496 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-02 20:25:33,498 | INFO | Fetching schedule for 2026-05-02
+2026-05-02 20:25:35,860 | INFO |   2026-05-02: 30 team-game rows (29 with probable pitcher)
+2026-05-02 20:25:35,860 | INFO | Fetching schedule for 2026-05-03
+2026-05-02 20:25:38,472 | INFO |   2026-05-03: 30 team-game rows (27 with probable pitcher)
+2026-05-02 20:25:38,472 | INFO | Fetching schedule for 2026-05-04
+2026-05-02 20:25:39,996 | INFO |   2026-05-04: 24 team-game rows (5 with probable pitcher)
+2026-05-02 20:25:40,001 | INFO | Starting load for table dim_probable_pitchers
+2026-05-02 20:25:40,044 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-02 20:25:40,044 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-02 20:25:40,050 | INFO | ============================================================
+2026-05-02 20:25:40,050 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-02 20:25:40,050 | INFO |   2026-05-02: 30 team-rows, 29 probable pitchers known
+2026-05-02 20:25:40,051 | INFO |   2026-05-03: 30 team-rows, 27 probable pitchers known
+2026-05-02 20:25:40,051 | INFO |   2026-05-04: 24 team-rows, 5 probable pitchers known
+2026-05-02 20:25:40,052 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-02 20:25:40,052 | INFO | ======================================================================
+2026-05-02 20:25:40,052 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-02 20:25:40,052 | INFO | ======================================================================
+2026-05-02 20:25:40,053 | INFO | Loading model artifacts from artifacts
+2026-05-02 20:25:40,400 | INFO | Loaded models. Expected feature columns: 218
+2026-05-02 20:25:40,401 | INFO | SQL Server engine created
+2026-05-02 20:25:40,401 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-02 20:25:41,299 | INFO | Loaded 549 synthetic matchup rows for 33 games
+2026-05-02 20:25:41,300 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-05-02 20:25:41,353 | INFO | Feature matrix shape: (549, 218)
+2026-05-02 20:25:41,384 | INFO | Aggregating to pitcher-game level...
+2026-05-02 20:25:41,388 | INFO | Aggregating 549 starter rows into pitcher-games
+2026-05-02 20:25:41,560 | INFO | Built 61 pitcher-game predictions
+2026-05-02 20:25:41,561 | INFO | Built 61 pitcher-game predictions
+2026-05-02 20:25:41,563 | INFO | SQL Server engine created
+2026-05-02 20:25:41,572 | INFO | Output tables ready
+2026-05-02 20:25:41,572 | INFO | SQL Server engine created
+2026-05-02 20:25:41,584 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-02 20:25:41,590 | INFO | Cleared 0 pristine future EV rows
+2026-05-02 20:25:41,590 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-02 20:25:41,651 | INFO | Loaded 61 rows into fact_pitcher_game_strikeout_predictions
+2026-05-02 20:25:41,651 | INFO | Wrote 61 game predictions
+2026-05-02 20:25:41,653 | INFO | SQL Server engine created
+2026-05-02 20:25:41,699 | INFO | SQL Server engine created
+2026-05-02 20:25:41,737 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-02 20:25:41,886 | INFO | Loaded 61 rows into fact_pitcher_strikeout_betting_ev
+2026-05-02 20:25:41,886 | INFO | Wrote 61 EV rows ready for odds entry
+2026-05-02 20:25:41,887 | INFO | Future game scoring complete.
+2026-05-02 20:25:41,889 | INFO | 
+======================================================================
+2026-05-02 20:25:41,890 | INFO | DONE. Next steps in SSMS:
+2026-05-02 20:25:41,890 | INFO | ======================================================================
+2026-05-02 20:25:41,890 | INFO | 
+2026-05-02 20:25:41,891 | INFO | 1. Look at upcoming games:
+2026-05-02 20:25:41,891 | INFO | 
+2026-05-02 20:25:41,891 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-02 20:25:41,891 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-02 20:25:41,892 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-02 20:25:41,892 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 20:25:41,892 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-02 20:25:41,892 | INFO |      AND sportsbook IS NULL
+2026-05-02 20:25:41,893 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-02 20:25:41,893 | INFO | 
+2026-05-02 20:25:41,893 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-02 20:25:41,893 | INFO | 
+2026-05-02 20:25:41,893 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-02 20:25:41,894 | INFO | 
+2026-05-02 20:25:41,894 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-02 20:25:41,894 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-02 20:25:41,894 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-02 20:25:41,894 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-02 20:25:41,894 | INFO | 
+2026-05-02 20:25:41,895 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-02 20:25:41,895 | INFO | 
+2026-05-02 20:25:41,895 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-02 20:25:41,895 | INFO | ======================================================================
+2026-05-03 14:58:54,304 | INFO | SQL Server engine created
+2026-05-03 14:59:07,126 | INFO | ======================================================================
+2026-05-03 14:59:07,127 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-03 14:59:07,127 | INFO | ======================================================================
+2026-05-03 14:59:07,127 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-03 14:59:07,129 | INFO | SQL Server engine created
+2026-05-03 14:59:07,574 | INFO | Cleared 54 existing probable-pitcher rows for re-fetch
+2026-05-03 14:59:07,576 | INFO | Fetching schedule for 2026-05-03
+2026-05-03 14:59:09,601 | INFO |   2026-05-03: 30 team-game rows (29 with probable pitcher)
+2026-05-03 14:59:09,602 | INFO | Fetching schedule for 2026-05-04
+2026-05-03 14:59:11,060 | INFO |   2026-05-04: 24 team-game rows (7 with probable pitcher)
+2026-05-03 14:59:11,060 | INFO | Fetching schedule for 2026-05-05
+2026-05-03 14:59:12,435 | INFO |   2026-05-05: 30 team-game rows (8 with probable pitcher)
+2026-05-03 14:59:12,454 | INFO | Starting load for table dim_probable_pitchers
+2026-05-03 14:59:12,716 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-03 14:59:12,716 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-03 14:59:12,726 | INFO | ============================================================
+2026-05-03 14:59:12,726 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-03 14:59:12,727 | INFO |   2026-05-03: 30 team-rows, 29 probable pitchers known
+2026-05-03 14:59:12,728 | INFO |   2026-05-04: 24 team-rows, 7 probable pitchers known
+2026-05-03 14:59:12,728 | INFO |   2026-05-05: 30 team-rows, 8 probable pitchers known
+2026-05-03 14:59:12,730 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-03 14:59:12,730 | INFO | ======================================================================
+2026-05-03 14:59:12,731 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-03 14:59:12,731 | INFO | ======================================================================
+2026-05-03 14:59:12,731 | INFO | Loading model artifacts from artifacts
+2026-05-03 14:59:13,372 | INFO | Loaded models. Expected feature columns: 218
+2026-05-03 14:59:13,372 | INFO | SQL Server engine created
+2026-05-03 14:59:13,372 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-03 15:00:10,976 | INFO | Loaded 459 synthetic matchup rows for 32 games
+2026-05-03 15:00:10,977 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_lineup_position_name', 'hitter_batting_order']
+2026-05-03 15:00:11,055 | INFO | Feature matrix shape: (459, 218)
+2026-05-03 15:00:11,135 | INFO | Aggregating to pitcher-game level...
+2026-05-03 15:00:11,140 | INFO | Aggregating 459 starter rows into pitcher-games
+2026-05-03 15:00:11,372 | INFO | Built 51 pitcher-game predictions
+2026-05-03 15:00:11,372 | INFO | Built 51 pitcher-game predictions
+2026-05-03 15:00:11,375 | INFO | SQL Server engine created
+2026-05-03 15:00:11,628 | INFO | Output tables ready
+2026-05-03 15:00:11,629 | INFO | SQL Server engine created
+2026-05-03 15:00:11,691 | INFO | Cleared 61 existing 'future' game predictions
+2026-05-03 15:00:11,702 | INFO | Cleared 39 pristine future EV rows
+2026-05-03 15:00:11,704 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-03 15:00:11,884 | INFO | Loaded 51 rows into fact_pitcher_game_strikeout_predictions
+2026-05-03 15:00:11,885 | INFO | Wrote 51 game predictions
+2026-05-03 15:00:11,888 | INFO | SQL Server engine created
+2026-05-03 15:00:16,122 | INFO | SQL Server engine created
+2026-05-03 15:00:16,375 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-03 15:00:17,771 | INFO | Loaded 51 rows into fact_pitcher_strikeout_betting_ev
+2026-05-03 15:00:17,771 | INFO | Wrote 51 EV rows ready for odds entry
+2026-05-03 15:00:17,772 | INFO | Future game scoring complete.
+2026-05-03 15:00:17,842 | INFO | 
+======================================================================
+2026-05-03 15:00:17,842 | INFO | DONE. Next steps in SSMS:
+2026-05-03 15:00:17,842 | INFO | ======================================================================
+2026-05-03 15:00:17,843 | INFO | 
+2026-05-03 15:00:17,843 | INFO | 1. Look at upcoming games:
+2026-05-03 15:00:17,843 | INFO | 
+2026-05-03 15:00:17,843 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-03 15:00:17,844 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-03 15:00:17,844 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-03 15:00:17,844 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-03 15:00:17,844 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-03 15:00:17,845 | INFO |      AND sportsbook IS NULL
+2026-05-03 15:00:17,845 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-03 15:00:17,845 | INFO | 
+2026-05-03 15:00:17,845 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-03 15:00:17,845 | INFO | 
+2026-05-03 15:00:17,845 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-03 15:00:17,845 | INFO | 
+2026-05-03 15:00:17,846 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-03 15:00:17,846 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-03 15:00:17,846 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-03 15:00:17,846 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-03 15:00:17,846 | INFO | 
+2026-05-03 15:00:17,846 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-03 15:00:17,846 | INFO | 
+2026-05-03 15:00:17,847 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-03 15:00:17,847 | INFO | ======================================================================
+2026-05-03 16:50:28,445 | INFO | SQL Server engine created
+2026-05-03 16:50:31,316 | INFO | ======================================================================
+2026-05-03 16:50:31,317 | INFO | MLB STRIKEOUT - DAILY FUTURE GAMES WORKFLOW
+2026-05-03 16:50:31,317 | INFO | ======================================================================
+2026-05-03 16:50:31,317 | INFO | 
+>>> STEP 1: Fetching probable pitchers from MLB Stats API
+2026-05-03 16:50:31,318 | INFO | SQL Server engine created
+2026-05-03 16:50:31,394 | INFO | Cleared 84 existing probable-pitcher rows for re-fetch
+2026-05-03 16:50:31,395 | INFO | Fetching schedule for 2026-05-03
+2026-05-03 16:50:33,463 | INFO |   2026-05-03: 30 team-game rows (29 with probable pitcher)
+2026-05-03 16:50:33,463 | INFO | Fetching schedule for 2026-05-04
+2026-05-03 16:50:34,847 | INFO |   2026-05-04: 24 team-game rows (7 with probable pitcher)
+2026-05-03 16:50:34,847 | INFO | Fetching schedule for 2026-05-05
+2026-05-03 16:50:36,077 | INFO |   2026-05-05: 30 team-game rows (8 with probable pitcher)
+2026-05-03 16:50:36,097 | INFO | Starting load for table dim_probable_pitchers
+2026-05-03 16:50:36,203 | INFO | Loaded 84 rows into dim_probable_pitchers
+2026-05-03 16:50:36,203 | INFO | Wrote 84 rows to dim_probable_pitchers
+2026-05-03 16:50:36,272 | INFO | ============================================================
+2026-05-03 16:50:36,476 | INFO | Summary of upcoming probable pitchers in DB:
+2026-05-03 16:50:36,477 | INFO |   2026-05-03: 30 team-rows, 29 probable pitchers known
+2026-05-03 16:50:36,477 | INFO |   2026-05-04: 24 team-rows, 7 probable pitchers known
+2026-05-03 16:50:36,477 | INFO |   2026-05-05: 30 team-rows, 8 probable pitchers known
+2026-05-03 16:50:36,479 | INFO | 
+>>> STEP 2: Scoring future games with trained model
+2026-05-03 16:50:36,479 | INFO | ======================================================================
+2026-05-03 16:50:36,480 | INFO | MLB Strikeout - Future Game Scoring
+2026-05-03 16:50:36,480 | INFO | ======================================================================
+2026-05-03 16:50:36,480 | INFO | Loading model artifacts from artifacts
+2026-05-03 16:50:36,920 | INFO | Loaded models. Expected feature columns: 218
+2026-05-03 16:50:36,921 | INFO | SQL Server engine created
+2026-05-03 16:50:36,921 | INFO | Loading future matchups: SELECT * FROM dbo.fact_future_matchups
+2026-05-03 16:50:38,089 | INFO | Loaded 396 synthetic matchup rows for 28 games
+2026-05-03 16:50:38,089 | WARNING | Future data missing 2 feature columns - filling with NaN. Sample missing columns: ['hitter_batting_order', 'hitter_lineup_position_name']
+2026-05-03 16:50:38,162 | INFO | Feature matrix shape: (396, 218)
+2026-05-03 16:50:38,221 | INFO | Aggregating to pitcher-game level...
+2026-05-03 16:50:38,225 | INFO | Aggregating 396 starter rows into pitcher-games
+2026-05-03 16:50:38,382 | INFO | Built 44 pitcher-game predictions
+2026-05-03 16:50:38,382 | INFO | Built 44 pitcher-game predictions
+2026-05-03 16:50:38,384 | INFO | SQL Server engine created
+2026-05-03 16:50:38,549 | INFO | Output tables ready
+2026-05-03 16:50:38,549 | INFO | SQL Server engine created
+2026-05-03 16:50:38,566 | INFO | Cleared 51 existing 'future' game predictions
+2026-05-03 16:50:38,573 | INFO | Cleared 28 pristine future EV rows
+2026-05-03 16:50:38,574 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-03 16:50:38,659 | INFO | Loaded 44 rows into fact_pitcher_game_strikeout_predictions
+2026-05-03 16:50:38,659 | INFO | Wrote 44 game predictions
+2026-05-03 16:50:38,662 | INFO | SQL Server engine created
+2026-05-03 16:50:38,753 | INFO | SQL Server engine created
+2026-05-03 16:50:38,803 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-03 16:50:38,937 | INFO | Loaded 44 rows into fact_pitcher_strikeout_betting_ev
+2026-05-03 16:50:38,937 | INFO | Wrote 44 EV rows ready for odds entry
+2026-05-03 16:50:38,937 | INFO | Future game scoring complete.
+2026-05-03 16:50:38,940 | INFO | 
+======================================================================
+2026-05-03 16:50:38,940 | INFO | DONE. Next steps in SSMS:
+2026-05-03 16:50:38,940 | INFO | ======================================================================
+2026-05-03 16:50:38,941 | INFO | 
+2026-05-03 16:50:38,941 | INFO | 1. Look at upcoming games:
+2026-05-03 16:50:38,941 | INFO | 
+2026-05-03 16:50:38,941 | INFO |    SELECT pitcher_name, opponent_team_name, game_date,
+2026-05-03 16:50:38,941 | INFO |           predicted_strikeouts, predicted_k_stddev,
+2026-05-03 16:50:38,941 | INFO |           opp_same_side_count, opp_opposite_side_count
+2026-05-03 16:50:38,941 | INFO |    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-03 16:50:38,941 | INFO |    WHERE game_date >= CAST(GETDATE() AS DATE)
+2026-05-03 16:50:38,942 | INFO |      AND sportsbook IS NULL
+2026-05-03 16:50:38,942 | INFO |    ORDER BY game_date, predicted_strikeouts DESC;
+2026-05-03 16:50:38,942 | INFO | 
+2026-05-03 16:50:38,942 | INFO | 2. Open Sportsbet, find each pitcher's strikeout prop
+2026-05-03 16:50:38,942 | INFO | 
+2026-05-03 16:50:38,942 | INFO | 3. Enter odds for each pitcher you want to consider:
+2026-05-03 16:50:38,942 | INFO | 
+2026-05-03 16:50:38,942 | INFO |    UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
+2026-05-03 16:50:38,942 | INFO |    SET sportsbook = 'Sportsbet', line = 5.5,
+2026-05-03 16:50:38,942 | INFO |        over_odds = 1.90, under_odds = 1.92
+2026-05-03 16:50:38,943 | INFO |    WHERE gamePk = ??? AND pitcher_id = ???;
+2026-05-03 16:50:38,943 | INFO | 
+2026-05-03 16:50:38,943 | INFO | 4. Run sql/compute_ev.sql to compute edge / EV / Kelly
+2026-05-03 16:50:38,943 | INFO | 
+2026-05-03 16:50:38,943 | INFO | 5. Place bets only on rows where recommended_side = OVER or UNDER
+2026-05-03 16:50:38,944 | INFO | ======================================================================
+2026-05-03 17:09:19,468 | INFO | SQL Server engine created
+2026-05-03 17:09:21,307 | INFO | ======================================================================
+2026-05-03 17:09:21,308 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-05-03 17:09:21,308 | INFO | ======================================================================
+2026-05-03 17:09:21,308 | INFO | SQL Server engine created
+2026-05-03 17:09:21,308 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-05-03 17:10:00,220 | INFO | Loaded 141,342 rows, 353 columns
+2026-05-03 17:10:00,566 | INFO | Dropped 0 rows with null target
+2026-05-03 17:10:01,246 | INFO | Split sizes - train: 61,522  val: 57,267  test: 22,553
+2026-05-03 17:10:01,266 | INFO | Selected 218 feature columns
+2026-05-03 17:10:02,159 | INFO | Feature matrix shapes - train (61522, 218)  val (57267, 218)  test (22553, 218)
+2026-05-03 17:10:02,159 | INFO | Training XGBoost...
+2026-05-03 17:10:20,925 | INFO | XGB best iteration: 308
+2026-05-03 17:10:20,946 | INFO | Training LightGBM...
+2026-05-03 17:10:29,282 | INFO | LGBM best iteration: 285
+2026-05-03 17:10:29,291 | INFO | Training Logistic Regression baseline...
+2026-05-03 17:10:31,511 | INFO |   Logreg fitting on expanded shape: (104205, 218)
+2026-05-03 17:10:36,868 | INFO | [xgb_calibrated] n=57,267  AUC=0.5931  LogLoss=0.5297  Brier=0.1340  Acc=0.7572  BaseRate=0.230  PredRate=0.229
+2026-05-03 17:10:36,899 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5487  LogLoss=0.5365  Brier=0.1363  Acc=0.7571  BaseRate=0.230  PredRate=0.216
+2026-05-03 17:10:36,940 | INFO | [logreg_calibrated] n=57,267  AUC=0.5910  LogLoss=0.5303  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-03 17:10:36,975 | INFO | [ensemble] n=57,267  AUC=0.5962  LogLoss=0.5290  Brier=0.1338  Acc=0.7573  BaseRate=0.230  PredRate=0.227
+2026-05-03 17:10:36,996 | INFO | [xgb_calibrated] n=22,553  AUC=0.5819  LogLoss=0.5282  Brier=0.1364  Acc=0.7535  BaseRate=0.227  PredRate=0.234
+2026-05-03 17:10:37,015 | INFO | [lgbm_calibrated] n=22,553  AUC=0.5563  LogLoss=0.5321  Brier=0.1378  Acc=0.7533  BaseRate=0.227  PredRate=0.216
+2026-05-03 17:10:37,034 | INFO | [logreg_calibrated] n=22,553  AUC=0.5825  LogLoss=0.5285  Brier=0.1365  Acc=0.7533  BaseRate=0.227  PredRate=0.234
+2026-05-03 17:10:37,052 | INFO | [ensemble] n=22,553  AUC=0.5869  LogLoss=0.5281  Brier=0.1362  Acc=0.7533  BaseRate=0.227  PredRate=0.231
+2026-05-03 17:10:37,084 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-05-03 17:10:47,029 | INFO | Built 3,342 pitcher-game predictions
+2026-05-03 17:10:47,037 | INFO | Aggregating 8,379 starter rows into pitcher-games
+2026-05-03 17:10:49,503 | INFO | Built 947 pitcher-game predictions
+2026-05-03 17:10:49,507 | INFO | [ensemble_game] games=3,342  MAE=1.480  RMSE=1.868  Bias=+0.065  Actual=3.84  Predicted=3.90
+2026-05-03 17:10:49,511 | INFO | [ensemble_game] games=947  MAE=1.696  RMSE=2.136  Bias=+0.208  Actual=4.74  Predicted=4.95
+2026-05-03 17:10:49,583 | INFO | Saved model artefacts to ./artifacts/
+2026-05-03 17:10:49,584 | INFO | SQL Server engine created
+2026-05-03 17:10:49,640 | INFO | Output tables ready
+2026-05-03 17:10:49,641 | INFO | SQL Server engine created
+2026-05-03 17:10:49,963 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (79145 rows)
+2026-05-03 17:10:49,981 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4259 rows)
+2026-05-03 17:10:49,987 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (967 rows)
+2026-05-03 17:10:50,005 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-03 17:11:33,818 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-05-03 17:11:33,826 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-03 17:11:51,826 | ERROR | Error loading data into fact_pa_strikeout_predictions: Can't reconnect until invalid transaction is rolled back.  Please rollback() fully before proceeding (Background on this error at: https://sqlalche.me/e/20/8s2b)
+2026-05-03 17:11:51,828 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-03 17:11:57,755 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-05-03 17:11:57,759 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-03 17:11:59,698 | INFO | Loaded 947 rows into fact_pitcher_game_strikeout_predictions
+2026-05-03 17:11:59,700 | INFO | SQL Server engine created
+2026-05-03 17:11:59,893 | INFO | SQL Server engine created
+2026-05-03 17:11:59,941 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-03 17:12:02,775 | INFO | Loaded 947 rows into fact_pitcher_strikeout_betting_ev
+2026-05-03 17:12:02,777 | INFO | SQL Server engine created
+2026-05-03 17:12:04,069 | INFO | update_ev_actuals: back-filled 0 sportsbook rows with actual results
+2026-05-03 17:12:04,071 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:12:04,085 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-03 17:12:04,087 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:12:04,096 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-03 17:12:04,098 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:12:04,108 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-03 17:12:04,109 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:12:04,118 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-03 17:12:04,118 | INFO | Pipeline complete.
+2026-05-03 17:42:27,779 | INFO | SQL Server engine created
+2026-05-03 17:42:32,582 | INFO | ======================================================================
+2026-05-03 17:42:32,582 | INFO | MLB Strikeout Pipeline - version v1.0.0
+2026-05-03 17:42:32,583 | INFO | ======================================================================
+2026-05-03 17:42:32,583 | INFO | SQL Server engine created
+2026-05-03 17:42:32,584 | INFO | Loading matchup data: SELECT * FROM dbo.fact_hitter_pitcher_matchup_with_handedness
+2026-05-03 17:44:13,773 | INFO | Loaded 141,342 rows, 353 columns
+2026-05-03 17:44:14,335 | INFO | Dropped 0 rows with null target
+2026-05-03 17:44:15,206 | INFO | Split sizes - train: 61,522  val: 57,267  test: 22,553
+2026-05-03 17:44:15,225 | INFO | Selected 218 feature columns
+2026-05-03 17:44:16,143 | INFO | Feature matrix shapes - train (61522, 218)  val (57267, 218)  test (22553, 218)
+2026-05-03 17:44:16,143 | INFO | Training XGBoost...
+2026-05-03 17:45:01,670 | INFO | XGB best iteration: 308
+2026-05-03 17:45:01,889 | INFO | Training LightGBM...
+2026-05-03 17:45:19,547 | INFO | LGBM best iteration: 285
+2026-05-03 17:45:19,557 | INFO | Training Logistic Regression baseline...
+2026-05-03 17:45:22,729 | INFO |   Logreg fitting on expanded shape: (104205, 218)
+2026-05-03 17:45:29,247 | INFO | [xgb_calibrated] n=57,267  AUC=0.5931  LogLoss=0.5297  Brier=0.1340  Acc=0.7572  BaseRate=0.230  PredRate=0.229
+2026-05-03 17:45:29,306 | INFO | [lgbm_calibrated] n=57,267  AUC=0.5487  LogLoss=0.5365  Brier=0.1363  Acc=0.7571  BaseRate=0.230  PredRate=0.216
+2026-05-03 17:45:29,359 | INFO | [logreg_calibrated] n=57,267  AUC=0.5910  LogLoss=0.5303  Brier=0.1341  Acc=0.7571  BaseRate=0.230  PredRate=0.229
+2026-05-03 17:45:29,411 | INFO | [ensemble] n=57,267  AUC=0.5962  LogLoss=0.5290  Brier=0.1338  Acc=0.7573  BaseRate=0.230  PredRate=0.227
+2026-05-03 17:45:29,437 | INFO | [xgb_calibrated] n=22,553  AUC=0.5819  LogLoss=0.5282  Brier=0.1364  Acc=0.7535  BaseRate=0.227  PredRate=0.234
+2026-05-03 17:45:29,466 | INFO | [lgbm_calibrated] n=22,553  AUC=0.5563  LogLoss=0.5321  Brier=0.1378  Acc=0.7533  BaseRate=0.227  PredRate=0.216
+2026-05-03 17:45:29,496 | INFO | [logreg_calibrated] n=22,553  AUC=0.5825  LogLoss=0.5285  Brier=0.1365  Acc=0.7533  BaseRate=0.227  PredRate=0.234
+2026-05-03 17:45:29,518 | INFO | [ensemble] n=22,553  AUC=0.5869  LogLoss=0.5281  Brier=0.1362  Acc=0.7533  BaseRate=0.227  PredRate=0.231
+2026-05-03 17:45:29,643 | INFO | Aggregating 23,629 starter rows into pitcher-games
+2026-05-03 17:45:41,015 | INFO | Built 3,342 pitcher-game predictions
+2026-05-03 17:45:41,033 | INFO | Aggregating 8,379 starter rows into pitcher-games
+2026-05-03 17:45:44,170 | INFO | Built 947 pitcher-game predictions
+2026-05-03 17:45:44,184 | INFO | [ensemble_game] games=3,342  MAE=1.480  RMSE=1.868  Bias=+0.065  Actual=3.84  Predicted=3.90
+2026-05-03 17:45:44,187 | INFO | [ensemble_game] games=947  MAE=1.696  RMSE=2.136  Bias=+0.208  Actual=4.74  Predicted=4.95
+2026-05-03 17:45:44,281 | INFO | Saved model artefacts to ./artifacts/
+2026-05-03 17:45:44,306 | INFO | SQL Server engine created
+2026-05-03 17:45:47,114 | INFO | Output tables ready
+2026-05-03 17:45:47,115 | INFO | SQL Server engine created
+2026-05-03 17:46:20,651 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pa_strikeout_predictions  (57267 rows)
+2026-05-03 17:46:20,680 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_game_strikeout_predictions  (4289 rows)
+2026-05-03 17:46:20,763 | INFO | Cleared previous predictions: DELETE FROM dbo.fact_pitcher_strikeout_betting_ev  (947 rows)
+2026-05-03 17:46:20,782 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-03 17:47:16,406 | INFO | Loaded 57267 rows into fact_pa_strikeout_predictions
+2026-05-03 17:47:16,415 | INFO | Starting load for table fact_pa_strikeout_predictions
+2026-05-03 17:47:36,086 | INFO | Loaded 22553 rows into fact_pa_strikeout_predictions
+2026-05-03 17:47:36,091 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-03 17:47:44,238 | INFO | Loaded 3342 rows into fact_pitcher_game_strikeout_predictions
+2026-05-03 17:47:44,241 | INFO | Starting load for table fact_pitcher_game_strikeout_predictions
+2026-05-03 17:47:46,146 | INFO | Loaded 947 rows into fact_pitcher_game_strikeout_predictions
+2026-05-03 17:47:46,149 | INFO | SQL Server engine created
+2026-05-03 17:47:47,039 | INFO | SQL Server engine created
+2026-05-03 17:47:47,191 | INFO | Starting load for table fact_pitcher_strikeout_betting_ev
+2026-05-03 17:47:50,153 | INFO | Loaded 947 rows into fact_pitcher_strikeout_betting_ev
+2026-05-03 17:47:50,156 | INFO | SQL Server engine created
+2026-05-03 17:47:51,225 | INFO | update_ev_actuals: back-filled 0 sportsbook rows with actual results
+2026-05-03 17:47:51,226 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:47:51,254 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-03 17:47:51,255 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:47:51,263 | INFO | Loaded 4 rows into fact_model_evaluation_metrics
+2026-05-03 17:47:51,265 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:47:51,274 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-03 17:47:51,275 | INFO | Starting load for table fact_model_evaluation_metrics
+2026-05-03 17:47:51,284 | INFO | Loaded 1 rows into fact_model_evaluation_metrics
+2026-05-03 17:47:51,284 | INFO | Pipeline complete.
