@@ -18,6 +18,7 @@ What it does:
 import logging
 import os
 import pickle
+from pathlib import Path
 import numpy as np
 import pandas as pd
 
@@ -206,6 +207,15 @@ def ensure_output_tables():
                        WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'games_2026')
             ALTER TABLE dbo.{ev} ADD games_2026 INT;
         IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_k_last_3')
+            ALTER TABLE dbo.{ev} ADD avg_k_last_3 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_k_last_5')
+            ALTER TABLE dbo.{ev} ADD avg_k_last_5 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
+                       WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'avg_k_last_10')
+            ALTER TABLE dbo.{ev} ADD avg_k_last_10 FLOAT;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns
                        WHERE object_id = OBJECT_ID('dbo.{ev}') AND name = 'weighted_k_per_bf_last_3')
             ALTER TABLE dbo.{ev} ADD weighted_k_per_bf_last_3 FLOAT;
         IF NOT EXISTS (SELECT 1 FROM sys.columns
@@ -345,6 +355,7 @@ def load_pitcher_recent_stats() -> pd.DataFrame:
 
     Columns returned:
         pitcher_id
+        avg_k_last_3/5/10              — average strikeout count per game
         weighted_k_per_bf_last_3/5/10  — PA-weighted K rate per batter faced
         avg_strike_pct_last_3/5/10     — strike percentage
         avg_pitches_per_inning_last_3/5/10 — pitches per inning
@@ -358,6 +369,9 @@ def load_pitcher_recent_stats() -> pd.DataFrame:
         )
         SELECT
             CAST(p.player_id AS INT)        AS pitcher_id,
+            p.avg_k_last_3,
+            p.avg_k_last_5,
+            p.avg_k_last_10,
             p.weighted_k_per_bf_last_3,
             p.weighted_k_per_bf_last_5,
             p.weighted_k_per_bf_last_10,
@@ -450,6 +464,91 @@ def update_ev_actuals(game_df: pd.DataFrame):
             updated += result.rowcount
 
     logger.info(f"update_ev_actuals: back-filled {updated} sportsbook rows with actual results")
+
+
+def recalibrate_on_current_season(artifact_dir: Path = Path("./artifacts")):
+    """
+    Re-fit isotonic calibrators on completed current-season games without
+    retraining the base models (XGB / LGBM / LogReg).
+
+    As 2026 data accumulates the 2025-fitted calibrators can drift. Re-running
+    this weekly keeps the probability mapping current and reduces systematic
+    over/under-estimation. Needs ~5 000+ PA rows (roughly 3-4 weeks of games).
+
+    Usage:
+        from pipeline import recalibrate_on_current_season
+        recalibrate_on_current_season()
+
+    Or via run_daily.py --recalibrate
+    """
+    import xgboost as xgb
+    import lightgbm as lgb
+
+    if not artifact_dir.exists():
+        raise FileNotFoundError(
+            f"Artifact directory {artifact_dir} not found. Run pipeline.py first."
+        )
+
+    logger.info(f"Loading base models from {artifact_dir} for recalibration...")
+    xgb_model = xgb.Booster()
+    xgb_model.load_model(str(artifact_dir / "xgb.json"))
+    lgbm_model = lgb.Booster(model_file=str(artifact_dir / "lgbm.txt"))
+    with open(artifact_dir / "logreg.pkl", "rb") as f:
+        logreg_bundle = pickle.load(f)
+    with open(artifact_dir / "feature_cols.pkl", "rb") as f:
+        feat_bundle = pickle.load(f)
+    feature_cols = feat_bundle["feature_cols"]
+    cat_maps = feat_bundle["cat_maps"]
+
+    # Load completed current-season games (TARGET_COL must not be NaN)
+    df_all = data_loader.load_matchup_data()
+    df_cur = df_all[
+        (df_all["season"] == config.TEST_SEASON) &
+        df_all[config.TARGET_COL].notna()
+    ].copy()
+
+    if df_cur.empty:
+        logger.warning("No completed current-season rows found — skipping recalibration.")
+        return
+
+    if len(df_cur) < 5_000:
+        logger.warning(
+            f"Only {len(df_cur):,} current-season PA rows available "
+            f"(recommend 5 000+). Calibration may be noisy."
+        )
+
+    logger.info(f"Recalibrating on {len(df_cur):,} {config.TEST_SEASON} PA rows...")
+    X_cur, _ = features.prepare_features(df_cur, feature_cols, cat_maps)
+    y_cur, w_cur = features.get_target_and_weights(df_cur)
+
+    # Raw predictions — use plain predict() since best_iteration is preserved in
+    # the saved JSON/txt, but we don't need to restrict to early-stop round here.
+    p_xgb  = xgb_model.predict(xgb.DMatrix(X_cur))
+    p_lgbm = lgbm_model.predict(X_cur)
+    p_lr   = models.predict_logreg(logreg_bundle, X_cur)
+
+    # Fit new calibrators on current-season actuals
+    cal_xgb  = models.fit_isotonic(p_xgb,  y_cur, sample_weight=w_cur)
+    cal_lgbm = models.fit_isotonic(p_lgbm, y_cur, sample_weight=w_cur)
+    cal_lr   = models.fit_isotonic(p_lr,   y_cur, sample_weight=w_cur)
+
+    p_xgb_cal  = models.apply_isotonic(cal_xgb,  p_xgb)
+    p_lgbm_cal = models.apply_isotonic(cal_lgbm, p_lgbm)
+    p_lr_cal   = models.apply_isotonic(cal_lr,   p_lr)
+
+    p_ens   = models.ensemble_probs(p_xgb_cal, p_lgbm_cal, p_lr_cal)
+    cal_ens = models.fit_isotonic(p_ens, y_cur, sample_weight=w_cur)
+
+    with open(artifact_dir / "calibrators.pkl", "wb") as f:
+        pickle.dump(
+            {"xgb": cal_xgb, "lgbm": cal_lgbm, "logreg": cal_lr, "ensemble": cal_ens},
+            f,
+        )
+
+    logger.info(
+        f"Calibrators updated from {config.TEST_SEASON} data. "
+        f"Re-run score_future_games.py to apply to upcoming games."
+    )
 
 
 def save_ev_template(game_df: pd.DataFrame):

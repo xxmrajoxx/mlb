@@ -22,6 +22,7 @@ import subprocess
 import sys
 
 import fetch_probable_pitchers
+import pipeline as pipeline_module
 import score_future_games
 
 logger = logging.getLogger("daily_runner")
@@ -34,6 +35,9 @@ def main():
                         help="Days ahead to fetch probable pitchers (default 2)")
     parser.add_argument("--skip_fetch", action="store_true",
                         help="Skip the MLB API fetch step (use if already up to date)")
+    parser.add_argument("--recalibrate", action="store_true",
+                        help="Re-fit calibrators on completed 2026 games before scoring "
+                             "(run weekly, needs ~3-4 weeks of 2026 data)")
     args = parser.parse_args()
 
     logger.info("=" * 70)
@@ -47,6 +51,11 @@ def main():
         fetch_probable_pitchers.main()
     else:
         logger.info("\n>>> STEP 1: SKIPPED (--skip_fetch)")
+
+    # Optional: re-calibrate on current-season completed games
+    if args.recalibrate:
+        logger.info("\n>>> STEP 1b: Recalibrating calibrators on completed 2026 games")
+        pipeline_module.recalibrate_on_current_season()
 
     # Step 2: Score future games
     logger.info("\n>>> STEP 2: Scoring future games with trained model")

@@ -145,8 +145,11 @@ SELECT
     -- Estimated lineup rank (where in the 9 we ranked this hitter)
     el.lineup_rank AS lineup_rank_estimate,
 
-    -- Synthetic PA assumptions for future games
-    3 AS hitter_plate_appearances,    -- approximation: 3 PA vs starter
+    -- Synthetic PA assumptions for future games.
+    -- Top-3 lineup spots bat ~3× against a 6-7 IP starter; spots 4-9 bat ~2×.
+    -- 3×3 + 6×2 = 21 total PAs, matching the empirical ~22 batters a MLB starter
+    -- faces on average (vs the previous flat 27 which over-inflated predicted Ks).
+    CASE WHEN el.lineup_rank <= 3 THEN 3 ELSE 2 END AS hitter_plate_appearances,
     NULL AS hitter_strikeouts,         -- unknown for future
     1 AS pitcher_is_starter,
     1 AS first_inning_faced,
