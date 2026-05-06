@@ -577,11 +577,11 @@ For every pitcher you want to consider betting:
 ```sql
 UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
 SET sportsbook = 'Sportsbet',
-    line = 5.5,
-    over_odds = 1.90,
-    under_odds = 1.90
-WHERE gamePk = 824932
-  AND pitcher_id = 691725;
+    line = 4.5,
+    over_odds = 2.00,
+    under_odds = 1.75
+WHERE game_date = '2026-05-05'
+  AND pitcher_name = 'Chris Bassitt';
 ```
 
 **Decimal odds only.** Australian sportsbooks already use this format. If you're checking a US book, convert: `decimal = (american / 100) + 1` for positive American odds.

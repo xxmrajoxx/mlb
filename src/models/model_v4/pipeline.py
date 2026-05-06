@@ -580,6 +580,27 @@ def save_ev_template(game_df: pd.DataFrame):
     recent_stats = load_pitcher_recent_stats()
     rows = rows.merge(recent_stats, on="pitcher_id", how="left")
 
+    # Don't insert template rows for games that already have a sportsbook entry
+    # (bet was placed). On re-runs, pipeline clears only sportsbook=NULL rows, so
+    # completed-game rows where you've already bet would otherwise get a duplicate.
+    engine = get_engine()
+    existing_bets = pd.read_sql(
+        f"SELECT CAST(gamePk AS BIGINT) AS gamePk, CAST(pitcher_id AS INT) AS pitcher_id"
+        f" FROM dbo.{config.EV_TABLE} WHERE sportsbook IS NOT NULL",
+        engine,
+    )
+    if not existing_bets.empty:
+        rows["gamePk"] = rows["gamePk"].astype("int64")
+        rows["pitcher_id"] = rows["pitcher_id"].astype(int)
+        existing_bets["gamePk"] = existing_bets["gamePk"].astype("int64")
+        existing_bets["pitcher_id"] = existing_bets["pitcher_id"].astype(int)
+        existing_bets["_has_bet"] = True
+        rows = rows.merge(existing_bets, on=["gamePk", "pitcher_id"], how="left")
+        skipped = rows["_has_bet"].notna().sum()
+        if skipped:
+            logger.info(f"Skipping {skipped} EV rows that already have sportsbook entries")
+        rows = rows[rows["_has_bet"].isna()].drop(columns=["_has_bet"])
+
     # Empty columns for manual entry
     for c in ["sportsbook", "line", "over_odds", "under_odds",
               "model_prob_over", "model_prob_under",
