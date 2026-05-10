@@ -1,8 +1,12 @@
-# MLB Strikeout Betting Model — Operator's Guide
+# MLB Strikeout Prediction & Betting EV System — Complete Guide
 
-A practical, day-to-day guide for running the model, reading its outputs, entering sportsbook odds, and identifying genuinely good bets.
+Predicts how many strikeouts a starting pitcher will record against a given lineup, then surfaces over/under bets with positive expected value at Australian sportsbook odds.
 
-This document is the companion to the technical README. **The technical README explains how the model works internally — this document explains how to use it.**
+**Two predictions, layered:**
+1. **Per plate-appearance:** for every hitter–pitcher matchup in a game, predict P(strikeout)
+2. **Per pitcher-game:** sum those P(K) values across the lineup via Poisson-binomial aggregation, producing an expected total Ks and a full probability distribution over 0, 1, 2, … n Ks
+
+The game-level distribution powers betting. Knowing P(K = 7) precisely also gives you P(K > 5.5), P(K > 6.5), etc. — exactly what sportsbooks price.
 
 ---
 
@@ -23,18 +27,20 @@ This document is the companion to the technical README. **The technical README e
 13. [Things to Watch Out For](#13-things-to-watch-out-for)
 14. [Troubleshooting](#14-troubleshooting)
 15. [Maintenance](#15-maintenance)
+16. [What to Build Next](#16-what-to-build-next)
+17. [Glossary](#17-glossary)
 
 ---
 
 ## 1. The ML Models — What They Are and Why
 
-The system uses **three different machine learning algorithms** layered together, plus a calibration step. Each piece does a specific job. Understanding what each one does will help you trust the predictions and spot when something's gone wrong.
+The system uses **three different machine learning algorithms** layered together, plus a calibration step. Each piece does a specific job.
 
 ### The big picture: how the predictions are built
 
 ```
    For every batter-vs-pitcher matchup in a game:
-   
+
         ┌─────────────────────────────────────────┐
         │      ~218 features about the matchup    │
         │  (rolling averages, velocities, etc.)   │
@@ -91,7 +97,7 @@ This reduced training time and improved generalisation without losing any meanin
 
 **What it is:** Gradient-boosted decision trees. Builds hundreds of small decision trees, each one fixing the mistakes of the trees before it.
 
-**Why we use it:** XGBoost is the single best-performing algorithm on tabular MLB data in published research. It handles missing values natively (which matters because your source view has lots of NULLs — pitcher previous-game stats are NULL for the first appearance of a season, for example). It also handles non-linear relationships beautifully (e.g. "a fastball over 96 mph against a hitter with high whiff rate produces dramatically more Ks than the linear sum of those two factors would suggest").
+**Why we use it:** XGBoost is the single best-performing algorithm on tabular MLB data in published research. It handles missing values natively (pitcher previous-game stats are NULL for the first appearance of a season). It also handles non-linear relationships well — e.g. "a fastball over 96 mph against a hitter with high whiff rate produces dramatically more Ks than the linear sum of those two factors would suggest".
 
 **Current hyperparameters:**
 - `learning_rate`: 0.02 (reduced from 0.05 — slower learning prevents premature early stopping)
@@ -105,9 +111,9 @@ This reduced training time and improved generalisation without losing any meanin
 
 #### **LightGBM** (25% of ensemble) — the diversity provider
 
-**What it is:** Same family as XGBoost (gradient-boosted trees) but uses a different splitting strategy ("leaf-wise" instead of "level-wise"). Microsoft's competitor to XGBoost.
+**What it is:** Same family as XGBoost (gradient-boosted trees) but uses a different splitting strategy ("leaf-wise" instead of "level-wise").
 
-**Why we use it:** Two trees of the same family but different building strategies make different mistakes. When XGBoost overfits to a quirk in the data, LightGBM often doesn't, and vice versa. Averaging both reduces the chance that one model's specific blind spot costs you a bet.
+**Why we use it:** Two trees of the same family but different building strategies make different mistakes. When XGBoost overfits to a quirk in the data, LightGBM often doesn't, and vice versa.
 
 **Current hyperparameters:**
 - `learning_rate`: 0.02 (reduced from 0.05)
@@ -123,11 +129,11 @@ This reduced training time and improved generalisation without losing any meanin
 
 #### **Logistic Regression** (20% of ensemble) — the sanity check
 
-**What it is:** A linear model. It assumes each feature contributes a fixed amount to the probability of a strikeout, with no interactions.
+**What it is:** A linear model. Each feature contributes a fixed amount to the probability of a strikeout, with no interactions.
 
-**Why we use it (despite being weaker):** Two reasons:
-1. **Sanity check.** If the trees aren't beating logistic regression by a meaningful margin, something's broken. They should always win, because Ks involve interactions (batter handedness × pitcher pitch mix, count situation × velocity, etc.) that linear models can't capture.
-2. **Ensemble diversity.** A linear model makes fundamentally different errors than tree models. Its weight in the ensemble (raised to 20% from 10%) adds robustness.
+**Why we use it:**
+1. **Sanity check.** If the trees aren't beating logistic regression by a meaningful margin, something's broken.
+2. **Ensemble diversity.** A linear model makes fundamentally different errors than tree models. Its weight (raised to 20% from 10%) adds robustness.
 
 **You'll see it in the logs as:** `Training Logistic Regression baseline...` and `[logreg_calibrated] AUC=...`
 
@@ -135,43 +141,47 @@ This reduced training time and improved generalisation without losing any meanin
 
 This isn't a base model — it's a wrapper applied **after** each base model and again on top of the ensemble.
 
-**What it does:** Maps raw model outputs to true probabilities. If XGBoost outputs "0.30" but in reality only 25% of those PAs actually end in strikeouts, isotonic regression learns that mapping (0.30 → 0.25) and corrects every future prediction.
+**What it does:** Maps raw model outputs to true probabilities. If XGBoost outputs "0.30" but in reality only 25% of those PAs end in strikeouts, isotonic regression learns that mapping (0.30 → 0.25) and corrects every future prediction.
 
-**Why this is the most important piece for betting:** Sportsbook prices are probabilities. If your model says 30% but reality is 25%, every "over 5.5 Ks at 2.10" bet you place based on the raw 30% is mispriced. Calibration is the difference between a model that scores well on AUC and a model that actually makes money.
+**Why this is the most important piece for betting:** Sportsbook prices are probabilities. If your model says 30% but reality is 25%, every "over 5.5 Ks at 2.10" bet you place is mispriced. Calibration is the difference between a model that scores well on AUC and one that actually makes money.
 
-**In-season recalibration:** The calibrators are initially fitted on 2025 validation data. As 2026 games accumulate, running `python run_daily.py --recalibrate` weekly re-fits the calibrators on completed 2026 outcomes — keeping the probability mapping current for the active season. See section 5 and 15.
+**In-season recalibration:** Calibrators are initially fitted on 2025 validation data. As 2026 games accumulate, running `python run_daily.py --recalibrate` weekly re-fits the calibrators on completed 2026 outcomes. See sections 5 and 15.
 
-**Where you'll see it working:** The Brier score in your evaluation metrics. A value below 0.14 means the probabilities reflect reality well — exactly what betting needs.
+**Where you'll see it working:** The Brier score in your evaluation metrics. A value below 0.14 means the probabilities reflect reality well.
 
 ### Why ensemble three models instead of just using XGBoost?
 
-Three reasons:
+1. **Calibration improves.** Averaging multiple models reduces variance and softens overconfident predictions — exactly what calibration needs.
+2. **Failure modes diversify.** When a single model has a bad day, the ensemble dilutes the damage.
+3. **It's almost free.** Adding two extra models adds ~2 minutes to training time. The Brier improvement is small (~0.002) but every basis point matters when betting real money.
 
-1. **Calibration improves.** Averaging multiple models reduces variance and softens overconfident predictions, which is exactly what calibration needs to work well.
-2. **Failure modes diversify.** When a single model has a bad day (because of a weird data point or a feature drift), the ensemble dilutes the damage.
-3. **It's almost free.** Adding two extra models added maybe 2 minutes to training time. The Brier improvement from ensembling vs. solo XGBoost is small (~0.002 in absolute terms), but every basis point of calibration matters when you're betting real money.
+### Why not other approaches?
 
-### Quick reference: what each model contributes to your final prediction
+- **Direct game-level regression** (predict total Ks straight from a pitcher-level feature row): less data per model, no per-batter granularity, can't generate over-line probabilities easily. The PA-then-aggregate path is strictly more expressive.
+- **Poisson regression on game totals:** a reasonable alternative, but assumes Ks are Poisson-distributed — they're not. They're Poisson-binomial (each batter has a different P(K)). The aggregation step in `game_aggregation.py` computes the *exact* Poisson-binomial distribution, which is more accurate.
+- **Neural nets / TabNet / MLPs:** generally tie or lose to XGBoost on tabular MLB data unless you have millions of rows and very rich raw Statcast inputs. Not worth the added complexity here.
+
+### Quick reference: what each model contributes
 
 | Model | Weight | Role |
 |---|---|---|
 | XGBoost | 55% | Primary predictor — strongest single model |
-| LightGBM | 25% | Diversifier within the same family — catches XGB's mistakes |
-| Logistic Regression | 20% | Sanity check + extra diversity from a different model class |
+| LightGBM | 25% | Diversifier — catches XGB's mistakes |
+| Logistic Regression | 20% | Sanity check + diversity from a different model class |
 | Isotonic Regression | (calibration) | Corrects probabilities so they reflect reality |
 
 ---
 
 ## 2. How the Data Is Split (and Why)
 
-The pipeline splits your data into three groups by **season**, not randomly. This matters a lot. Here's the full reasoning.
+The pipeline splits data by **season**, not randomly. Shuffling would cause temporal leakage — the model would see May 2024 data during training and June 2024 data during testing, implicitly learning about future conditions.
 
 ### The split
 
 | Split | Seasons | What it's used for |
 |---|---|---|
 | **Train** | 2023, 2024 | Fit XGBoost, LightGBM, and Logistic Regression |
-| **Validation** | 2025 | Decide when to stop training, fit initial calibration, tune the ensemble |
+| **Validation** | 2025 | Early stopping, fit initial calibration, tune the ensemble |
 | **Test** | 2026 | Final held-out evaluation — never touched during training |
 
 Configured in `config.py`:
@@ -181,33 +191,24 @@ VALIDATION_SEASON = 2025
 TEST_SEASON = 2026
 ```
 
-### Why split by season instead of randomly?
-
-**This is the single most important design decision in the pipeline.** If you randomly shuffled all rows and put 70% in train and 30% in test, the model would see PAs from May 2024 in training **and** PAs from June 2024 in test. This causes **temporal leakage** — the model implicitly learns about late-season conditions from early-season training rows from the same period. In real betting, you only ever predict *future* games.
-
-### Why these specific seasons?
-
-- **2023 and 2024 for training:** Two complete seasons gives the model enough data (~61K PAs) to learn pitcher-batter dynamics across many different matchups, parks, and weather conditions.
-- **2025 for validation:** A complete season the model hasn't seen. Used for early stopping, calibration, and ensemble tuning.
-- **2026 (current) for test:** This is the season you actually want to bet on. The model has never seen any of it — so its accuracy on this split is your honest estimate of real-world performance.
+- **2023 and 2024 for training:** Two complete seasons (~61K PAs) to learn pitcher-batter dynamics across many matchups, parks, and conditions.
+- **2025 for validation:** A complete unseen season. Used for early stopping, calibration, and ensemble tuning.
+- **2026 for test:** The season you actually bet on. Its accuracy is your honest real-world estimate.
 
 ### Rolling the windows forward
 
 When 2026 wraps up, edit `config.py`:
-
 ```python
-TRAIN_SEASONS = [2024, 2025]      # add 2025 to training, drop 2023
-VALIDATION_SEASON = 2026          # 2026 becomes validation
-TEST_SEASON = 2027                # next season is your test set
+TRAIN_SEASONS = [2024, 2025]
+VALIDATION_SEASON = 2026
+TEST_SEASON = 2027
 ```
 
-Why drop 2023? Old data hurts in baseball. Pitching philosophy, hitter approaches, and league-wide K rates evolve every year.
+Why drop 2023? Old data hurts in baseball — pitching philosophy and league-wide K rates evolve every year.
 
 ---
 
 ## 3. Project Directory Structure
-
-Your project lives in `C:\Users\andre\PycharmProjects\ajo\mlb\src\models\model_v4\`. Here's what each file does:
 
 ```
 mlb/
@@ -222,7 +223,7 @@ mlb/
             ├── models.py                ← XGBoost + LightGBM + Logistic Regression + isotonic calibration
             ├── evaluation.py            ← all model metrics
             ├── game_aggregation.py      ← turns per-PA predictions into pitcher-game totals
-            ├── sql_loader.py            ← your SQL Server connection helper
+            ├── sql_loader.py            ← SQL Server connection helper
             │
             ├── -- LIVE SCORING (run daily) --
             ├── run_daily.py             ← MAIN DAILY ENTRY — runs fetch + score
@@ -289,7 +290,7 @@ SELECT TOP 5 * FROM mlb.dbo.dim_player;
 -- In SSMS, open sql/create_future_matchups_view.sql and press F5
 ```
 
-**Note:** This view must be re-run whenever `create_future_matchups_view.sql` changes. The current version assigns PA counts by lineup rank (3 PAs for spots 1-3, 2 PAs for spots 4-9 = 21 total) rather than the previous flat 27. This corrects a systematic over-prediction of ~1-2 Ks per game.
+**Note:** Re-run this view whenever `create_future_matchups_view.sql` changes. The current version assigns PA counts by lineup rank (3 PAs for spots 1-3, 2 PAs for spots 4-9 = 21 total), correcting the previous flat 27 that over-inflated predicted Ks by ~1-2 per game.
 
 ### Step 6: Train the model for the first time
 ```bash
@@ -297,7 +298,7 @@ cd C:\Users\andre\PycharmProjects\ajo\mlb\src\models\model_v4
 python pipeline.py
 ```
 
-This takes 10-20 minutes (XGBoost and LightGBM now run up to 5,000 rounds with a lower learning rate of 0.02) and creates the trained model artifacts in `./artifacts/`.
+Takes 10-20 minutes. Creates trained model artifacts in `./artifacts/`.
 
 ### Step 7: Verify live scoring
 ```bash
@@ -313,7 +314,7 @@ WHERE split_set = 'future'
 ORDER BY game_date, predicted_strikeouts DESC;
 ```
 
-If predicted strikeouts are in the 3-8 range for starters, you're set up correctly.
+Predicted strikeouts in the 3-8 range for starters means you're set up correctly.
 
 ---
 
@@ -335,7 +336,7 @@ fact_hitter_pitcher_matchup_with_handedness  (135K+ historical rows)
 
 **Run:** `python pipeline.py` — once a week. Re-running daily adds noise without value.
 
-### Recalibration pipeline (`run_daily.py --recalibrate`) — runs weekly, from week 3-4 onwards
+### Recalibration pipeline (`run_daily.py --recalibrate`) — runs weekly from week 3-4 onwards
 
 Re-fits only the **isotonic calibrators** on completed 2026 games — without retraining XGBoost, LightGBM, or Logistic Regression. The base models stay the same; only the probability-to-reality mapping is updated.
 
@@ -350,16 +351,16 @@ Completed 2026 games in the matchup view
     Re-run score_future_games.py to apply updated calibration
 ```
 
-**Why this matters:** The calibrators were initially fitted on 2025 validation data. As 2026 outcomes accumulate, re-fitting on current-season data corrects for any drift between how the model behaved on 2025 data vs. how it behaves in 2026. This is especially important in the first half of the season when the pitch-clock, rule changes, or line-up trends may differ from 2025.
+**Why this matters:** Calibrators were initially fitted on 2025 validation data. As 2026 outcomes accumulate, re-fitting on current-season data corrects any drift between 2025 and 2026 conditions (pitch-clock changes, new rule changes, lineup trends).
 
-**When to start:** After 3-4 weeks into the 2026 season (roughly 5,000+ PA rows completed). Too early and the calibration is noisy; too late and you're leaving a correction on the table.
+**When to start:** After 3-4 weeks into the 2026 season (~5,000+ PA rows completed). Too early = noisy calibration. Too late = leaving a correction on the table.
 
 **Run:**
 ```bash
 python run_daily.py --recalibrate
 ```
 
-This recalibrates first, then scores future games in one command. After it completes, the updated calibrators are used automatically for all future scoring runs (including plain `run_daily.py`).
+This recalibrates then scores future games in one command. After it completes, the updated calibrators are used automatically for all future scoring runs.
 
 **Frequency:** Once a week, on the same day as your full retrain (e.g. Sunday).
 
@@ -395,7 +396,7 @@ The model itself only changes when you run `pipeline.py`. Recalibration (weekly)
 
 ### Phase A — Upstream data refresh (your existing pipelines)
 
-These build the raw data and feature tables that everything else depends on. **Run these first:**
+These build the raw data and feature tables that everything else depends on. **Run these first, after games complete each night:**
 
 ```bash
 python -m src.pipelines.mlb_player_pitching_gamelogs_gamePk
@@ -432,7 +433,7 @@ cd C:\Users\andre\PycharmProjects\ajo\mlb\src\models\model_v4
 python run_daily.py --recalibrate
 ```
 
-**Frequency:** weekly, on the same day as the full retrain. The `--recalibrate` flag updates calibrators on current-season data, then automatically re-scores future games. No need to run `run_daily.py` separately on that day.
+**Frequency:** weekly, same day as the full retrain. On weeks when you retrain: run `python pipeline.py` first, then `python run_daily.py --recalibrate`.
 
 ### Phase D — Live scoring (daily, without recalibration)
 
@@ -441,7 +442,7 @@ cd C:\Users\andre\PycharmProjects\ajo\mlb\src\models\model_v4
 python run_daily.py
 ```
 
-**Frequency:** daily, in the morning before you intend to bet. On weeks when you also retrain, run `python pipeline.py` first, then `python run_daily.py --recalibrate`.
+**Frequency:** daily, in the morning before you intend to bet.
 
 ### Phase E — Bet recommendations (pre-game)
 
@@ -454,7 +455,20 @@ In SSMS:
 
 ### Phase F — Settlement (next day)
 
-After games complete, your upstream pipelines (Phase A) re-populate `actual_strikeouts`. Then re-run `sql/compute_ev.sql` to populate `bet_result` (WIN / LOSS / PUSH).
+After games complete, run Phase A upstream pipelines. Then:
+```sql
+-- Populate actual_strikeouts from pitching gamelogs
+UPDATE ev
+SET ev.actual_strikeouts = g.strikeOuts
+FROM mlb.dbo.fact_pitcher_strikeout_betting_ev ev
+JOIN mlb.dbo.fact_player_pitching_gamelogs g
+  ON g.player_id = ev.pitcher_id
+ AND g.gamePk    = ev.gamePk
+WHERE ev.actual_strikeouts IS NULL
+  AND g.strikeOuts IS NOT NULL;
+```
+
+Then re-run `sql/compute_ev.sql` to populate `bet_result` (WIN / LOSS / PUSH).
 
 ### When to run what — quick reference
 
@@ -467,7 +481,7 @@ After games complete, your upstream pipelines (Phase A) re-populate `actual_stri
 | Fetch probable pitchers + score (Phase D) | **Daily**, morning | `python run_daily.py` |
 | Enter sportsbook odds (Phase E) | Pre-game | UPDATE statements in SSMS |
 | Compute EV (Phase E) | Pre-game | F5 `sql/compute_ev.sql` |
-| Settle bet results (Phase F) | Day after | Re-run `sql/compute_ev.sql` |
+| Settle bet results (Phase F) | Day after | UPDATE actuals + re-run `sql/compute_ev.sql` |
 
 ---
 
@@ -497,6 +511,8 @@ One row per starting pitcher per game.
 | `prob_over_3_5` through `prob_over_9_5` | P(pitcher records ≥ threshold Ks) |
 | `actual_strikeouts` | What actually happened (NULL until game completes) |
 | `split_set` | `validation` (2025), `test` (2026), or `future` (upcoming) |
+
+**How `actual_strikeouts` gets populated:** When Phase A upstream pipelines run after games complete and `pipeline.py` re-runs weekly, it back-fills actuals from the source matchup view automatically via `update_ev_actuals()`. For immediate settlement without waiting for a full retrain, run the Phase F UPDATE above directly.
 
 ### `fact_pitcher_strikeout_betting_ev` — your EV worksheet
 
@@ -529,6 +545,8 @@ Pre-populated with every test-season and future pitcher-game. You manually fill 
 | `avg_strike_pct_last_3/5/10` | Average strike percentage over last 3/5/10 starts |
 | `avg_pitches_per_inning_last_3/5/10` | Average pitches per inning over last 3/5/10 starts |
 
+**Note on avg_k columns:** These come from `fact_pitcher_model_featuresv2` via the pitcher's most recent gamePk in that table. If `pitcher_features_v2` hasn't run recently, the values may reflect an older period. If avg_k looks inconsistent with recent game logs, run Phase A pipelines to refresh the feature table, then re-run `python run_daily.py`.
+
 **Sportsbook entry (you fill in):**
 
 | Column | Example |
@@ -555,11 +573,11 @@ Pre-populated with every test-season and future pitcher-game. You manually fill 
 
 ### `fact_pa_strikeout_predictions` — per plate-appearance detail
 
-Granular per-batter predictions. Use for deep-dive analysis ("which specific hitters in this lineup is the model most confident about?").
+Granular per-batter predictions. Use for deep-dive analysis: which specific hitters in this lineup is the model most confident about?
 
 ### `fact_model_evaluation_metrics` — performance log
 
-A new batch of rows each pipeline run. Lets you watch the model's accuracy over time.
+A new batch of rows each pipeline run. Watch these over time — if Brier or MAE start drifting upwards, the model needs retraining.
 
 ```sql
 SELECT * FROM mlb.dbo.fact_model_evaluation_metrics
@@ -577,32 +595,36 @@ For every pitcher you want to consider betting:
 ```sql
 UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
 SET sportsbook = 'Sportsbet',
-    line = 4.5,
-    over_odds = 2.00,
-    under_odds = 1.75
-WHERE game_date = '2026-05-05'
-  AND pitcher_name = 'Chris Bassitt';
+    line = 5.5,
+    over_odds = 1.90,
+    under_odds = 1.90
+WHERE game_date = '2026-05-10'
+  AND pitcher_name = 'Sandy Alcantara';
 ```
 
-**Decimal odds only.** Australian sportsbooks already use this format. If you're checking a US book, convert: `decimal = (american / 100) + 1` for positive American odds.
+**Decimal odds only.** Australian sportsbooks already use this format. If checking a US book, convert: `decimal = (american / 100) + 1` for positive American odds.
 
 After updating odds, run `compute_ev.sql` to populate the EV columns.
 
 ### Bet results (after games finish)
 
-The pipeline pulls `actual_strikeouts` automatically when you re-run it. Or update directly:
+`compute_ev.sql` reads `actual_strikeouts` to produce `bet_result` — but it does not populate `actual_strikeouts` itself. Populate it first:
 
 ```sql
+-- Direct from pitching gamelogs (most reliable)
 UPDATE ev
-SET ev.actual_strikeouts = g.actual_strikeouts
+SET ev.actual_strikeouts = g.strikeOuts
 FROM mlb.dbo.fact_pitcher_strikeout_betting_ev ev
-JOIN mlb.dbo.fact_pitcher_game_strikeout_predictions g
-  ON g.gamePk = ev.gamePk AND g.pitcher_id = ev.pitcher_id
+JOIN mlb.dbo.fact_player_pitching_gamelogs g
+  ON g.player_id = ev.pitcher_id
+ AND g.gamePk    = ev.gamePk
 WHERE ev.actual_strikeouts IS NULL
-  AND g.actual_strikeouts IS NOT NULL;
+  AND g.strikeOuts IS NOT NULL;
 ```
 
-Then re-run `compute_ev.sql` — it fills in `bet_result` automatically.
+Then re-run `compute_ev.sql` — Step 7 fills in `bet_result` automatically.
+
+Alternatively, after a full weekly retrain, `pipeline.py` calls `update_ev_actuals()` which back-fills both `actual_strikeouts` and `bet_result` in one step for all completed games.
 
 ### Season splits (once per year)
 
@@ -620,22 +642,31 @@ TEST_SEASON = 2027
 
 Once you're comfortable, your daily routine is roughly **15–20 minutes**:
 
-### Morning (5 minutes)
+### Morning (5 minutes) — settle yesterday
 
-1. Settle yesterday's bets:
+1. Run Phase A upstream pipelines (to refresh gamelogs with last night's results)
+
+2. Populate actual strikeouts for settled bets:
    ```sql
-   UPDATE mlb.dbo.fact_pitcher_strikeout_betting_ev
-   SET actual_strikeouts = (SELECT actual_strikeouts FROM mlb.dbo.fact_pitcher_game_strikeout_predictions g
-                            WHERE g.gamePk = ev.gamePk AND g.pitcher_id = ev.pitcher_id)
+   UPDATE ev
+   SET ev.actual_strikeouts = g.strikeOuts
    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev ev
-   WHERE actual_strikeouts IS NULL;
+   JOIN mlb.dbo.fact_player_pitching_gamelogs g
+     ON g.player_id = ev.pitcher_id
+    AND g.gamePk    = ev.gamePk
+   WHERE ev.actual_strikeouts IS NULL
+     AND g.strikeOuts IS NOT NULL;
    ```
-2. Run `compute_ev.sql` to mark WIN/LOSS on yesterday's bets.
-3. Glance at performance (see section 11).
 
-### Afternoon (10 minutes)
+3. Run `compute_ev.sql` to mark WIN/LOSS/PUSH on yesterday's bets.
 
-1. Pull tonight's slate:
+4. Glance at performance (see section 15 monthly query).
+
+### Afternoon (10 minutes) — score today's games
+
+1. Run `python run_daily.py` to fetch probable pitchers and score today's games.
+
+2. Pull tonight's slate:
    ```sql
    SELECT pitcher_name, opponent_team_name, predicted_strikeouts,
           predicted_k_stddev, prob_over_5_5, prob_over_6_5,
@@ -647,16 +678,16 @@ Once you're comfortable, your daily routine is roughly **15–20 minutes**:
    ORDER BY predicted_strikeouts DESC;
    ```
 
-2. Open your sportsbook. For each interesting pitcher, write down the line and over/under odds.
+3. Open your sportsbook. For each interesting pitcher, write down the line and over/under odds.
 
-3. Update the EV table (see section 8).
+4. Update the EV table (see section 8).
 
-4. Run `compute_ev.sql`.
+5. Run `compute_ev.sql`.
 
-5. Read the recommendations:
+6. Read the recommendations:
    ```sql
    SELECT pitcher_name, opponent_team_name, line, predicted_strikeouts,
-          model_prob_over, over_odds, edge_over, ev_over,
+          predicted_k_stddev, model_prob_over, over_odds, edge_over, ev_over,
           recommended_side, kelly_fraction,
           avg_k_last_5, weighted_k_per_bf_last_5
    FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
@@ -665,11 +696,12 @@ Once you're comfortable, your daily routine is roughly **15–20 minutes**:
    ORDER BY ev_over DESC;
    ```
 
-### Pre-game (5 minutes)
+### Pre-game (5 minutes) — place bets
 
-1. Place each recommended bet at the suggested Kelly fraction.
-2. **Cap any single bet at 5% of bankroll** even if Kelly says higher.
-3. Check confirmed lineups before final placement — late scratches invalidate predictions.
+1. Walk through the pre-bet sequence (see section 11) for each recommendation.
+2. Place each recommended bet at the suggested Kelly fraction.
+3. **Cap any single bet at 5% of bankroll** even if Kelly says higher.
+4. Check confirmed lineups before final placement — late scratches invalidate predictions.
 
 ---
 
@@ -679,7 +711,7 @@ Once you're comfortable, your daily routine is roughly **15–20 minutes**:
 
 #### **ROC AUC** (`roc_auc`)
 
-Measures how well the model ranks PAs likely to end in K above those unlikely to. AUC runs lower than typical binary classifiers because the target is fractional (per-PA K rate, not binary 0/1).
+Measures how well the model ranks PAs likely to end in K above those unlikely to. AUC runs lower than typical binary classifiers because the target is fractional.
 
 | Value | Verdict |
 |---|---|
@@ -787,7 +819,7 @@ Quarter-Kelly stake as a fraction of bankroll.
 | 0.02 – 0.04 | Moderate stake (2–4%) |
 | 0.04 – 0.05 | Large stake — script's practical cap |
 
-**The 5% cap is non-negotiable.** Model uncertainty is real.
+**The 5% cap is non-negotiable.** Model uncertainty is real. Full Kelly is only optimal if your probability estimates are exactly right — they're not. Quarter-Kelly cuts variance dramatically while capturing most of the long-run growth.
 
 #### **predicted_k_stddev** — the model's uncertainty signal
 
@@ -797,7 +829,7 @@ A pitcher with `predicted_strikeouts = 6.0` and `predicted_k_stddev = 1.5`:
 - Realistic range: **4–8 Ks** (predicted ± 1 stddev = ~68% of outcomes)
 - Very likely range: **3–9 Ks** (predicted ± 2 stddev = ~95% of outcomes)
 
-Stddev is highest when the pitcher faces many batters and per-PA K rates are near 0.5. It is lowest when per-PA probabilities are extreme (near 0 or 1 = the model is very certain on each batter).
+Stddev is highest when the pitcher faces many batters and per-PA K rates are near 0.5. It is lowest when per-PA probabilities are extreme (near 0 or 1).
 
 **Stddev ranges and stake adjustments:**
 
@@ -812,13 +844,13 @@ Stddev is highest when the pitcher faces many batters and per-PA K rates are nea
 
 **The combined check — how far is the line from the prediction?**
 
-Stddev is most damaging when the sportsbook line sits close to the predicted K total. Calculate this in your head before betting:
+Stddev is most damaging when the sportsbook line sits close to the predicted K total:
 
 ```
 signal_ratio = (predicted_strikeouts - line) / predicted_k_stddev
 ```
 
-For UNDER bets, use `(line - predicted_strikeouts) / predicted_k_stddev`.
+For UNDER bets: `(line - predicted_strikeouts) / predicted_k_stddev`
 
 | signal_ratio | Verdict |
 |---|---|
@@ -827,45 +859,40 @@ For UNDER bets, use `(line - predicted_strikeouts) / predicted_k_stddev`.
 | 0.2 – 0.5 | **Marginal** — one bad inning erases the edge |
 | < 0.2 | **Noise** — the bet is near a coin flip; pass regardless of EV |
 
-**Example:** `predicted = 6.5`, `line = 5.5`, `stddev = 1.6` → signal_ratio = (6.5−5.5)/1.6 = **0.625** (acceptable OVER). Same prediction, `line = 6.5` → signal_ratio = 0.0/1.6 = **0.0** (pass).
+**Example:** `predicted = 6.5`, `line = 5.5`, `stddev = 1.6` → signal_ratio = (6.5−5.5)/1.6 = **0.625** (acceptable OVER).
 
 ### Using the recent form columns to validate a bet
-
-Before placing any bet, cross-check the model's prediction against the pitcher's actual recent performance:
 
 | Column | What to look for |
 |---|---|
 | `avg_k_last_3` vs `line` | If avg Ks over last 3 starts is above the line, that's supporting context for OVER |
-| `weighted_k_per_bf_last_5` | K rate × 21 PAs = rough implied Ks. If this is near predicted_strikeouts, the prediction is grounded in recent form |
+| `weighted_k_per_bf_last_5` | K rate × 21 PAs = rough implied Ks. If this is near `predicted_strikeouts`, the prediction is grounded in recent form |
 | `avg_strike_pct_last_5` | Strike% above 0.65 is a strong K environment |
-| `avg_pitches_per_inning_last_5` | High pitches/IP (>17) may mean deeper counts but fewer innings pitched — K total could swing either way |
-| `games_2026` | Low value (< 4) means you have little 2026 data for this pitcher — treat the prediction with more uncertainty |
+| `avg_pitches_per_inning_last_5` | High pitches/IP (>17) may mean deeper counts but fewer innings pitched |
+| `games_2026` | < 4 starts means limited current-season data — treat the prediction with more uncertainty |
 
 ### What to look for when placing a bet — pre-bet sequence
 
-Walk through this in order before acting on any `recommended_side`:
-
 **Step 1 — EV and edge (minimum requirements)**
-- `ev_over` or `ev_under` ≥ 0.05 (the script enforces this, but verify)
-- `edge_over` or `edge_under` ≥ 0.06 (below 3% is noise after vig)
+- `ev_over` or `ev_under` ≥ 0.05
+- `edge_over` or `edge_under` ≥ 0.06
 
 **Step 2 — Confidence check (`predicted_k_stddev`)**
 - Stddev < 2.2 is comfortable; 2.2–2.5 is caution; > 2.5 consider skipping
 - Calculate `signal_ratio = (predicted_strikeouts - line) / predicted_k_stddev`
-  - Below 0.3: the edge is too thin relative to variance — pass even if EV looks good
+  - Below 0.3: pass even if EV looks good
   - Above 0.6: the gap is meaningful — stddev is less of a concern
 
 **Step 3 — Recent form cross-check**
-- `avg_k_last_5` vs `line`: pitcher averaging above the line over 5 starts supports OVER
-- `weighted_k_per_bf_last_5 × 21` ≈ implied Ks from recent K rate; if this is far from `predicted_strikeouts`, the model expects a form reversal — add caution
+- `avg_k_last_5` vs `line`: above the line over 5 starts supports OVER
+- `weighted_k_per_bf_last_5 × 21` ≈ implied Ks from recent rate; large gap vs `predicted_strikeouts` means the model expects a form reversal — add caution
 - `avg_strike_pct_last_5` ≥ 0.65 supports K volume
-- `games_2026` < 4: limited current-season data — treat the prediction as less reliable
+- `games_2026` < 4: limited current-season data — treat prediction as less reliable
 
 **Step 4 — Matchup check**
 - `same_side_ratio = opp_same_side_count / (opp_same_side_count + opp_opposite_side_count)`
   - > 0.55: K-friendly lineup for the pitcher
   - < 0.40: lineup is angled against the pitcher's handedness — extra scrutiny for OVER
-- Check opponent team's recent K tendencies if you have time
 
 **Step 5 — Confirm odds are still current**
 - Lines move in the hours before game time; re-confirm before placing
@@ -873,7 +900,7 @@ Walk through this in order before acting on any `recommended_side`:
 
 **Step 6 — Confirm the lineup**
 - Late scratches (top-3 hitters especially) can meaningfully shift the prediction
-- If a high-K-rate batter is out, OVER bets on that pitcher weaken; check confirmed lineups 30–60 min before first pitch
+- Check confirmed lineups 30–60 min before first pitch
 
 **Stake sizing:**
 - Start with `kelly_fraction × bankroll`
@@ -893,22 +920,21 @@ Walk through this in order before acting on any `recommended_side`:
 
 ### About the bias correction in compute_ev.sql (`@BIAS_KS`)
 
-The model may over-predict total Ks due to two compounding factors:
+The model may over-predict total Ks due to:
+1. **Model training bias** — if base models over-estimate per-PA K probability, this multiplies up to ~1-2 extra Ks per game
+2. **Synthetic PA inflation** — the future matchups view assigns 21 total PAs per game. If the actual starter faces fewer batters, predictions will be proportionally high
 
-1. **Model training bias** — if the base models over-estimate per-PA K probability (e.g. from a misconfigured training run), this multiplies up to ~1-2 extra Ks per game
-2. **Synthetic PA inflation** — the future matchups view assigns 21 total PAs per game (3 for lineup spots 1-3, 2 for spots 4-9). If the actual starter faces fewer batters (short outing), predictions will be proportionally high
-
-To correct for this, `compute_ev.sql` has a `@BIAS_KS` variable at the top:
+`compute_ev.sql` has a `@BIAS_KS` variable at the top:
 
 ```sql
 DECLARE @BIAS_KS FLOAT = 0.0;  -- tune from the diagnostic query
 ```
 
-When set to a positive value (e.g. 1.0), it shifts the effective line up when reading from the pre-computed probability table. For example, with `@BIAS_KS = 1.0` and a line of 4.5, the script looks up `prob_over_5_5` instead of `prob_over_4_5` — effectively saying "the model over-predicts by 1 K, so the true probability of beating 4.5 equals the model's probability of beating 5.5".
+When set positive (e.g. 1.0), it shifts the effective line up when reading from the pre-computed probability table. With `@BIAS_KS = 1.0` and a line of 4.5, the script looks up `prob_over_5_5` instead of `prob_over_4_5`.
 
 **Setting `@BIAS_KS` correctly:**
 
-Run the diagnostic query at the bottom of `compute_ev.sql` to measure historical bias:
+Run the diagnostic query at the bottom of `compute_ev.sql`:
 
 ```sql
 SELECT g.split_set, COUNT(*) AS games,
@@ -920,8 +946,6 @@ WHERE g.actual_strikeouts IS NOT NULL
 GROUP BY g.split_set;
 ```
 
-Then use this table:
-
 | Measured avg_bias | Set `@BIAS_KS` |
 |---|---|
 | 0.0 – 0.3 | 0.0 (no correction) |
@@ -930,21 +954,17 @@ Then use this table:
 | 1.2 – 1.7 | 1.5 |
 | > 1.7 | 2.0 |
 
-Note: `@BIAS_KS` must be a multiple of 0.5 because the probability table only has columns at 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5.
+`@BIAS_KS` must be a multiple of 0.5 — the probability table only has columns at 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5.
 
-**After retraining the model** with corrected hyperparameters (learning rate 0.02, LGBM num_leaves 31), re-run the diagnostic — bias should be closer to zero and `@BIAS_KS` can be set back to 0.0.
-
-**Also check the bet result summary** (second diagnostic query in the script) to see if OVER has historically been winning or losing. If OVER win% is below 45%, bias correction is needed.
+After retraining with corrected hyperparameters, re-run the diagnostic — bias should be near zero and `@BIAS_KS` can return to 0.0.
 
 ---
 
 ## 12. Handedness — Reading Platoon Matchups
 
-The model uses **batter handedness and pitcher throwing arm** as direct features. Same-side matchups (RHP vs RHB, LHP vs LHB) produce K rates 2-4 percentage points higher than opposite-side matchups.
+Same-side matchups (RHP vs RHB, LHP vs LHB) produce K rates 2-4 percentage points higher than opposite-side matchups.
 
-### What handedness columns are in your tables
-
-#### `fact_pitcher_game_strikeout_predictions` and `fact_pitcher_strikeout_betting_ev`
+### What handedness columns mean
 
 | Column | Meaning |
 |---|---|
@@ -988,15 +1008,18 @@ ORDER BY same_side_ratio DESC;
 ### All recommendations showing OVER
 
 If nearly every game shows `recommended_side = OVER`, the model is over-predicting K totals. Two root causes:
-
 1. **Model bias** — run the diagnostic in `compute_ev.sql` and increase `@BIAS_KS` if avg_bias > 0.7
-2. **Lines are too conservative** — compare `predicted_strikeouts` vs `line` across games; if the gap is consistently > 1.5 Ks, the model may be correct and sportsbooks are setting low lines
+2. **Lines are too conservative** — if the gap between `predicted_strikeouts` and `line` is consistently > 1.5 Ks, the model may be correct and sportsbooks are setting low lines
 
-The permanent fix is retraining with updated hyperparameters (`python pipeline.py`), which should reduce any systematic over-prediction.
+The permanent fix is retraining (`python pipeline.py`).
+
+### All recommendations showing UNDER
+
+This is normal and expected. Sportsbooks deliberately set K prop lines high because recreational bettors love betting OVER. The value side in K markets is structurally more often UNDER. Before acting, verify that the model prediction AND recent form (avg_k_last_5) both support the under — if the model predicts low but recent form is high, add caution.
 
 ### Calibration drift
 
-If `Brier` starts climbing across pipeline runs (e.g. 0.137 → 0.152), re-train and run `--recalibrate`. This usually happens after major league-wide changes.
+If `Brier` starts climbing across pipeline runs (e.g. 0.137 → 0.152), re-train and run `--recalibrate`. Usually happens after major league-wide changes.
 
 ### Bias drift
 
@@ -1006,9 +1029,21 @@ If overall `bias` consistently exceeds +0.4 across runs, increase `@BIAS_KS` in 
 
 If AUC suddenly > 0.70 when previous runs were ~0.58, investigate immediately — a leakage column has likely crept into `LEAKAGE_COLS` in `config.py`.
 
+### avg_k columns out of sync with game logs
+
+If `avg_k_last_3/5/10` look inconsistently high or low compared to a pitcher's recent game logs, the `fact_pitcher_model_featuresv2` feature table is stale. Verify:
+```sql
+SELECT TOP 1 p.player_id, p.gamePk, g.game_date, p.avg_k_last_3
+FROM mlb.dbo.fact_pitcher_model_featuresv2 p
+JOIN mlb.dbo.mlb_schedule g ON g.gamePk = p.gamePk
+WHERE CAST(p.player_id AS INT) = <pitcher_id>
+ORDER BY p.gamePk DESC;
+```
+If `game_date` is old, run Phase A pipelines including `pitcher_features_v2`, then re-run `python run_daily.py`.
+
 ### Late lineup changes
 
-The model uses the most recent lineup it saw. If a star sits at game time and predictions weren't refreshed, the prediction is wrong. **Always check confirmed lineups before placing significant bets.**
+The model uses the most recent lineup it saw. If a star sits at game time, the prediction is wrong. Always check confirmed lineups before placing significant bets.
 
 ### Sportsbook line movement
 
@@ -1016,7 +1051,11 @@ Lines move. The odds you saw at lunch might shift at game time after sharp money
 
 ### The 5% bankroll cap
 
-**Never stake more than 5% of bankroll on one bet**, regardless of Kelly. Model uncertainty is real and a single 50% Kelly bet that loses can wipe out months of grinding.
+Never stake more than 5% of bankroll on one bet, regardless of Kelly. A single 50% Kelly bet that loses can wipe out months of grinding.
+
+### Sample weights
+
+The source view has some rows representing single PAs and some representing multi-PA aggregates (`hitter_plate_appearances > 1`). The `sample_weight` column scales their influence. The pipeline uses it automatically — no action needed, but be aware that raw row counts in the source data don't equal PA counts.
 
 ---
 
@@ -1029,16 +1068,19 @@ Lines move. The odds you saw at lunch might shift at game time after sharp money
 | `recommended_side` is all PASS | No edges, OR odds not entered | Check `over_odds` is filled in; also check `@BIAS_KS` isn't too high |
 | `recommended_side` is all OVER | Model over-predicting (bias) | Run diagnostic in `compute_ev.sql`; increase `@BIAS_KS` or retrain |
 | Duplicate rows in prediction tables | Pipeline ran twice without cleanup | Run `sql/cleanup_duplicates.sql` once; pipeline auto-clears going forward |
+| Duplicate rows in EV table (two rows same game) | `pipeline.py` re-ran — completed game inserted as new test-set row alongside protected bet row | Delete the NULL-sportsbook duplicate: `DELETE FROM ev WHERE gamePk=? AND pitcher_id=? AND sportsbook IS NULL` |
 | AUC dropped below 0.55 | Source data issue | Check `LEAKAGE_COLS` and recent source view changes |
 | AUC above 0.70 | Leakage | Investigate `LEAKAGE_COLS`; a post-game column probably leaked in |
 | `--recalibrate` warns "only N rows" | Season is too young | Wait until 3-4 weeks in (5,000+ PA rows). Proceed with existing 2025-fitted calibrators |
-| `--recalibrate` runs but predictions unchanged | score_future_games.py not re-run | Run `python run_daily.py --recalibrate` (includes re-scoring) or re-run `score_future_games.py` manually |
+| `--recalibrate` runs but predictions unchanged | `score_future_games.py` not re-run | Run `python run_daily.py --recalibrate` (includes re-scoring) |
 | `score_future_games.py` says "no future matchups found" | MLB API hasn't published probable pitchers, or `fact_future_matchups` view is stale | Run `python fetch_probable_pitchers.py`; check `dim_probable_pitchers` has rows |
 | Future predictions look far too high (predicted > 8 Ks routinely) | Old model artifacts still in use | Re-run `python pipeline.py` with updated config hyperparameters |
-| `predicted_strikeouts` looks too low (< 3) for starters | Reliever included, or `fact_future_matchups` view not recreated after SQL change | Re-run `sql/create_future_matchups_view.sql` in SSMS; filter `batters_faced_modeled >= 15` |
+| `predicted_strikeouts` looks too low (< 3) for starters | Reliever included, or `fact_future_matchups` view not recreated | Re-run `sql/create_future_matchups_view.sql` in SSMS; filter `batters_faced_modeled >= 15` |
 | `Invalid object name 'dbo.fact_pitcher_game_strikeout_predictions'` | Table was dropped | Re-run `python pipeline.py` — `ensure_output_tables()` recreates it |
 | `model_prob_over` is NULL after running compute_ev.sql | Line is not a standard .5 boundary (e.g. 4.3, 3.4) | Only lines 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5 are supported |
-| New EV table columns (avg_k_last_3 etc.) are all NULL | Table predates the ALTER TABLE additions | Run `pipeline.py` or `score_future_games.py` — `ensure_output_tables()` adds the columns automatically |
+| New EV table columns (avg_k_last_3 etc.) are all NULL | Table predates the ALTER TABLE additions | Run `pipeline.py` or `score_future_games.py` — `ensure_output_tables()` adds columns automatically |
+| `actual_strikeouts` not updating when compute_ev.sql runs | compute_ev.sql only reads actuals — doesn't populate them | Run the Phase F UPDATE against `fact_player_pitching_gamelogs` first, then re-run compute_ev.sql |
+| avg_k columns don't match pitcher's recent game logs | `fact_pitcher_model_featuresv2` is stale | Run Phase A pipelines including `pitcher_features_v2`, then re-run `python run_daily.py` |
 
 ---
 
@@ -1047,10 +1089,10 @@ Lines move. The odds you saw at lunch might shift at game time after sharp money
 ### Daily
 - Run upstream data pipelines (Phase A)
 - Run `python run_daily.py` for live scoring
-- Settle yesterday's bets via `compute_ev.sql`
+- Settle yesterday's bets (Phase F UPDATE + re-run compute_ev.sql)
 
 ### Weekly
-1. **Re-train model** — picks up the latest data:
+1. **Re-train model:**
    ```bash
    python pipeline.py
    ```
@@ -1059,9 +1101,7 @@ Lines move. The odds you saw at lunch might shift at game time after sharp money
    ```bash
    python run_daily.py --recalibrate
    ```
-   This re-fits the isotonic calibrators on completed 2026 games. Run it on the same day as the full retrain. If you're on the Sunday retrain cycle:
-   - Sunday: `python pipeline.py` → `python run_daily.py --recalibrate`
-   - Mon–Sat: `python run_daily.py`
+   Sunday cycle: `python pipeline.py` → `python run_daily.py --recalibrate`. Mon–Sat: `python run_daily.py`.
 
    **Start using `--recalibrate` when:**
    - At least 3-4 weeks into the 2026 season
@@ -1078,30 +1118,30 @@ Lines move. The odds you saw at lunch might shift at game time after sharp money
    ```
 
 ### Monthly
-- Review your bet log:
-  ```sql
-  SELECT
-      COUNT(*) AS total_bets,
-      SUM(CASE WHEN bet_result = 'WIN' THEN 1 ELSE 0 END) AS wins,
-      SUM(CASE WHEN bet_result = 'LOSS' THEN 1 ELSE 0 END) AS losses,
-      AVG(CASE WHEN bet_result = 'WIN' THEN 1.0 ELSE 0.0 END) AS hit_rate,
-      SUM(CASE
-              WHEN bet_result = 'WIN' AND recommended_side = 'OVER' THEN over_odds - 1
-              WHEN bet_result = 'WIN' AND recommended_side = 'UNDER' THEN under_odds - 1
-              WHEN bet_result = 'LOSS' THEN -1
-              ELSE 0
-          END) AS profit_per_unit_staked
-  FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
-  WHERE bet_result IS NOT NULL;
-  ```
+Review your bet log:
+```sql
+SELECT
+    COUNT(*) AS total_bets,
+    SUM(CASE WHEN bet_result = 'WIN' THEN 1 ELSE 0 END) AS wins,
+    SUM(CASE WHEN bet_result = 'LOSS' THEN 1 ELSE 0 END) AS losses,
+    AVG(CASE WHEN bet_result = 'WIN' THEN 1.0 ELSE 0.0 END) AS hit_rate,
+    SUM(CASE
+            WHEN bet_result = 'WIN' AND recommended_side = 'OVER' THEN over_odds - 1
+            WHEN bet_result = 'WIN' AND recommended_side = 'UNDER' THEN under_odds - 1
+            WHEN bet_result = 'LOSS' THEN -1
+            ELSE 0
+        END) AS profit_per_unit_staked
+FROM mlb.dbo.fact_pitcher_strikeout_betting_ev
+WHERE bet_result IS NOT NULL;
+```
+
 - If hit_rate > 0.55 with > 50 bets, your edge is showing. Continue.
 - If profit_per_unit_staked is negative after 100+ bets, re-train and re-evaluate `@BIAS_KS`.
 
 ### Every 4-6 weeks
-**Re-tune `@BIAS_KS` in `compute_ev.sql`** using the diagnostic query at the bottom of that script.
+**Re-tune `@BIAS_KS` in `compute_ev.sql`** using the diagnostic query at the bottom of that script:
 
 ```sql
--- Run in SSMS — measures actual model bias across K prediction buckets
 SELECT
     CASE
         WHEN predicted_strikeouts < 4 THEN '1. Low (<4)'
@@ -1126,24 +1166,62 @@ GROUP BY
     END;
 ```
 
-Use the overall `avg_bias` (from the simpler query at the bottom of `compute_ev.sql`) to set `@BIAS_KS` to the nearest 0.5.
-
-After a full retrain with the corrected hyperparameters (LR 0.02, LGBM num_leaves 31), re-run the diagnostic — bias should be near zero and `@BIAS_KS` can return to 0.0.
-
 ### Per-season
 - Roll season splits in `config.py`
-- Drop the four output tables and re-run for a clean slate
+- Drop the four output tables and re-run `pipeline.py` for a clean slate
 - Reset `@BIAS_KS` to 0.0 and re-measure after a few weeks of the new season
+
+---
+
+## 16. What to Build Next
+
+In priority order:
+
+1. **Park factors** — strikeout rates vary noticeably by ballpark (high altitude, foul territory size, etc.). Adding `park_id` as a categorical feature or merging in pitcher-friendly factor coefficients would tighten predictions by ~0.1-0.2 Ks per game.
+
+2. **Umpire** — strike zone size varies meaningfully across umpires. Statcast publishes per-umpire zone data and CSW (called strikes + whiffs) rates. A tight-zone umpire working a high-K pitcher is a genuine OVER signal.
+
+3. **Weather** — wind direction and game-time temperature affect K rate slightly. Free APIs are available (e.g. Open-Meteo). Most useful for games in extreme conditions (wind chill below 45°F, strong wind blowing in).
+
+4. **Closing line value tracking** — log the line you bet at and the closing line. If your bets consistently beat the close, you have real edge. If not, you're getting lucky. This is the gold-standard check for model validity.
+
+5. **SHAP values** — per-prediction feature attribution would let you sanity-check why the model thinks a pitcher will dominate or get rocked. Worth running for high-stake picks to catch edge cases where a single feature is driving an unusual prediction.
+
+6. **A reliever model** — currently we only score starters for game totals. Reliever K rates are different and could be modelled separately if you want to bet team-total Ks or first-5-innings markets.
+
+---
+
+## 17. Glossary
+
+| Term | Meaning |
+|---|---|
+| PA | Plate Appearance — one batter facing one pitcher, ends in a strikeout, walk, hit, out, etc. |
+| K | Strikeout |
+| Calibration | When a model says 30%, the event happens 30% of the time |
+| AUC | Area Under ROC Curve — model's ability to rank Ks above non-Ks |
+| Brier score | Mean squared error of probabilities vs binary outcomes |
+| EV | Expected Value — average return on a $1 bet over many trials |
+| Edge | model_prob − implied_prob — how much better your probability estimate is than the book's |
+| Kelly criterion | Bet-sizing formula maximising long-run bankroll growth |
+| Quarter-Kelly | Using 25% of the full Kelly stake — standard practice given model uncertainty |
+| Vig / juice | The sportsbook's built-in margin (1.90/1.90 implies ~52.6% each side, not 50%) |
+| Poisson-binomial | Distribution of the sum of independent non-identical Bernoullis (= total Ks given each batter has a different P(K)) |
+| Isotonic regression | A monotone function fitted to map raw model scores to calibrated probabilities |
+| signal_ratio | (predicted_strikeouts − line) / predicted_k_stddev — measures whether the edge is meaningful relative to model uncertainty |
+| Platoon advantage | The tendency for same-handedness matchups (RHP vs RHB, LHP vs LHB) to produce more strikeouts than opposite-side matchups |
+| Split set | The season category of a row: `train` (2023-24), `validation` (2025), `test` (2026), `future` (upcoming games) |
+| @BIAS_KS | Variable in compute_ev.sql that shifts the effective line lookup to correct for systematic model over-prediction |
 
 ---
 
 ## Final reminders
 
-1. **You will lose 40–45% of individual bets even with positive EV.** Variance is brutal. Trust the system.
+1. **You will lose 40–45% of individual bets even with positive EV.** Variance is brutal over short samples. Trust the system over hundreds of bets, not dozens.
 2. **Quarter-Kelly is conservative deliberately.** Never override the 5% hard cap upward.
 3. **Check confirmed lineups before placing bets.** A late scratch invalidates the prediction.
 4. **Run `--recalibrate` weekly from week 3-4 of the season.** The calibrators fitted on 2025 data get stale; current-season data improves them.
 5. **If all recommendations are OVER, check `@BIAS_KS` and run the diagnostic.** The PA count fix (21 total vs old 27) and retraining should largely eliminate this, but some residual bias may remain.
-6. **Track everything.** Your bet log is the only ground truth. Believe the data, not your gut.
+6. **If avg_k columns don't match game logs, the feature table is stale.** Re-run Phase A pipelines including `pitcher_features_v2`.
+7. **Track everything.** Your bet log is the only ground truth. Believe the data, not your gut.
 
 Good luck.

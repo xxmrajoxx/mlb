@@ -192,3 +192,54 @@ FROM dbo.fact_pitcher_strikeout_betting_ev
 WHERE bet_result IS NOT NULL
   AND recommended_side IN ('OVER','UNDER')
 GROUP BY recommended_side;
+
+-- To check over and under bets 
+
+select game_date, pitcher_name, pitcher_team_name, predicted_strikeouts, predicted_k_stddev, line, over_odds, 
+under_odds, model_prob_over, implied_prob_over, edge_over, ev_over, recommended_side, 
+games_2023, games_2024, games_2025, games_2026
+from  mlb.dbo.fact_pitcher_strikeout_betting_ev
+where game_date in ('2026-05-09','2026-05-10')
+and sportsbook is not null
+and recommended_side <> 'pass'
+and recommended_side = 'over'
+order by model_prob_over desc;
+
+select 
+	player_name,
+	game_date, 
+	summary, 
+	gamesStarted,
+		strikeOuts,
+	numberOfPitches, 
+	inningsPitched,
+	strikePercentage,
+	pitchesPerInning
+from mlb.dbo.fact_player_pitching_gamelogs
+where player_name = 'Jack Kochanowicz'
+order by game_date desc;
+
+
+select game_date, pitcher_name, opponent_team_name, predicted_strikeouts, predicted_k_stddev, line, under_odds, 
+over_odds, model_prob_under, implied_prob_under, edge_under, ev_under, recommended_side, 
+games_2023, games_2024, games_2025, games_2026
+from  mlb.dbo.fact_pitcher_strikeout_betting_ev
+where game_date in ('2026-05-09','2026-05-10')
+and sportsbook is not null
+and recommended_side <> 'pass'
+and recommended_side = 'under'
+order by model_prob_under desc;
+
+select 
+	player_name,
+	game_date, 
+	summary, 
+	gamesStarted,
+		strikeOuts,
+	numberOfPitches, 
+	inningsPitched,
+	strikePercentage,
+	pitchesPerInning
+from mlb.dbo.fact_player_pitching_gamelogs
+where player_name = 'Joe Ryan'
+order by game_date desc;
